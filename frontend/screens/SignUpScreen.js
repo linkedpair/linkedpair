@@ -1,102 +1,110 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
-  View,
-  TextInput,
-  StyleSheet,
   Text,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  Keyboard,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+  View,
+  StyleSheet,
+  TextInput,
+  KeyboardAvoidingView
+} from 'react-native';
 
 export default function SignUpScreen({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleSignUp = () => {
-    // For now, just log the values
+  
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  
+  const handleSignIn = () => {
+    console.log("username:", username);
     console.log("Email:", email);
     console.log("Password:", password);
-    alert("Sign-up clicked!");
-  };
+    alert("Sign Up Clicked!");
+  }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.keyboardAvoidingContainer}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
-    >
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled"
-      >
-        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          <View style={styles.innerContainer}>
-            <Text style={styles.title}>Sign Up</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-            <TouchableOpacity
-              style={styles.customButton}
-              onPress={handleSignUp}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.buttonText}>Sign Up</Text>
-            </TouchableOpacity>
-            <View style={styles.linkWrapper}>
-              <Text style={styles.linkText}>
-                Already have an account?{" "}
-                <Text
-                  style={styles.link}
-                  onPress={() => navigation.navigate("SignIn")}
-                >
-                  Sign In
-                </Text>
-              </Text>
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </ScrollView>
+    <KeyboardAvoidingView style={styles.MainContainer}>
+      <View style={styles.WhiteSpace} />
+      <View style={styles.WhiteSpace}>
+        <Text style={styles.SignUpText}>Sign Up</Text>
+        <Typeable 
+        type="Username" 
+        value={username}
+        onChangeText={setUsername}
+        />
+        <Typeable 
+        type="Email"
+        value={email}
+        onChangeText={setEmail}
+        />
+        <Typeable 
+        type="Password"
+        value={password}
+        onChangeText={setPassword}
+        />
+        <SignUpButton onPress={handleSignIn}/>
+        <View style={styles.linkContainer}>
+        <Text>Already Have an Account? {" "}
+          <Text 
+          style={styles.RedirectToSignInText}
+          onPress={() => navigation.navigate("SignIn")}>
+            Sign In
+          </Text>
+        </Text>
+        </View>
+      </View>
+      <View style={styles.WhiteSpace} />
     </KeyboardAvoidingView>
-  );
+  )
 }
 
+const Typeable = WhatToType => {
+  return (
+    <View style={styles.Typeable}>
+      <TextInput
+        placeholder={`Enter your ${WhatToType.type}`}
+        onChangeText={WhatToType.onChangeText}
+        defaultValue={WhatToType.value}
+        keyboardType={WhatToType.type === "Email" 
+          ? "email-address"
+          : "default"}
+      />
+    </View>
+  )
+}
+
+const SignUpButton = NextAction => {
+  const buttonPressed = () => {
+    console.log('Button pressed')
+  };
+  return (
+    <View style={styles.CreateEmailButton}>
+      <TouchableOpacity onPress={NextAction.onPress}>
+        <Text style={styles.ButtonText}>Sign Up</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
-  keyboardAvoidingContainer: {
+  MainContainer: {
     flex: 1,
-    backgroundColor: "#fff",
+    justifyContent: 'center',
+    backgroundColor: 'white'
   },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
-  innerContainer: {
+  WhiteSpace: {
     flex: 1,
-    justifyContent: "center",
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-  title: {
+  SignUpText: {
     fontSize: 24,
     marginBottom: 24,
     fontWeight: "bold",
-    textAlign: "center",
+    textAlign: "center"
   },
-  input: {
+  Typeable: {
+    width: '90%',
     borderWidth: 1,
     borderColor: "#aaa",
     borderRadius: 6,
@@ -104,32 +112,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     height: 48,
     fontSize: 16,
+    justifyContent: 'center'
   },
-  customButton: {
+  CreateEmailButton: {
     backgroundColor: "#1E90FF",
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: "center",
     marginTop: 20,
     marginBottom: 16,
+    width: '90%'
   },
-  buttonText: {
+  ButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "600"
   },
-  linkWrapper: {
-    marginTop: 32,
-    alignItems: "center",
-  },
-  linkText: {
-    color: "#000",
-    fontSize: 14,
-  },
-  link: {
+  RedirectToSignInText: {
     color: "#007AFF",
     fontSize: 14,
     fontWeight: "bold",
-    textDecorationLine: "underline",
+    textDecorationLine: "underline"
   },
+  linkContainer: {
+    marginTop: 32,
+    alignItems: "center"
+  }
 });
