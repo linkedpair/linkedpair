@@ -6,14 +6,19 @@ import {
   StyleSheet,
   TextInput,
   KeyboardAvoidingView,
-  Image
+  Image,
+  Button
 } from 'react-native';
+
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function SignUpScreen({ navigation }) {
   
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [male, setMale] = useState(null)
+  const [date, setDate] = useState(new Date())
+  const [datePickerOpen, setDatePickerOpen] = useState(false)
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -59,6 +64,12 @@ export default function SignUpScreen({ navigation }) {
             }}
           />
         </View>
+        <DateInput
+          date={date}
+          setDate={setDate}
+          datePickerOpen={datePickerOpen}
+          setDatePickerOpen={setDatePickerOpen}
+        />
         <StandardInput 
           type="Username" 
           value={username}
@@ -133,6 +144,31 @@ const FemaleButton = props => {
         Female
       </Text>
     </TouchableOpacity>
+  )
+}
+
+const DateInput = props => {
+  return (
+    <View style={styles.StandardInput}>
+      <Button 
+        title="Select Date" 
+        onPress={() => props.setDatePickerOpen(true)} 
+      />
+      {props.datePickerOpen && 
+        <DateTimePicker
+          mode="date"
+          open={props.datePickerOpen}
+          value={props.date}
+          onChange={(event, SelectedDate) => {
+            props.setDatePickerOpen(false)
+            if (SelectedDate) {
+              props.setDate(SelectedDate);
+              alert(`I have selected ${SelectedDate}`)
+            }
+        }}
+      />
+      }
+    </View>
   )
 }
 
