@@ -200,7 +200,7 @@ const PasswordInput = props => {
           keyboardType={'default'}
           secureTextEntry={props.hidePassword}
         />
-        <TouchableOpacity  onPress={()=> props.setHidePassword(prev => !prev)}>
+        <TouchableOpacity onPress={()=> props.setHidePassword(prev => !prev)}>
           <Image
             style={styles.PasswordImage}
             source={props.hidePassword 
