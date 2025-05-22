@@ -29,7 +29,7 @@ export default function SignUpScreen({ navigation }) {
     console.log("Email:", email);
     console.log("Password:", password);
     alert("Sign Up Clicked!");
-    navigation.navigate("ProfilePage")
+    navigation.navigate("MainTabs")
   }
 
   return (
