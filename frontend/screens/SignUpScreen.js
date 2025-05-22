@@ -24,11 +24,12 @@ export default function SignUpScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
   
-  const handleSignIn = () => {
+  const handleSignUp = () => {
     console.log("username:", username);
     console.log("Email:", email);
     console.log("Password:", password);
     alert("Sign Up Clicked!");
+    navigation.navigate("ProfilePage")
   }
 
   return (
@@ -49,6 +50,7 @@ export default function SignUpScreen({ navigation }) {
           />
         </View>
         <View style={styles.GenderRow}>
+          {/* I store gender as a boolean - Male is true and Female is false */}
           <MaleButton
             selected={male}
             onPress={() => {
@@ -56,7 +58,8 @@ export default function SignUpScreen({ navigation }) {
               alert(`I am male`)
             }}
           />
-          <FemaleButton 
+          <FemaleButton
+          // ensures that when app starts, both buttons are unselected 
             selected={male === false}
             onPress={() => {
               setMale(false)
@@ -87,7 +90,7 @@ export default function SignUpScreen({ navigation }) {
           hidePassword={hidePassword}
           setHidePassword={setHidePassword}
         />
-        <SignUpButton onPress={handleSignIn}/>
+        <SignUpButton onPress={handleSignUp}/>
         <View style={styles.linkContainer}>
         <Text>Already Have an Account? {" "}
           <Text 
@@ -103,28 +106,28 @@ export default function SignUpScreen({ navigation }) {
   )
 }
 
-const NameInput = props => {
+const NameInput = ({type, value, onChangeText}) => {
   return (
     <View style={styles.NameInput}>
       <TextInput
         style={styles.InputText}
-        placeholder={`Enter your ${props.type}`}
-        onChangeText={props.onChangeText}
-        defaultValue={props.value}
+        placeholder={`Enter your ${type}`}
+        onChangeText={onChangeText}
+        defaultValue={value}
         keyboardType={"default"}
       />
     </View>
   )
 }
 
-const MaleButton = props => {
+const MaleButton = ({selected, onPress}) => {
   return (
     <TouchableOpacity 
-      style={props.selected 
+      style={selected 
         ? [styles.GenderButton, { backgroundColor: '#4a98e0' }]
         : [styles.GenderButton, { backgroundColor: 'white' }]
       }
-      onPress={props.onPress}>
+      onPress={onPress}>
       <Text style={{ textAlign: 'center' }}>
         Male
       </Text>
@@ -132,14 +135,14 @@ const MaleButton = props => {
   )
 }
 
-const FemaleButton = props => {
+const FemaleButton = ({selected, onPress}) => {
   return (
     <TouchableOpacity 
-      style={props.selected 
+      style={selected 
         ? [styles.GenderButton, { backgroundColor: '#fe6b75' }]
         : [styles.GenderButton, { backgroundColor: 'white' }]
       }
-      onPress={props.onPress}>
+      onPress={onPress}>
       <Text style={{ textAlign: 'center' }}>
         Female
       </Text>
@@ -147,22 +150,23 @@ const FemaleButton = props => {
   )
 }
 
-const DateInput = props => {
+const DateInput = (date, setDate, datePickerOpen, setDatePickerOpen) => {
   return (
     <View style={styles.StandardInput}>
       <Button 
         title="Select Date" 
-        onPress={() => props.setDatePickerOpen(true)} 
+        onPress={() => setDatePickerOpen(true)} 
       />
-      {props.datePickerOpen && 
+      {/* If datepicker is open, datetimepicker will be called */}
+      {datePickerOpen && 
         <DateTimePicker
           mode="date"
-          open={props.datePickerOpen}
-          value={props.date}
+          open={datePickerOpen}
+          value={date}
           onChange={(event, SelectedDate) => {
-            props.setDatePickerOpen(false)
+            setDatePickerOpen(false)
             if (SelectedDate) {
-              props.setDate(SelectedDate);
+              setDate(SelectedDate);
               alert(`I have selected ${SelectedDate}`)
             }
         }}
@@ -172,15 +176,15 @@ const DateInput = props => {
   )
 }
 
-const StandardInput = props => {
+const StandardInput = ({type, value, onChangeText}) => {
   return (
     <View style={styles.StandardInput}>
       <TextInput
         style={styles.InputText}
-        placeholder={`Enter your ${props.type}`}
-        onChangeText={props.onChangeText}
-        defaultValue={props.value}
-        keyboardType={props.type === "Email" 
+        placeholder={`Enter your ${type}`}
+        onChangeText={onChangeText}
+        defaultValue={value}
+        keyboardType={type === "Email" 
           ? "email-address"
           : "default"}
       />
@@ -188,22 +192,22 @@ const StandardInput = props => {
   )
 }
 
-const PasswordInput = props => {
+const PasswordInput = ({type, value, onChangeText, hidePassword, setHidePassword})=> {
   return (
     <View>
       <View style={styles.StandardInput}>
         <TextInput
           style={styles.InputText}
-          placeholder={`Enter your ${props.type}`}
-          onChangeText={props.onChangeText}
-          defaultValue={props.value}
+          placeholder={`Enter your ${type}`}
+          onChangeText={onChangeText}
+          defaultValue={value}
           keyboardType={'default'}
-          secureTextEntry={props.hidePassword}
+          secureTextEntry={hidePassword}
         />
-        <TouchableOpacity onPress={()=> props.setHidePassword(prev => !prev)}>
+        <TouchableOpacity onPress={()=> setHidePassword(prev => !prev)}>
           <Image
             style={styles.PasswordImage}
-            source={props.hidePassword 
+            source={hidePassword 
               ? require('../assets/PasswordShow.jpg')
               : require('../assets/PasswordHide.webp')}
           />
