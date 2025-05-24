@@ -3,12 +3,11 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { auth } from "../firebaseConfig";
 import { signOut } from "firebase/auth";
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen() {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
       Alert.alert("Signed Out", "You have been signed out.");
-      navigation.replace("SignIn");
     } catch (error) {
       console.error("Sign-out error:", error);
       Alert.alert("Error", "Failed to sign out.");

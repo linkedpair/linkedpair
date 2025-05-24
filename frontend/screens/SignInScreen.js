@@ -45,8 +45,6 @@ export default function SignInScreen({ navigation }) {
       const user = userCredential.user;
       console.log("User signed in:", user);
       Alert.alert("Success", "Signed in successfully!");
-      // Navigate to the home screen or any other screen
-      navigation.navigate("Home");
     } catch (error) {
       console.error("Error signing in:", error);
       Alert.alert("Error", "Failed to sign in. Please check your credentials.");

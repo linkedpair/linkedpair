@@ -67,7 +67,6 @@ export default function SignUpScreen({ navigation }) {
 
       console.log("User created:", user);
       alert("Account created successfully!");
-      navigation.navigate("Home");
     } catch (error) {
       console.error("Sign up error:", error);
       alert(error.message || "Failed to create account");
