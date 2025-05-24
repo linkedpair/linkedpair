@@ -190,7 +190,7 @@ const FemaleButton = ({ selected, onPress }) => {
   );
 };
 
-const DateInput = (date, setDate, datePickerOpen, setDatePickerOpen) => {
+const DateInput = ({ date, setDate, datePickerOpen, setDatePickerOpen }) => {
   return (
     <View style={styles.StandardInput}>
       <Button title="Select Date" onPress={() => setDatePickerOpen(true)} />
