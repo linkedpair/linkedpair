@@ -106,7 +106,7 @@ export default function SignUpScreen({ navigation }) {
   )
 }
 
-const NameInput = ({type, value, onChangeText}) => {
+const NameInput = ({ type, value, onChangeText }) => {
   return (
     <View style={styles.NameInput}>
       <TextInput
@@ -120,7 +120,7 @@ const NameInput = ({type, value, onChangeText}) => {
   )
 }
 
-const MaleButton = ({selected, onPress}) => {
+const MaleButton = ({ selected, onPress }) => {
   return (
     <TouchableOpacity 
       style={selected 
@@ -135,7 +135,7 @@ const MaleButton = ({selected, onPress}) => {
   )
 }
 
-const FemaleButton = ({selected, onPress}) => {
+const FemaleButton = ({ selected, onPress }) => {
   return (
     <TouchableOpacity 
       style={selected 
@@ -150,7 +150,7 @@ const FemaleButton = ({selected, onPress}) => {
   )
 }
 
-const DateInput = (date, setDate, datePickerOpen, setDatePickerOpen) => {
+const DateInput = ({ date, setDate, datePickerOpen, setDatePickerOpen }) => {
   return (
     <View style={styles.StandardInput}>
       <Button 
@@ -176,7 +176,7 @@ const DateInput = (date, setDate, datePickerOpen, setDatePickerOpen) => {
   )
 }
 
-const StandardInput = ({type, value, onChangeText}) => {
+const StandardInput = ({ type, value, onChangeText }) => {
   return (
     <View style={styles.StandardInput}>
       <TextInput
@@ -192,7 +192,7 @@ const StandardInput = ({type, value, onChangeText}) => {
   )
 }
 
-const PasswordInput = ({type, value, onChangeText, hidePassword, setHidePassword})=> {
+const PasswordInput = ({ type, value, onChangeText, hidePassword, setHidePassword })=> {
   return (
     <View>
       <View style={styles.StandardInput}>
