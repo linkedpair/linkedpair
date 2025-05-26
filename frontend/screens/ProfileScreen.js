@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Text,
   TouchableOpacity,
@@ -11,13 +11,55 @@ import {
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-export default function ProfileScreen() {
-    
+import { auth, firestore } from '../firebaseConfig'
+import { doc, getDoc } from 'firebase/firestore'
+import { onAuthStateChanged } from 'firebase/auth'
+
+export default function ProfileScreen({ navigation }) {
+
+  const [data, setData] = useState(null)
+  const [birthdate, setBirthdate] = useState(null)
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const userRef = doc(firestore, 'users', user.uid)
+          const docSnap = await getDoc(userRef)
+
+          if (docSnap.exists()) {
+            setData(docSnap.data())
+            setBirthdate(docSnap.data().dateOfBirth)
+          } else {
+            alert('Missing data!')
+          }
+        } catch (error) {
+          alert('error fetching user data')
+        }
+      } else {
+        setData(null)
+      }
+    })
+
+    return () => unsubscribe()
+  }, [])
+
+  // Just a placeholder screen to ensure that the data loads before the program 
+  // runs data.firstName below to prevent it from accessing a null object.
+  // In theory we will never reach this screen.
+  if (!data) {
+    return (
+      <Text>Loading...</Text>
+    )
+  }
+
   return (
     <SafeAreaView style={styles.SafeAreaViewContainer}>
       <ScrollView contentContainerStyle={styles.MainContainer}>
           <View style={styles.WhiteSpace} />
-          <Header />
+          <Header 
+            navigation={navigation}
+          />
           <PhotoAndName />
           <PinkLineSeparator />
           <View style={styles.AboutContainer}>
@@ -27,22 +69,22 @@ export default function ProfileScreen() {
           <AttributeLineSeparator />
           <UserAttribute 
             type="First Name"
-            initialValue="William"
+            initialValue={data.firstName}
           />
           <AttributeLineSeparator />
           <UserAttribute
             type="Last Name"
-            initialValue="Branson"
+            initialValue={data.lastName}
           />
           <AttributeLineSeparator />
           <UserAttribute
             type="Display Name"
-            initialValue="Carrot"
+            initialValue={data.username}
           />
           <AttributeLineSeparator />
           <UserAttribute
             type="Age"
-            initialValue="21"
+            initialValue={calculateAge(birthdate)}
           />
           <View style={styles.AboutContainer}>
             <Text style={styles.AboutText}>Private Profile</Text>
@@ -51,12 +93,12 @@ export default function ProfileScreen() {
           <AttributeLineSeparator />
           <UserAttribute
             type="Gender"
-            initialValue="Male"
+            initialValue={data.gender}
           />
           <AttributeLineSeparator />
           <UserAttribute
             type="Email"
-            initialValue="williamjliow@gmail.com"
+            initialValue={data.email}
           />
           <AttributeLineSeparator />
           <View style={styles.WhiteSpace} />
@@ -65,11 +107,28 @@ export default function ProfileScreen() {
   )
 }
 
-const Header = () => {
+function calculateAge(birthday) {
+  const birthDate = new Date(birthday)
+  const today = new Date()
+  
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+
+  return age;
+}
+
+const Header = ({ navigation }) => {
   return (
     <View style={{ flexDirection: 'row' }}>
       <Text style={styles.HeaderText}>Profile</Text>
-      <TouchableOpacity style={{ flex: 1, paddingTop: 8 }}>
+      <TouchableOpacity 
+        style={{ flex: 1, paddingTop: 8 }}
+        onPress={() => navigation.navigate("Settings")}
+      >
         <Ionicons name="settings-outline" size={24} color="gray" />
       </TouchableOpacity>
     </View>
@@ -123,7 +182,7 @@ const AttributeLineSeparator = () => {
 const UserAttribute = ({type, initialValue}) => {
 
   const [isEditing, setIsEditing] = useState(false)
-  const [value, setValue] = useState(initialValue)
+  const [value, setValue] = useState(initialValue ?? "-")
 
   // If attribute is "Age" or "Gender", we do not allow users to edit, 
   // Otherwise, clicking on each attribute will turn it into a TextInput
@@ -134,9 +193,10 @@ const UserAttribute = ({type, initialValue}) => {
           {/* Type is fixed */}
           <Text style={styles.AttributeType}>{type}</Text>
         </View>
-          {isEditing && (type != "Age" || type != "Gender") ? (
+          {isEditing && (type != "Age" || type != "Gender" 
+          || type != "First Name" || type != "Last Name") ? (
             <TextInput
-              style={styles.AttributeValue}
+              style={styles.EditableAttributeValue}
               value={value}
               onChangeText={setValue}
               autoFocus={true}
@@ -145,7 +205,7 @@ const UserAttribute = ({type, initialValue}) => {
               onSubmitEditing={() => setIsEditing(false)}
             />
           ) : (
-            (type != "Age" && type != "Gender") ? (
+            (type != "Age" && type != "Gender" && type != "First Name" && type != "Last Name") ? (
               <TouchableOpacity 
                 onPress={() => setIsEditing(true)}>
                 {/* initialValue will be extracted from database */}

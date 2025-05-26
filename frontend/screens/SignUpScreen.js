@@ -58,7 +58,7 @@ export default function SignUpScreen({ navigation }) {
       await setDoc(doc(firestore, "users", user.uid), {
         firstName,
         lastName,
-        gender: male ? "male" : "female",
+        gender: male ? "Male" : "Female",
         dateOfBirth: date.toISOString().split("T")[0], // Format date as YYYY-MM-DD
         username,
         email,
