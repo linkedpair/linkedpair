@@ -11,6 +11,7 @@ import {
 } from "react-native";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { Dropdown } from 'react-native-element-dropdown';
 
 import { auth, firestore } from "../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -26,6 +27,7 @@ export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [hidePassword, setHidePassword] = useState(true);
+  const [major, setMajor] = useState("");
 
   const handleSignUp = async () => {
     if (
@@ -34,7 +36,8 @@ export default function SignUpScreen({ navigation }) {
       !email ||
       !password ||
       male === null ||
-      !username
+      !username ||
+      !major
     ) {
       alert("Please fill out all required fields.");
       return;
@@ -62,6 +65,7 @@ export default function SignUpScreen({ navigation }) {
         dateOfBirth: date.toISOString().split("T")[0], // Format date as YYYY-MM-DD
         username,
         email,
+        major,
         createdAt: new Date().toISOString(),
       });
 
@@ -114,12 +118,19 @@ export default function SignUpScreen({ navigation }) {
           datePickerOpen={datePickerOpen}
           setDatePickerOpen={setDatePickerOpen}
         />
+        <MajorDropdownInput 
+          major={major}
+          setMajor={setMajor}
+        />
         <StandardInput
           type="Username"
           value={username}
           onChangeText={setUsername}
         />
-        <StandardInput type="Email" value={email} onChangeText={setEmail} />
+        <StandardInput 
+          type="Email" 
+          value={email} 
+          onChangeText={setEmail} />
         <PasswordInput
           type="Password"
           value={password}
@@ -259,6 +270,52 @@ const PasswordInput = ({
   );
 };
 
+const faculties = [
+  'Arts and Social Sciences',
+  'Business',
+  'Computing',
+  'Continuing and Lifelong Education',
+  'Dentistry',
+  'Design and Engineering',
+  'Duke-NUS',
+  'Law',
+  'Medicine',
+  'Music',
+  'NUS College',
+  'NUS Graduate School',
+  'Public Health',
+  'Public Policy',
+  'Science',
+  'Yale-NUS'
+]
+
+const data = faculties.map(faculty => ({
+  label: faculty,
+  value: faculty
+}))
+
+const MajorDropdownInput = ({ major, setMajor }) => {
+  return(
+    <Dropdown
+      style={styles.dropdown}
+      placeholderStyle={styles.placeholderStyle}
+      selectedTextStyle={styles.selectedTextStyle}
+      inputSearchStyle={styles.inputSearchStyle}
+      data={data}
+      search
+      maxHeight={300}
+      labelField="label"
+      valueField="value"
+      placeholder={"Select your Major"}
+      searchPlaceholder="Search..."
+      value={major}
+      onChange={item => {
+        setMajor(item.value);
+      }}
+    />
+  )
+}
+
 const SignUpButton = (NextAction) => {
   return (
     <TouchableOpacity
@@ -341,6 +398,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 20,
     marginBottom: 16,
+  },
+  dropdown: {
+    marginBottom: 12,
+    height: 48,
+    borderWidth: 1,
+    borderColor: "#aaa",
+    paddingHorizontal: 12,
+    borderRadius: 6
+  },
+  placeholderStyle: {
+    fontSize: 14,
+    color: "#aaa"
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
   },
   ButtonText: {
     color: "#fff",
