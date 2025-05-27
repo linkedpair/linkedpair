@@ -262,9 +262,9 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   Image: {
-    height: 134, 
-    width: 134, 
-    borderRadius: 67, 
+    height: '96%', 
+    width: '96%', 
+    borderRadius: '96%',
     resizeMode: 'cover'
   },
   AboutContainer: {

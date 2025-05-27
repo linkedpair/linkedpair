@@ -1,7 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ProfileStack from './ProfileStack';
 import ChatScreen from '../screens/ChatScreen';
-import SettingsScreen from '../screens/SettingsScreen'
 import MatchScreen from '../screens/MatchScreen';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -61,7 +60,7 @@ export default function MyTabs() {
       })}
     >
       <Tab.Screen name="Match" component={MatchScreen} />
-      <Tab.Screen name="Chat" component={SettingsScreen} />
+      <Tab.Screen name="Chat" component={ChatScreen} />
       <Tab.Screen name="You" component={ProfileStack} />
     </Tab.Navigator>
   );
