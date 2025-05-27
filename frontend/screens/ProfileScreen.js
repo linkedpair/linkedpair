@@ -72,24 +72,34 @@ export default function ProfileScreen({ navigation }) {
           </View>
           <AttributeLineSeparator />
           <UserAttribute 
-            type="First Name"
+            type="first Name"
+            displayType="First Name"
             initialValue={data.firstName}
           />
           <AttributeLineSeparator />
           <UserAttribute
-            type="Last Name"
+            type="last Name"
+            displayType="Last Name"            
             initialValue={data.lastName}
           />
           <AttributeLineSeparator />
           <UserAttribute
             type="username"
+            displayType="Display Name"  
             initialValue={data.username}
             user={user}
           />
           <AttributeLineSeparator />
           <UserAttribute
-            type="Age"
+            type="age"
+            displayType="Age"
             initialValue={calculateAge(birthdate)}
+          />
+          <AttributeLineSeparator />
+          <UserAttribute
+            type="major"
+            displayType="Major"
+            initialValue={data.major}
           />
           <View style={styles.AboutContainer}>
             <Text style={styles.AboutText}>Private Profile</Text>
@@ -97,12 +107,14 @@ export default function ProfileScreen({ navigation }) {
           </View>
           <AttributeLineSeparator />
           <UserAttribute
-            type="Gender"
+            type="gender"
+            displayType="Gender"
             initialValue={data.gender}
           />
           <AttributeLineSeparator />
           <UserAttribute
             type="email"
+            displayType="Email"
             initialValue={data.email}
             user={user}
           />
@@ -185,7 +197,7 @@ const AttributeLineSeparator = () => {
   )
 }
 
-const UserAttribute = ({ type, initialValue, user }) => {
+const UserAttribute = ({ type, displayType, initialValue, user }) => {
 
   const [isEditing, setIsEditing] = useState(false)
   const [value, setValue] = useState(initialValue ?? "-")
@@ -200,43 +212,51 @@ const UserAttribute = ({ type, initialValue, user }) => {
     }  
   }
 
-  // If attribute is "Age" or "Gender", we do not allow users to edit, 
-  // Otherwise, clicking on each attribute will turn it into a TextInput
+  // If attribute is in the list below, we do not allow users to edit.
+  // Otherwise, clicking on each attribute will turn it into a TextInput.
+  const UneditableTypes = (type != "age" &&
+    type != "gender" &&
+    type != "first Name" &&
+    type != "last Name" &&
+    type != "major"
+  )
+
   return (
     <View style={{ marginLeft: 24 }}>
       <View style={styles.AttributeContainer}>
         <View>
           {/* Type is fixed */}
-          <Text style={styles.AttributeType}>{type}</Text>
+          <Text style={styles.AttributeType}>{displayType}</Text>
         </View>
-          {isEditing && (type != "Age" || type != "Gender" 
-          || type != "First Name" || type != "Last Name") ? (
-            <TextInput
-              style={styles.EditableAttributeValue}
-              value={value}
-              onChangeText={setValue}
-              autoFocus={true}
-              onBlur={handleUpdate}
-              returnKeyType='done'
-              onSubmitEditing={handleUpdate}
-            />
+        {isEditing && UneditableTypes 
+          ? (
+          <TextInput
+            style={styles.EditableAttributeValue}
+            value={value}
+            onChangeText={setValue}
+            autoFocus={true}
+            onBlur={handleUpdate}
+            returnKeyType='done'
+            onSubmitEditing={handleUpdate}
+          />
+        ) : (
+          UneditableTypes ? (
+            <TouchableOpacity 
+              onPress={() => setIsEditing(true)}>
+              {/* initialValue will be extracted from database */}
+              <Text style={styles.EditableAttributeValue}>{value}</Text>
+            </TouchableOpacity>
           ) : (
-            (type != "Age" && type != "Gender" && type != "First Name" && type != "Last Name") ? (
-              <TouchableOpacity 
-                onPress={() => setIsEditing(true)}>
-                {/* initialValue will be extracted from database */}
-                <Text style={styles.EditableAttributeValue}>{value}</Text>
-              </TouchableOpacity>
-            ) : (
-              <View style={{ flexDirection: 'row' }}>
-                <Text style={styles.UneditableAttributeValue}>{value}</Text>
-                <Image 
-                  style={styles.UneditableImage}
-                  source={require('../assets/CannotEdit.png')} 
-                />
-              </View>
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={styles.UneditableAttributeValue}>{value}</Text>
+              <Image 
+                style={styles.UneditableImage}
+                source={require('../assets/CannotEdit.png')} 
+              />
+            </View>
             )
-        )}
+          )
+        }
       </View>
     </View>
   )
