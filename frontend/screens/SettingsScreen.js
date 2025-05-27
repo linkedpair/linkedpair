@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { auth } from "../firebaseConfig";
 import { signOut } from "firebase/auth";
 
-export default function HomeScreen() {
+export default function SettingsScreen() {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
@@ -16,7 +16,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.welcomeText}>Welcome!</Text>
+      <Text style={styles.welcomeText}>Settings</Text>
       <Text style={styles.emailText}>{auth.currentUser?.email}</Text>
       <TouchableOpacity style={styles.button} onPress={handleSignOut}>
         <Text style={styles.buttonText}>Sign Out</Text>

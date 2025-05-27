@@ -23,6 +23,6 @@ const auth = initializeAuth(app, {
 });
 
 // Initialize Firestore
-const firestore = getFirestore(app);
+const db = getFirestore(app);
 
-export { auth, firestore };
+export { auth, db };
