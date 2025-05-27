@@ -4,10 +4,6 @@ import {
   TouchableOpacity,
   View,
   StyleSheet,
-  TextInput,
-  Image,
-  Button,
-  ScrollView,
   KeyboardAvoidingView
 } from 'react-native';
 

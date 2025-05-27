@@ -12,17 +12,19 @@ import {
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { auth, firestore } from '../firebaseConfig'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, updateDoc } from 'firebase/firestore'
 import { onAuthStateChanged } from 'firebase/auth'
 
 export default function ProfileScreen({ navigation }) {
 
   const [data, setData] = useState(null)
   const [birthdate, setBirthdate] = useState(null)
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        setUser(user)
         try {
           const userRef = doc(firestore, 'users', user.uid)
           const docSnap = await getDoc(userRef)
@@ -60,7 +62,9 @@ export default function ProfileScreen({ navigation }) {
           <Header 
             navigation={navigation}
           />
-          <PhotoAndName />
+          <PhotoAndName 
+            username={data.firstName}
+          />
           <PinkLineSeparator />
           <View style={styles.AboutContainer}>
             <Text style={styles.AboutText}>Public Profile</Text>
@@ -78,8 +82,9 @@ export default function ProfileScreen({ navigation }) {
           />
           <AttributeLineSeparator />
           <UserAttribute
-            type="Display Name"
+            type="username"
             initialValue={data.username}
+            user={user}
           />
           <AttributeLineSeparator />
           <UserAttribute
@@ -97,8 +102,9 @@ export default function ProfileScreen({ navigation }) {
           />
           <AttributeLineSeparator />
           <UserAttribute
-            type="Email"
+            type="email"
             initialValue={data.email}
+            user={user}
           />
           <AttributeLineSeparator />
           <View style={styles.WhiteSpace} />
@@ -146,13 +152,13 @@ const Circle = () => {
   )
 }
 
-const PhotoAndName = () => {
+const PhotoAndName = ({ username }) => {
   return (
     <View style={styles.PhotoAndNameContainer}>
       <Circle />
       <View>
         {/* To extract name from database */}
-        <Text style={styles.NameText}>Carrot</Text>
+        <Text style={styles.NameText}>{username}</Text>
       </View>
       <Text style={styles.BelowNameText}>Looking for One Night Stand</Text>
     </View>
@@ -179,10 +185,20 @@ const AttributeLineSeparator = () => {
   )
 }
 
-const UserAttribute = ({type, initialValue}) => {
+const UserAttribute = ({ type, initialValue, user }) => {
 
   const [isEditing, setIsEditing] = useState(false)
   const [value, setValue] = useState(initialValue ?? "-")
+
+  const handleUpdate = async () => {
+    setIsEditing(false)
+    try {
+      const userRef = doc(firestore, 'users', user.uid)
+      await updateDoc(userRef, {[type]: value})
+    } catch (error) {
+      alert('Update Failed')
+    }  
+  }
 
   // If attribute is "Age" or "Gender", we do not allow users to edit, 
   // Otherwise, clicking on each attribute will turn it into a TextInput
@@ -200,9 +216,9 @@ const UserAttribute = ({type, initialValue}) => {
               value={value}
               onChangeText={setValue}
               autoFocus={true}
-              onBlur={() => setIsEditing(false)}
+              onBlur={handleUpdate}
               returnKeyType='done'
-              onSubmitEditing={() => setIsEditing(false)}
+              onSubmitEditing={handleUpdate}
             />
           ) : (
             (type != "Age" && type != "Gender" && type != "First Name" && type != "Last Name") ? (

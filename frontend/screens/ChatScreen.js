@@ -4,60 +4,60 @@ import {
   TouchableOpacity,
   View,
   StyleSheet,
-  TextInput,
   Image,
-  Button,
-  ScrollView,
   SafeAreaView,
   FlatList,
 } from 'react-native';
 
 
-export default function ChatScreen() {
+export default function ChatScreen({ navigation }) {
 
-    const [chats, setChats] = useState([])
+  const [chats, setChats] = useState([])
 
-    // Eventually to be extracted from database, these are just placeholders
-    useEffect(() => {
-      setChats([
-        { name: 'William', lastText: 'Hello!'}, 
-        { name: 'Johnathon', lastText: 'Bye!'},
-        { name: 'Lilly', lastText: 'What games do you like to play?'},
-        { name: 'Monika', lastText: 'if we were socks we would make a great pair. This text is too long'},
-        { name: 'Taylor', lastText: 'Wanna be Minecraft without the craft?'},
-        { name: 'Katarina', lastText: "you're hot"},
-        { name: 'Gina', lastText: 'Do you play league?'},        
-      ])}, []);
+  // Eventually to be extracted from database, these are just placeholders
+  useEffect(() => {
+    setChats([
+      { name: 'William', lastText: 'Hello!'}, 
+      { name: 'Johnathon', lastText: 'Bye!'},
+      { name: 'Lilly', lastText: 'What games do you like to play?'},
+      { name: 'Monika', lastText: 'if we were socks we would make a great pair. This text is too long'},
+      { name: 'Taylor', lastText: 'Wanna be Minecraft without the craft?'},
+      { name: 'Katarina', lastText: "you're hot"},
+      { name: 'Gina', lastText: 'Do you play league?'},        
+    ])}, []);
 
-    return (
-      <SafeAreaView style={styles.SafeAreaViewContainer}>
-        <View style={styles.WhiteSpace} />
-        <Header />
-        <View style={{ flex: 1 }}>
-          <FlatList
-            data={chats}
-            keyExtractor={(item) => item.name}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={styles.ChatContainer}>
-                <Photo />
-                <View style={styles.TextDisplay}>
-                  <Text style={styles.NameText}>{item.name}</Text>  
-                  <Text 
-                    style={styles.ContentText}
-                    numberOfLines={1}
-                    ellipsizeMode='tail'
-                  >
-                    {item.lastText}
-                  </Text>
-                </View>
-                <NotificationSymbol />
-              </TouchableOpacity>
-            )}
-            contentContainerStyle={{ flex: 1 }}
-          />
-        </View>
-      </SafeAreaView>
-    )
+  return (
+    <SafeAreaView style={styles.SafeAreaViewContainer}>
+      <View style={styles.WhiteSpace} />
+      <Header />
+      <View style={{ flex: 1 }}>
+        <FlatList
+          data={chats}
+          keyExtractor={(item) => item.name}
+          renderItem={({ item }) => (
+            <TouchableOpacity 
+              style={styles.ChatContainer}
+              onPress={() => navigation.navigate("ChatDetails")}
+            >
+              <Photo />
+              <View style={styles.TextDisplay}>
+                <Text style={styles.NameText}>{item.name}</Text>  
+                <Text 
+                  style={styles.ContentText}
+                  numberOfLines={1}
+                  ellipsizeMode='tail'
+                >
+                  {item.lastText}
+                </Text>
+              </View>
+              <NotificationSymbol />
+            </TouchableOpacity>
+          )}
+          contentContainerStyle={{ flex: 1 }}
+        />
+      </View>
+    </SafeAreaView>
+  )
 }
 
 const Header = () => {
