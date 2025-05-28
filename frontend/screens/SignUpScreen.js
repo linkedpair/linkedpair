@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -14,15 +14,17 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { Dropdown } from 'react-native-element-dropdown';
 import * as ImagePicker from 'expo-image-picker';
 
-import { auth, firestore } from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
+
+import * as Location from "expo-location";
 
 export default function SignUpScreen({ navigation }) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [male, setMale] = useState(null);
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -30,6 +32,30 @@ export default function SignUpScreen({ navigation }) {
   const [hidePassword, setHidePassword] = useState(true);
   const [major, setMajor] = useState("");
   const [image, setImage] = useState(null);
+  const [location, setLocation] = useState(null);
+
+  // Fetch location automatically
+  useEffect(() => {
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission Denied",
+          "Location permission is required to match you with nearby users."
+        );
+        return;
+      }
+
+      const currentLocation = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Highest,
+      });
+
+      setLocation({
+        latitude: currentLocation.coords.latitude,
+        longitude: currentLocation.coords.longitude,
+      });
+    })();
+  }, []);
 
   const handleSignUp = async () => {
     if (
@@ -40,7 +66,8 @@ export default function SignUpScreen({ navigation }) {
       male === null ||
       !username ||
       !major ||
-      !image
+      !image ||
+      !date 
     ) {
       alert("Please fill out all required fields.");
       return;
@@ -49,6 +76,11 @@ export default function SignUpScreen({ navigation }) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       alert("Please enter a valid email address.");
+      return;
+    }
+
+    if (!location) {
+      Alert.alert("Location Error", "Location is required for signup.");
       return;
     }
 
@@ -61,7 +93,8 @@ export default function SignUpScreen({ navigation }) {
       const user = userCredential.user;
 
       // Create a user document in Firestore
-      await setDoc(doc(firestore, "users", user.uid), {
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
         firstName,
         lastName,
         gender: male ? "Male" : "Female",
@@ -70,7 +103,9 @@ export default function SignUpScreen({ navigation }) {
         email,
         major,
         image,
+        location,
         createdAt: new Date().toISOString(),
+        matchedWith: [],
       });
 
       console.log("User created:", user);
@@ -122,19 +157,13 @@ export default function SignUpScreen({ navigation }) {
           datePickerOpen={datePickerOpen}
           setDatePickerOpen={setDatePickerOpen}
         />
-        <MajorDropdownInput 
-          major={major}
-          setMajor={setMajor}
-        />
+        <MajorDropdownInput major={major} setMajor={setMajor} />
         <StandardInput
           type="Username"
           value={username}
           onChangeText={setUsername}
         />
-        <StandardInput 
-          type="Email" 
-          value={email} 
-          onChangeText={setEmail} />
+        <StandardInput type="Email" value={email} onChangeText={setEmail} />
         <PasswordInput
           type="Password"
           value={password}
@@ -211,13 +240,16 @@ const FemaleButton = ({ selected, onPress }) => {
 const DateInput = ({ date, setDate, datePickerOpen, setDatePickerOpen }) => {
   return (
     <View style={styles.StandardInput}>
-      <Button title="Select Date Of Birth" onPress={() => setDatePickerOpen(true)} />
+      <Button
+        title={date ? date.toDateString() : "Select Date"}
+        onPress={() => setDatePickerOpen(true)}
+      />
       {/* If datepicker is open, datetimepicker will be called */}
       {datePickerOpen && (
         <DateTimePicker
           mode='date'
           open={datePickerOpen}
-          value={date}
+          value={date || new Date()}
           onChange={(event, SelectedDate) => {
             setDatePickerOpen(false);
             if (SelectedDate) {
@@ -279,31 +311,31 @@ const PasswordInput = ({
 };
 
 const faculties = [
-  'Arts and Social Sciences',
-  'Business',
-  'Computing',
-  'Continuing and Lifelong Education',
-  'Dentistry',
-  'Design and Engineering',
-  'Duke-NUS',
-  'Law',
-  'Medicine',
-  'Music',
-  'NUS College',
-  'NUS Graduate School',
-  'Public Health',
-  'Public Policy',
-  'Science',
-  'Yale-NUS'
-]
+  "Arts and Social Sciences",
+  "Business",
+  "Computing",
+  "Continuing and Lifelong Education",
+  "Dentistry",
+  "Design and Engineering",
+  "Duke-NUS",
+  "Law",
+  "Medicine",
+  "Music",
+  "NUS College",
+  "NUS Graduate School",
+  "Public Health",
+  "Public Policy",
+  "Science",
+  "Yale-NUS",
+];
 
-const data = faculties.map(faculty => ({
+const data = faculties.map((faculty) => ({
   label: faculty,
-  value: faculty
-}))
+  value: faculty,
+}));
 
 const MajorDropdownInput = ({ major, setMajor }) => {
-  return(
+  return (
     <Dropdown
       style={styles.dropdown}
       placeholderStyle={styles.placeholderStyle}
@@ -317,12 +349,12 @@ const MajorDropdownInput = ({ major, setMajor }) => {
       placeholder={"Select your Major"}
       searchPlaceholder="Search..."
       value={major}
-      onChange={item => {
+      onChange={(item) => {
         setMajor(item.value);
       }}
     />
-  )
-}
+  );
+};
 
 const ImageInput = ({ image, setImage }) => {
 
@@ -438,11 +470,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#aaa",
     paddingHorizontal: 12,
-    borderRadius: 6
+    borderRadius: 6,
   },
   placeholderStyle: {
     fontSize: 14,
-    color: "#aaa"
+    color: "#aaa",
   },
   selectedTextStyle: {
     fontSize: 16,
