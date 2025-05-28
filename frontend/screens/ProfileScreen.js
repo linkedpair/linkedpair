@@ -10,6 +10,7 @@ import {
   SafeAreaView
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import * as ImagePicker from 'expo-image-picker';
 
 import { auth, firestore } from '../firebaseConfig'
 import { doc, getDoc, updateDoc } from 'firebase/firestore'
@@ -20,6 +21,7 @@ export default function ProfileScreen({ navigation }) {
   const [data, setData] = useState(null)
   const [birthdate, setBirthdate] = useState(null)
   const [user, setUser] = useState(null)
+  const [profilePhoto, setProfilePhoto] = useState(null)
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -32,6 +34,7 @@ export default function ProfileScreen({ navigation }) {
           if (docSnap.exists()) {
             setData(docSnap.data())
             setBirthdate(docSnap.data().dateOfBirth)
+            setProfilePhoto(docSnap.data().image)
           } else {
             alert('Missing data!')
           }
@@ -64,6 +67,9 @@ export default function ProfileScreen({ navigation }) {
           />
           <PhotoAndName 
             username={data.firstName}
+            photo={profilePhoto}
+            setPhoto={setProfilePhoto}
+            user={user}
           />
           <PinkLineSeparator />
           <View style={styles.AboutContainer}>
@@ -153,21 +159,48 @@ const Header = ({ navigation }) => {
   )
 }
 
-const Circle = () => {
+const Photo = ({ photo, user, setPhoto }) => {
+
+  const PickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images', 'videos'],
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+  
+    if (!result.canceled) {
+      try {
+        const userRef = doc(firestore, 'users', user.uid)
+        await updateDoc(userRef, {image: result.assets[0].uri})
+        setPhoto(result.assets[0].uri)
+      } catch (error) {
+        alert('Update Failed')
+      }  
+    }
+  }
+
   return (
-  <View style={styles.Circle}>
-    {/* To extract image from database */}
+  <TouchableOpacity 
+    style={styles.Photo}
+    onPress={PickImage}
+  >
     <Image 
       style={styles.Image}
-      source={require('../assets/TestPhoto.jpeg')} />
-  </View>
+      source={{ uri: photo }} 
+    />
+  </TouchableOpacity>
   )
 }
 
-const PhotoAndName = ({ username }) => {
+const PhotoAndName = ({ username, photo, user, setPhoto }) => {
   return (
     <View style={styles.PhotoAndNameContainer}>
-      <Circle />
+      <Photo 
+        photo={photo}
+        user={user}
+        setPhoto={setPhoto}
+      />
       <View>
         {/* To extract name from database */}
         <Text style={styles.NameText}>{username}</Text>
@@ -286,7 +319,7 @@ const styles = StyleSheet.create({
     marginLeft: 21,
     marginBottom: 33
   },
-  Circle: {
+  Photo: {
     width: 150,
     height: 150,
     borderRadius: 75,

@@ -12,6 +12,7 @@ import {
 
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Dropdown } from 'react-native-element-dropdown';
+import * as ImagePicker from 'expo-image-picker';
 
 import { auth, firestore } from "../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -28,6 +29,7 @@ export default function SignUpScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [hidePassword, setHidePassword] = useState(true);
   const [major, setMajor] = useState("");
+  const [image, setImage] = useState(null);
 
   const handleSignUp = async () => {
     if (
@@ -37,7 +39,8 @@ export default function SignUpScreen({ navigation }) {
       !password ||
       male === null ||
       !username ||
-      !major
+      !major ||
+      !image
     ) {
       alert("Please fill out all required fields.");
       return;
@@ -66,6 +69,7 @@ export default function SignUpScreen({ navigation }) {
         username,
         email,
         major,
+        image,
         createdAt: new Date().toISOString(),
       });
 
@@ -138,6 +142,10 @@ export default function SignUpScreen({ navigation }) {
           hidePassword={hidePassword}
           setHidePassword={setHidePassword}
         />
+        <ImageInput 
+          image={image}
+          setImage={setImage}
+        />
         <SignUpButton onPress={handleSignUp} />
         <View style={styles.linkContainer}>
           <Text>
@@ -203,11 +211,11 @@ const FemaleButton = ({ selected, onPress }) => {
 const DateInput = ({ date, setDate, datePickerOpen, setDatePickerOpen }) => {
   return (
     <View style={styles.StandardInput}>
-      <Button title="Select Date" onPress={() => setDatePickerOpen(true)} />
+      <Button title="Select Date Of Birth" onPress={() => setDatePickerOpen(true)} />
       {/* If datepicker is open, datetimepicker will be called */}
       {datePickerOpen && (
         <DateTimePicker
-          mode="date"
+          mode='date'
           open={datePickerOpen}
           value={date}
           onChange={(event, SelectedDate) => {
@@ -313,6 +321,31 @@ const MajorDropdownInput = ({ major, setMajor }) => {
         setMajor(item.value);
       }}
     />
+  )
+}
+
+const ImageInput = ({ image, setImage }) => {
+
+  const PickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images', 'videos'],
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  return (
+    <View style={!image ? styles.StandardInput : styles.SelectedImage}>
+      {!image 
+        ? <Button title="Pick an image from camera roll" onPress={PickImage} />
+        : <Image source={{ uri: image }} style={styles.SelectedImage} />
+      }
+    </View>
   )
 }
 
@@ -441,4 +474,8 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "left",
   },
+  SelectedImage: {
+    height: 50, 
+    width: 50,
+  }
 });
