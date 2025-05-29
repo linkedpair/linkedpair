@@ -11,6 +11,8 @@ import {
   Image,
   TextInput,
   FlatList,
+  ScrollView,
+  Platform
 } from 'react-native';
 
 
@@ -41,11 +43,13 @@ export default function ChatDetailsScreen({ navigation }) {
 
   useEffect(() => {
   
+    // We query and extract the messages in descending order
     const q = query(
     collection(db, "chats", chatId, "messages"),
     orderBy("timestamp", "desc")
     );
 
+    // Here we map each chat document to the id and its data
     const unsubscribe = onSnapshot(q, (snapshot) => {
       setMessages(snapshot.docs.map(doc => ({
         id: doc.id,
@@ -57,7 +61,13 @@ export default function ChatDetailsScreen({ navigation }) {
   }, []);
 
   return (
-    <KeyboardAvoidingView style={styles.SafeAreaViewContainer}>
+    <KeyboardAvoidingView 
+      style={styles.SafeAreaViewContainer}
+      // Allows the screen to rise above the keyboard when it appears
+      // * remember to change if we do implement android
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset
+    >
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.WhiteSpace} />
         <Header
@@ -80,20 +90,22 @@ export default function ChatDetailsScreen({ navigation }) {
 }
 
 const SendMessage = async (chatId, text, senderId, setTextContent) => {
-    
+  
+  // Upon sending a message add it to the corresponding document
   await addDoc(collection(db, "chats", chatId, "messages"), {
       text,
       senderId,
       timestamp: serverTimestamp(),
     })
 
-    // Set Last Message
+    // Here we set the last message to the corresponding chat document for easy access
     await setDoc(doc(db, "chats", chatId), {
       lastMessage: { 
         text, 
         timestamp: new Date() }
     }, { merge: true });
 
+    // Reset the current text content to null
     setTextContent('')
   }
 
@@ -123,7 +135,6 @@ const Header = ({ matchedUser, navigation }) => {
 const Photo = ({ image }) => {
   return (
   <View style={styles.Circle}>
-    {/* To extract image from database */}
     <Image 
       style={styles.Image}
       source={{ uri: image || 

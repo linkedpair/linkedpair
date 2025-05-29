@@ -5,6 +5,7 @@ import ChatDetailsScreen from "../screens/ChatDetailsScreen";
 
 const Stack = createNativeStackNavigator();
 
+// This is a stack for all screens accessible in the Chat Tab
 export default function ChatStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -14,4 +15,3 @@ export default function ChatStack() {
   );
 }
 
-// This is a stack for all screens accessible in the Chat Tab

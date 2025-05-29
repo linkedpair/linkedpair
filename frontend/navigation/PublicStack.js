@@ -5,6 +5,7 @@ import SignUpScreen from "../screens/SignUpScreen";
 
 const Stack = createNativeStackNavigator();
 
+// This PublicStack component is used for the public routes of the application
 export default function PublicStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -13,4 +14,4 @@ export default function PublicStack() {
     </Stack.Navigator>
   );
 }
-// This PublicStack component is used for the public routes of the application
+

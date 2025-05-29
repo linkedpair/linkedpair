@@ -17,6 +17,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { auth, db } from "../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import * as Location from "expo-location";
 
@@ -367,8 +368,16 @@ const ImageInput = ({ image, setImage }) => {
       });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+    const localUri = result.assets[0].uri;  
+
+    try {
+      const downloadUrl = await uploadUserImageAsync(user.uid, localUri); 
+      setImage(downloadUrl);  
+    } catch (error) {
+      console.error("Upload failed: ", error);
+      alert("Failed to upload image. Please try again.");
     }
+  }
   };
 
   return (
@@ -380,6 +389,19 @@ const ImageInput = ({ image, setImage }) => {
     </View>
   )
 }
+
+const uploadUserImageAsync = async (userUid, uri) => {
+  const response = await fetch(uri);
+  const blob = await response.blob();
+
+  const storage = getStorage();
+  const imageRef = ref(storage, `userImages/${userUid}.jpg`); 
+
+  await uploadBytes(imageRef, blob);
+
+  const downloadURL = await getDownloadURL(imageRef);
+  return downloadURL;
+};
 
 const SignUpButton = (NextAction) => {
   return (

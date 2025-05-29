@@ -107,6 +107,7 @@ export default function MatchScreen({ navigation }) {
 
   async function getOrCreateChat(currentUser, matchedUser) {
     
+    // Query from db for chats where the chat contains the current user
     const chatQuery = query(
       collection(db, 'chats'),
       where('users', 'array-contains', currentUser.uid)
@@ -114,6 +115,9 @@ export default function MatchScreen({ navigation }) {
 
     const snapshot = await getDocs(chatQuery)
 
+    // Here we obtain the chat from the above query which has both the current
+    // and matched user
+    // similar to using a for each loop in java (for each docSnap in snapshot.docs)
     for (const docSnap of snapshot.docs) {
       const chat = docSnap.data();
       if (chat.userIds.includes(matchedUser.uid)) {
@@ -121,6 +125,9 @@ export default function MatchScreen({ navigation }) {
       }
     }
 
+    // We enter here if we are unable to find a chat above. We create a chat here
+    // I add users and userIds so we can retrieve the user object directly 
+    // for its data later
     const chatRef = await addDoc(collection(db, 'chats'), {
       users: [currentUser, matchedUser],
       userIds: [currentUser.uid, matchedUser.uid],
@@ -134,7 +141,8 @@ export default function MatchScreen({ navigation }) {
     return { 
       id: chatRef.id, 
       users: [currentUser, matchedUser],
-      userIds: [currentUser.uid, matchedUser.uid] };
+      userIds: [currentUser.uid, matchedUser.uid] 
+    };
   }
 
   return (

@@ -7,6 +7,8 @@ import {
   Image,
   SafeAreaView,
   FlatList,
+  ScrollView,
+  LogBox
 } from 'react-native';
 
 import { auth, db } from "../firebaseConfig";
@@ -16,70 +18,101 @@ import {
   orderBy, 
   collection, 
   where,
+  doc,
+  getDoc
 } from "firebase/firestore";
+import { onAuthStateChanged } from 'firebase/auth'
 
 
 export default function ChatScreen({ navigation }) {
 
+  // Turning off an error because i need my flatlist to be in a 
+  // scrollview else it refuses to scroll
+  useEffect(() => {
+    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+  }, [])  
+  
+  const [user, setUser] = useState(null)
   const [chats, setChats] = useState([])
 
   useEffect(() => {
-    const q = query(
-      collection(db, "chats"),
-      where("userIds", "array-contains", auth.currentUser.uid),
-      orderBy("lastMessage.timestamp", "desc")
-    );
+  const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      setUser(user);
+      subscribeToChats(user.uid); 
+    } else {
+      setUser(null);
+    }
+  });
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const chatList = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setChats(chatList);
-    });
+  return () => unsubscribeAuth();
+}, []);
 
-    return () => unsubscribe();
-  }, []);
+const subscribeToChats = (uid) => {
+  
+  // Here we sort the chats in order of descending last message, 
+  // latest message should appear first
+  const q = query(
+    collection(db, "chats"),
+    where("userIds", "array-contains", uid),
+    orderBy("lastMessage.timestamp", "desc")
+  );
+
+  const unsubscribeChats = onSnapshot(q, (snapshot) => {
+    const chatList = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setChats(chatList);
+  });
+
+  return unsubscribeChats;
+};
 
   return (
     <SafeAreaView style={styles.SafeAreaViewContainer}>
-      <View style={styles.WhiteSpace} />
-      <Header />
-      <View style={{ flex: 1 }}>
-        <FlatList
-          data={chats}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity 
-              style={styles.ChatContainer}
-              onPress={async () => {
-                navigation.navigate("ChatDetails", {
-                  chatId: item.id,
-                  matchedUser: item.users[1]
-                });
-              }}
-            >
-              <Photo 
-                photo={item.users[1].image || 
-                  'https://milkmochabear.com/cdn/shop/files/mmb-carrots-a_2048x.jpg?v=1698799022'
-                }
-              />
-              <View style={styles.TextDisplay}>
-                <Text style={styles.NameText}>{item.users[1].firstName}</Text>  
-                <Text 
-                  style={styles.ContentText}
-                  numberOfLines={1}
-                  ellipsizeMode='tail'
+      <ScrollView>
+        <View style={styles.WhiteSpace} />
+        <Header />
+        <View style={{ flex: 1 }}>
+          <FlatList
+            data={chats}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => {
+              const matchedUser = item.users.find((otherUser) => otherUser.uid != user.uid);
+
+              return (
+                <TouchableOpacity 
+                  style={styles.ChatContainer}
+                  onPress={async () => {
+                  navigation.navigate("ChatDetails", {
+                    chatId: item.id,
+                    matchedUser: matchedUser
+                  });
+                }}
                 >
-                {item.lastMessage?.text || "start chatting..."}
-                </Text>
-              </View>
-              {/* <NotificationSymbol /> */}
-            </TouchableOpacity>
-            )}
-          contentContainerStyle={{ flex: 1 }}
-        />
-      </View>
+                  <Photo 
+                    photo={matchedUser.image || 
+                      'https://milkmochabear.com/cdn/shop/files/mmb-carrots-a_2048x.jpg?v=1698799022'
+                    }
+                  />
+                  <View style={styles.TextDisplay}>
+                    <Text style={styles.NameText}>{matchedUser.firstName}</Text>  
+                    <Text 
+                      style={styles.ContentText}
+                      numberOfLines={1}
+                      ellipsizeMode='tail'
+                    >
+                    {item.lastMessage?.text || "start chatting..."}
+                    </Text>
+                  </View>
+                  {/* <NotificationSymbol /> */}
+              </TouchableOpacity>
+              )}}
+            contentContainerStyle={{ flex: 1 }}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   )
 }
@@ -96,7 +129,6 @@ const Header = () => {
 const Photo = ({ photo }) => {
   return (
   <View style={styles.Circle}>
-    {/* To extract image from database */}
     <Image 
       style={styles.Image}
       source={{ uri: photo }}/>
