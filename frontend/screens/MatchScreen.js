@@ -10,11 +10,20 @@ import {
 
 import { auth, db } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { 
+  doc, 
+  collection, 
+  getDocs, 
+  query, 
+  where, 
+  addDoc, 
+  getDoc, 
+  serverTimestamp, 
+} from "firebase/firestore";
 
 import { buddyMatch, romanticMatch, geolocationMatch } from "../utils/matching";
 
-export default function MatchScreen() {
+export default function MatchScreen({ navigation }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [initialising, setInitialising] = useState(true);
 
@@ -77,12 +86,55 @@ export default function MatchScreen() {
       } else if (type === "Geolocation") {
         result = await geolocationMatch(currentUser);
       }
-      setMatchedUser(result);
+      
+      if (result) {
+        setMatchedUser(result);
+        const chat = await getOrCreateChat(currentUser, result)
+        navigation.navigate("Chat", {
+          screen: "ChatDetails",
+          params: {
+            chatId: chat.id,
+            matchedUser: result
+          }
+        })
+      }
     } catch (error) {
       console.error("Match error:", error);
     } finally {
       setLoading(false);
     }
+  }
+
+  async function getOrCreateChat(currentUser, matchedUser) {
+    
+    const chatQuery = query(
+      collection(db, 'chats'),
+      where('users', 'array-contains', currentUser.uid)
+    )
+
+    const snapshot = await getDocs(chatQuery)
+
+    for (const docSnap of snapshot.docs) {
+      const chat = docSnap.data();
+      if (chat.userIds.includes(matchedUser.uid)) {
+        return { id: docSnap.id, ...chat };
+      }
+    }
+
+    const chatRef = await addDoc(collection(db, 'chats'), {
+      users: [currentUser, matchedUser],
+      userIds: [currentUser.uid, matchedUser.uid],
+      createdAt: new Date(),
+      lastMessage: {
+        text: null,
+        timestamp: serverTimestamp()
+      }
+    })
+
+    return { 
+      id: chatRef.id, 
+      users: [currentUser, matchedUser],
+      userIds: [currentUser.uid, matchedUser.uid] };
   }
 
   return (

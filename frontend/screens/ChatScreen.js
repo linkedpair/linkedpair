@@ -9,22 +9,37 @@ import {
   FlatList,
 } from 'react-native';
 
+import { auth, db } from "../firebaseConfig";
+import { 
+  onSnapshot, 
+  query, 
+  orderBy, 
+  collection, 
+  where,
+} from "firebase/firestore";
+
 
 export default function ChatScreen({ navigation }) {
 
   const [chats, setChats] = useState([])
 
-  // Eventually to be extracted from database, these are just placeholders
   useEffect(() => {
-    setChats([
-      { name: 'William', lastText: 'Hello!'}, 
-      { name: 'Johnathon', lastText: 'Bye!'},
-      { name: 'Lilly', lastText: 'What games do you like to play?'},
-      { name: 'Monika', lastText: 'if we were socks we would make a great pair. This text is too long'},
-      { name: 'Taylor', lastText: 'Wanna be Minecraft without the craft?'},
-      { name: 'Katarina', lastText: "you're hot"},
-      { name: 'Gina', lastText: 'Do you play league?'},        
-    ])}, []);
+    const q = query(
+      collection(db, "chats"),
+      where("userIds", "array-contains", auth.currentUser.uid),
+      orderBy("lastMessage.timestamp", "desc")
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const chatList = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setChats(chatList);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <SafeAreaView style={styles.SafeAreaViewContainer}>
@@ -33,32 +48,42 @@ export default function ChatScreen({ navigation }) {
       <View style={{ flex: 1 }}>
         <FlatList
           data={chats}
-          keyExtractor={(item) => item.name}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <TouchableOpacity 
               style={styles.ChatContainer}
-              onPress={() => navigation.navigate("ChatDetails")}
+              onPress={async () => {
+                navigation.navigate("ChatDetails", {
+                  chatId: item.id,
+                  matchedUser: item.users[1]
+                });
+              }}
             >
-              <Photo />
+              <Photo 
+                photo={item.users[1].image || 
+                  'https://milkmochabear.com/cdn/shop/files/mmb-carrots-a_2048x.jpg?v=1698799022'
+                }
+              />
               <View style={styles.TextDisplay}>
-                <Text style={styles.NameText}>{item.name}</Text>  
+                <Text style={styles.NameText}>{item.users[1].firstName}</Text>  
                 <Text 
                   style={styles.ContentText}
                   numberOfLines={1}
                   ellipsizeMode='tail'
                 >
-                  {item.lastText}
+                {item.lastMessage?.text || "start chatting..."}
                 </Text>
               </View>
-              <NotificationSymbol />
+              {/* <NotificationSymbol /> */}
             </TouchableOpacity>
-          )}
+            )}
           contentContainerStyle={{ flex: 1 }}
         />
       </View>
     </SafeAreaView>
   )
 }
+
 
 const Header = () => {
   return (
@@ -68,13 +93,13 @@ const Header = () => {
   )
 }
 
-const Photo = () => {
+const Photo = ({ photo }) => {
   return (
   <View style={styles.Circle}>
     {/* To extract image from database */}
     <Image 
       style={styles.Image}
-      source={require('../assets/TestPhoto.jpeg')} />
+      source={{ uri: photo }}/>
   </View>
   )
 }
