@@ -99,7 +99,12 @@ export default function SignUpScreen({ navigation }) {
         password
       );
       const user = userCredential.user;
-      setUser(user)
+      
+      let downloadUrl = null;
+
+      if (imageUri) {
+        downloadUrl = await uploadUserImageAsync(user.uid, imageUri);
+      }
 
       // Create a user document in Firestore
       await setDoc(doc(db, "users", user.uid), {
@@ -111,7 +116,7 @@ export default function SignUpScreen({ navigation }) {
         username,
         email,
         major,
-        image,
+        image: downloadUrl,
         location,
         profileDescription,
         createdAt: serverTimestamp(),
@@ -435,15 +440,7 @@ const ImageInput = ({ image, setImage }) => {
     });
 
     if (!result.canceled) {
-      const localUri = result.assets[0].uri;
-
-      try {
-        const downloadUrl = await uploadUserImageAsync(user.uid, localUri);
-        setImage(downloadUrl);
-      } catch (error) {
-        console.error("Upload failed: ", error);
-        alert("Failed to upload image. Please try again.");
-      }
+      setImage(result.assets[0].uri)
     }
   };
 
