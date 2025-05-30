@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const OPENAI_API_KEY =
-  "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";
+  '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'
 
 export async function generateProfileDescription(traits) {
   const prompt = `Write a friendly and engaging social profile description based on these traits: ${traits}.`;

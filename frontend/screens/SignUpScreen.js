@@ -99,12 +99,6 @@ export default function SignUpScreen({ navigation }) {
         password
       );
       const user = userCredential.user;
-      
-      let downloadUrl = null;
-
-      if (imageUri) {
-        downloadUrl = await uploadUserImageAsync(user.uid, imageUri);
-      }
 
       // Create a user document in Firestore
       await setDoc(doc(db, "users", user.uid), {
@@ -116,7 +110,7 @@ export default function SignUpScreen({ navigation }) {
         username,
         email,
         major,
-        image: downloadUrl,
+        image,
         location,
         profileDescription,
         createdAt: serverTimestamp(),
@@ -453,19 +447,6 @@ const ImageInput = ({ image, setImage }) => {
       )}
     </View>
   );
-};
-
-const uploadUserImageAsync = async (userUid, uri) => {
-  const response = await fetch(uri);
-  const blob = await response.blob();
-
-  const storage = getStorage();
-  const imageRef = ref(storage, `userImages/${userUid}.jpg`);
-
-  await uploadBytes(imageRef, blob);
-
-  const downloadURL = await getDownloadURL(imageRef);
-  return downloadURL;
 };
 
 const SignUpButton = (NextAction) => {
