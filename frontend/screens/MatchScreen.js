@@ -10,15 +10,15 @@ import {
 
 import { auth, db } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
-import { 
-  doc, 
-  collection, 
-  getDocs, 
-  query, 
-  where, 
-  addDoc, 
-  getDoc, 
-  serverTimestamp, 
+import {
+  doc,
+  collection,
+  getDocs,
+  query,
+  where,
+  addDoc,
+  getDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 
 import { buddyMatch, romanticMatch, geolocationMatch } from "../utils/matching";
@@ -86,17 +86,17 @@ export default function MatchScreen({ navigation }) {
       } else if (type === "Geolocation") {
         result = await geolocationMatch(currentUser);
       }
-      
+
       if (result) {
         setMatchedUser(result);
-        const chat = await getOrCreateChat(currentUser, result)
+        const chat = await getOrCreateChat(currentUser, result);
         navigation.navigate("Chat", {
           screen: "ChatDetails",
           params: {
             chatId: chat.id,
-            matchedUser: result
-          }
-        })
+            matchedUser: result,
+          },
+        });
       }
     } catch (error) {
       console.error("Match error:", error);
@@ -106,14 +106,13 @@ export default function MatchScreen({ navigation }) {
   }
 
   async function getOrCreateChat(currentUser, matchedUser) {
-    
     // Query from db for chats where the chat contains the current user
     const chatQuery = query(
-      collection(db, 'chats'),
-      where('users', 'array-contains', currentUser.uid)
-    )
+      collection(db, "chats"),
+      where("users", "array-contains", currentUser.uid)
+    );
 
-    const snapshot = await getDocs(chatQuery)
+    const snapshot = await getDocs(chatQuery);
 
     // Here we obtain the chat from the above query which has both the current
     // and matched user
@@ -126,22 +125,22 @@ export default function MatchScreen({ navigation }) {
     }
 
     // We enter here if we are unable to find a chat above. We create a chat here
-    // I add users and userIds so we can retrieve the user object directly 
+    // I add users and userIds so we can retrieve the user object directly
     // for its data later
-    const chatRef = await addDoc(collection(db, 'chats'), {
+    const chatRef = await addDoc(collection(db, "chats"), {
       users: [currentUser, matchedUser],
       userIds: [currentUser.uid, matchedUser.uid],
       createdAt: new Date(),
       lastMessage: {
         text: null,
-        timestamp: serverTimestamp()
-      }
-    })
+        timestamp: serverTimestamp(),
+      },
+    });
 
-    return { 
-      id: chatRef.id, 
+    return {
+      id: chatRef.id,
       users: [currentUser, matchedUser],
-      userIds: [currentUser.uid, matchedUser.uid] 
+      userIds: [currentUser.uid, matchedUser.uid],
     };
   }
 

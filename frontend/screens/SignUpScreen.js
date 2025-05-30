@@ -8,15 +8,18 @@ import {
   KeyboardAvoidingView,
   Image,
   Button,
+  Alert,
+  ScrollView,
 } from "react-native";
+import { generateProfileDescription } from "../utils/openai";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Dropdown } from 'react-native-element-dropdown';
-import * as ImagePicker from 'expo-image-picker';
+import { Dropdown } from "react-native-element-dropdown";
+import * as ImagePicker from "expo-image-picker";
 
 import { auth, db } from "../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import * as Location from "expo-location";
@@ -34,7 +37,9 @@ export default function SignUpScreen({ navigation }) {
   const [major, setMajor] = useState("");
   const [image, setImage] = useState(null);
   const [location, setLocation] = useState(null);
-  const [user, setUser] = useState(null)
+  const [traits, setTraits] = useState("");
+  const [profileDescription, setProfileDescription] = useState("");
+  const [loadingDesc, setLoadingDesc] = useState(false);
 
   // Fetch location automatically
   useEffect(() => {
@@ -69,7 +74,8 @@ export default function SignUpScreen({ navigation }) {
       !username ||
       !major ||
       !image ||
-      !date 
+      !date ||
+      !profileDescription
     ) {
       alert("Please fill out all required fields.");
       return;
@@ -107,7 +113,8 @@ export default function SignUpScreen({ navigation }) {
         major,
         image,
         location,
-        createdAt: new Date().toISOString(),
+        profileDescription,
+        createdAt: serverTimestamp(),
         matchedWith: [],
       });
 
@@ -119,79 +126,138 @@ export default function SignUpScreen({ navigation }) {
     }
   };
 
+  const handleGenerateDescription = async () => {
+    if (!traits.trim()) {
+      alert("Please enter your traits first.");
+      return;
+    }
+    try {
+      setLoadingDesc(true);
+      const description = await generateProfileDescription(traits);
+      setProfileDescription(description);
+    } catch (error) {
+      alert("Failed to generate description. Please try again.");
+    } finally {
+      setLoadingDesc(false);
+    }
+  };
+
   return (
     <KeyboardAvoidingView style={styles.MainContainer}>
-      <View style={styles.WhiteSpace} />
-      <View style={styles.FormContainer}>
-        <Text style={styles.SignUpText}>Sign Up</Text>
-        <View style={styles.NameRow}>
-          <NameInput
-            type="First Name"
-            value={firstName}
-            onChangeText={setFirstName}
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.WhiteSpace} />
+        <View style={styles.FormContainer}>
+          <Text style={styles.SignUpText}>Sign Up</Text>
+          <View style={styles.NameRow}>
+            <NameInput
+              type="First Name"
+              value={firstName}
+              onChangeText={setFirstName}
+            />
+            <NameInput
+              type="Last Name"
+              value={lastName}
+              onChangeText={setLastName}
+            />
+          </View>
+          <View style={styles.GenderRow}>
+            {/* I store gender as a boolean - Male is true and Female is false */}
+            <MaleButton
+              selected={male}
+              onPress={() => {
+                setMale(true);
+                alert(`I am male`);
+              }}
+            />
+            <FemaleButton
+              // ensures that when app starts, both buttons are unselected
+              selected={male === false}
+              onPress={() => {
+                setMale(false);
+                alert(`I am female`);
+              }}
+            />
+          </View>
+          <DateInput
+            date={date}
+            setDate={setDate}
+            datePickerOpen={datePickerOpen}
+            setDatePickerOpen={setDatePickerOpen}
           />
-          <NameInput
-            type="Last Name"
-            value={lastName}
-            onChangeText={setLastName}
+          <MajorDropdownInput major={major} setMajor={setMajor} />
+          <StandardInput
+            type="Username"
+            value={username}
+            onChangeText={setUsername}
           />
-        </View>
-        <View style={styles.GenderRow}>
-          {/* I store gender as a boolean - Male is true and Female is false */}
-          <MaleButton
-            selected={male}
-            onPress={() => {
-              setMale(true);
-              alert(`I am male`);
+          <StandardInput type="Email" value={email} onChangeText={setEmail} />
+          <PasswordInput
+            type="Password"
+            value={password}
+            onChangeText={setPassword}
+            hidePassword={hidePassword}
+            setHidePassword={setHidePassword}
+          />
+          <ImageInput image={image} setImage={setImage} />
+
+          <TextInput
+            placeholder="Enter traits (e.g. adventurous, kind, loves books)"
+            value={traits}
+            onChangeText={setTraits}
+            style={{
+              borderWidth: 1,
+              borderColor: "#ccc",
+              padding: 10,
+              marginVertical: 10,
             }}
           />
-          <FemaleButton
-            // ensures that when app starts, both buttons are unselected
-            selected={male === false}
-            onPress={() => {
-              setMale(false);
-              alert(`I am female`);
+
+          <TouchableOpacity
+            onPress={handleGenerateDescription}
+            disabled={loadingDesc}
+            style={{
+              backgroundColor: "#28a745",
+              padding: 12,
+              alignItems: "center",
+              borderRadius: 5,
             }}
-          />
-        </View>
-        <DateInput
-          date={date}
-          setDate={setDate}
-          datePickerOpen={datePickerOpen}
-          setDatePickerOpen={setDatePickerOpen}
-        />
-        <MajorDropdownInput major={major} setMajor={setMajor} />
-        <StandardInput
-          type="Username"
-          value={username}
-          onChangeText={setUsername}
-        />
-        <StandardInput type="Email" value={email} onChangeText={setEmail} />
-        <PasswordInput
-          type="Password"
-          value={password}
-          onChangeText={setPassword}
-          hidePassword={hidePassword}
-          setHidePassword={setHidePassword}
-        />
-        <ImageInput 
-          image={image}
-          setImage={setImage}
-        />
-        <SignUpButton onPress={handleSignUp} />
-        <View style={styles.linkContainer}>
-          <Text>
-            Already Have an Account?{" "}
-            <Text
-              style={styles.RedirectToSignInText}
-              onPress={() => navigation.navigate("SignIn")}
-            >
-              Sign In
+          >
+            <Text style={{ color: "#fff", fontWeight: "bold" }}>
+              {loadingDesc ? "Generating..." : "Generate Profile Description"}
             </Text>
-          </Text>
+          </TouchableOpacity>
+
+          {profileDescription ? (
+            <View
+              style={{
+                marginTop: 15,
+                padding: 10,
+                backgroundColor: "#f0f0f0",
+                borderRadius: 5,
+              }}
+            >
+              <Text>{profileDescription}</Text>
+            </View>
+          ) : null}
+
+          <SignUpButton onPress={handleSignUp} />
+          <View style={styles.linkContainer}>
+            <Text>
+              Already Have an Account?{" "}
+              <Text
+                style={styles.RedirectToSignInText}
+                onPress={() => navigation.navigate("SignIn")}
+              >
+                Sign In
+              </Text>
+            </Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.WhiteSpace} />
+        <View style={styles.WhiteSpace} />
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -250,7 +316,7 @@ const DateInput = ({ date, setDate, datePickerOpen, setDatePickerOpen }) => {
       {/* If datepicker is open, datetimepicker will be called */}
       {datePickerOpen && (
         <DateTimePicker
-          mode='date'
+          mode="date"
           open={datePickerOpen}
           value={date || new Date()}
           onChange={(event, SelectedDate) => {
@@ -360,44 +426,44 @@ const MajorDropdownInput = ({ major, setMajor }) => {
 };
 
 const ImageInput = ({ image, setImage }) => {
-
   const PickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images', 'videos'],
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
+      mediaTypes: ["images", "videos"],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
 
     if (!result.canceled) {
-    const localUri = result.assets[0].uri;  
+      const localUri = result.assets[0].uri;
 
-    try {
-      const downloadUrl = await uploadUserImageAsync(user.uid, localUri); 
-      setImage(downloadUrl);  
-    } catch (error) {
-      console.error("Upload failed: ", error);
-      alert("Failed to upload image. Please try again.");
+      try {
+        const downloadUrl = await uploadUserImageAsync(user.uid, localUri);
+        setImage(downloadUrl);
+      } catch (error) {
+        console.error("Upload failed: ", error);
+        alert("Failed to upload image. Please try again.");
+      }
     }
-  }
   };
 
   return (
     <View style={!image ? styles.StandardInput : styles.SelectedImage}>
-      {!image 
-        ? <Button title="Pick an image from camera roll" onPress={PickImage} />
-        : <Image source={{ uri: image }} style={styles.SelectedImage} />
-      }
+      {!image ? (
+        <Button title="Pick an image from camera roll" onPress={PickImage} />
+      ) : (
+        <Image source={{ uri: image }} style={styles.SelectedImage} />
+      )}
     </View>
-  )
-}
+  );
+};
 
 const uploadUserImageAsync = async (userUid, uri) => {
   const response = await fetch(uri);
   const blob = await response.blob();
 
   const storage = getStorage();
-  const imageRef = ref(storage, `userImages/${userUid}.jpg`); 
+  const imageRef = ref(storage, `userImages/${userUid}.jpg`);
 
   await uploadBytes(imageRef, blob);
 
@@ -531,7 +597,7 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   SelectedImage: {
-    height: 50, 
+    height: 50,
     width: 50,
-  }
+  },
 });
