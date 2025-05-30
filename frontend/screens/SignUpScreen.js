@@ -34,6 +34,7 @@ export default function SignUpScreen({ navigation }) {
   const [major, setMajor] = useState("");
   const [image, setImage] = useState(null);
   const [location, setLocation] = useState(null);
+  const [user, setUser] = useState(null)
 
   // Fetch location automatically
   useEffect(() => {
@@ -92,6 +93,7 @@ export default function SignUpScreen({ navigation }) {
         password
       );
       const user = userCredential.user;
+      setUser(user)
 
       // Create a user document in Firestore
       await setDoc(doc(db, "users", user.uid), {
