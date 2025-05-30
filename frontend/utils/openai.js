@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const OPENAI_API_KEY =
-  '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'
-
+  'FAKE_KEY'
+  
 export async function generateProfileDescription(traits) {
   const prompt = `Write a friendly and engaging social profile description based on these traits: ${traits}.`;
 
