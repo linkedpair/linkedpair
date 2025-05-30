@@ -1,8 +1,7 @@
 import axios from "axios";
 
-const OPENAI_API_KEY =
-  'FAKE_KEY'
-  
+const OPENAI_API_KEY = "FAKE_API_KEY"; // Replace with your actual OpenAI API key
+
 export async function generateProfileDescription(traits) {
   const prompt = `Write a friendly and engaging social profile description based on these traits: ${traits}.`;
 
