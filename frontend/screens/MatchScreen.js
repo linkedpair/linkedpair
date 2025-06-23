@@ -21,7 +21,11 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 
-import { buddyMatch, romanticMatch, geolocationMatch } from "../utils/matching";
+import {
+  aiBuddyMatch,
+  aiRomanticMatch,
+  geolocationMatch,
+} from "../utils/matching";
 
 export default function MatchScreen({ navigation }) {
   const [currentUser, setCurrentUser] = useState(null);
@@ -79,22 +83,29 @@ export default function MatchScreen({ navigation }) {
 
     try {
       let result = null;
-      if (type === "Buddy") {
-        result = await buddyMatch(currentUser);
-      } else if (type === "Romantic") {
-        result = await romanticMatch(currentUser);
+      if (type === "AI Buddy") {
+        result = await aiBuddyMatch(currentUser);
+      } else if (type === "AI Romantic") {
+        result = await aiRomanticMatch(currentUser);
       } else if (type === "Geolocation") {
         result = await geolocationMatch(currentUser);
       }
 
       if (result) {
-        setMatchedUser(result);
-        const chat = await getOrCreateChat(currentUser, result);
+        const userData = result.match || result; // works for AI and geolocation
+        const compatibilityScore =
+          typeof result.compatibilityScore === "number"
+            ? result.compatibilityScore
+            : undefined;
+
+        setMatchedUser({ ...userData, compatibilityScore });
+
+        const chat = await getOrCreateChat(currentUser, userData);
         navigation.navigate("Chat", {
           screen: "ChatDetails",
           params: {
             chatId: chat.id,
-            matchedUser: result,
+            matchedUser: userData,
           },
         });
       }
@@ -148,8 +159,11 @@ export default function MatchScreen({ navigation }) {
     <KeyboardAvoidingView style={styles.MainContainer}>
       <View style={styles.WhiteSpace} />
       <View style={styles.FormContainer}>
-        <MatchButton type="Buddy" onPress={() => handleMatch("Buddy")} />
-        <MatchButton type="Romantic" onPress={() => handleMatch("Romantic")} />
+        <MatchButton type="AI Buddy" onPress={() => handleMatch("AI Buddy")} />
+        <MatchButton
+          type="AI Romantic"
+          onPress={() => handleMatch("AI Romantic")}
+        />
         <MatchButton
           type="Geolocation"
           onPress={() => handleMatch("Geolocation")}
@@ -173,6 +187,15 @@ export default function MatchScreen({ navigation }) {
                     {matchedUser.location.longitude.toFixed(3)}
                   </Text>
                 )}
+                {typeof matchedUser.compatibilityScore === "number" && (
+                  <Text
+                    style={getCompatibilityTextStyle(
+                      matchedUser.compatibilityScore
+                    )}
+                  >
+                    Compatibility: {matchedUser.compatibilityScore}%
+                  </Text>
+                )}
               </View>
             ) : (
               <Text style={styles.noMatchText}>
@@ -193,6 +216,10 @@ const MatchButton = ({ type, onPress }) => {
     </TouchableOpacity>
   );
 };
+
+const getCompatibilityTextStyle = (score) => ({
+  color: score >= 80 ? "#4CAF50" : score >= 60 ? "#FFC107" : "#F44336",
+});
 
 const styles = StyleSheet.create({
   MainContainer: {
