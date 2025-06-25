@@ -24,6 +24,28 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
+// Helper: Calculate cosine similarity between two vectors
+function cosineSimilarity(vecA, vecB) {
+  if (!vecA || !vecB || vecA.length !== vecB.length) return -1;
+
+  let dot = 0;
+  let normA = 0;
+  let normB = 0;
+
+  for (let i = 0; i < vecA.length; i++) {
+    dot += vecA[i] * vecB[i];
+    normA += vecA[i] ** 2;
+    normB += vecB[i] ** 2;
+  }
+
+  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+}
+
+// Converts cosine similarity (-1 to 1) to compatibility score (0 to 100)
+function similarityToScore(similarity) {
+  return Math.round(((similarity + 1) / 2) * 100);
+}
+
 // Match 1 user who satisfies criteria and has not matched with currentUser yet
 async function tryMatch(currentUser, candidate) {
   if (
@@ -42,8 +64,8 @@ async function tryMatch(currentUser, candidate) {
   return null;
 }
 
-// Buddy Match: same gender AND same major
-export async function buddyMatch(currentUser) {
+// AI Buddy Match: same gender AND same major
+export async function aiBuddyMatch(currentUser) {
   const usersRef = collection(db, "users");
 
   const q = query(
@@ -55,22 +77,59 @@ export async function buddyMatch(currentUser) {
 
   const querySnapshot = await getDocs(q);
 
+  let bestMatch = null;
+  let bestSimilarity = -Infinity;
+
   for (const docSnap of querySnapshot.docs) {
     const candidate = docSnap.data();
-    const matched = await tryMatch(currentUser, candidate);
-    if (matched) return matched;
+
+    // Skip if already matched
+    if (
+      currentUser.matchedWith?.includes(candidate.uid) ||
+      candidate.matchedWith?.includes(currentUser.uid)
+    ) {
+      continue;
+    }
+
+    const similarity = cosineSimilarity(
+      currentUser.embedding,
+      candidate.embedding
+    );
+
+    if (similarity > bestSimilarity) {
+      bestSimilarity = similarity;
+      bestMatch = candidate;
+    }
+  }
+
+  if (bestMatch) {
+    // Save mutual match
+    await updateDoc(doc(db, "users", currentUser.uid), {
+      matchedWith: arrayUnion(bestMatch.uid),
+    });
+    await updateDoc(doc(db, "users", bestMatch.uid), {
+      matchedWith: arrayUnion(currentUser.uid),
+    });
+
+    return {
+      match: bestMatch,
+      compatibilityScore: similarityToScore(bestSimilarity),
+    };
   }
 
   return null;
 }
 
-// Romantic Match: different gender AND different major
-export async function romanticMatch(currentUser) {
+// AI Romantic Match: different gender AND different major
+export async function aiRomanticMatch(currentUser) {
   const usersRef = collection(db, "users");
 
   const q = query(usersRef, where("gender", "!=", currentUser.gender)); // Only one inequality allowed
 
   const querySnapshot = await getDocs(q);
+
+  let bestMatch = null;
+  let bestSimilarity = -Infinity;
 
   for (const docSnap of querySnapshot.docs) {
     const candidate = docSnap.data();
@@ -79,10 +138,36 @@ export async function romanticMatch(currentUser) {
     const isDifferentMajor = candidate.major !== currentUser.major;
     const isNotCurrentUser = candidate.uid !== currentUser.uid;
 
-    if (isDifferentMajor && isNotCurrentUser) {
-      const matched = await tryMatch(currentUser, candidate);
-      if (matched) return matched;
+    if (
+      isDifferentMajor &&
+      isNotCurrentUser &&
+      !currentUser.matchedWith?.includes(candidate.uid) &&
+      !candidate.matchedWith?.includes(currentUser.uid)
+    ) {
+      const similarity = cosineSimilarity(
+        currentUser.embedding,
+        candidate.embedding
+      );
+
+      if (similarity > bestSimilarity) {
+        bestSimilarity = similarity;
+        bestMatch = candidate;
+      }
     }
+  }
+
+  if (bestMatch) {
+    await updateDoc(doc(db, "users", currentUser.uid), {
+      matchedWith: arrayUnion(bestMatch.uid),
+    });
+    await updateDoc(doc(db, "users", bestMatch.uid), {
+      matchedWith: arrayUnion(currentUser.uid),
+    });
+
+    return {
+      match: bestMatch,
+      compatibilityScore: similarityToScore(bestSimilarity),
+    };
   }
 
   return null;

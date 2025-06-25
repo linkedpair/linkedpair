@@ -1,7 +1,7 @@
+import { OPENAI_API_KEY } from '@env';
 import axios from "axios";
 
-const OPENAI_API_KEY =
-  'FAKE_KEY'
+const OPENAI_API_KEY = OPENAI_API_KEY;
   
 export async function generateProfileDescription(traits) {
   const prompt = `Write a friendly and engaging social profile description based on these traits: ${traits}.`;
