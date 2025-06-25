@@ -12,6 +12,7 @@ import {
   ScrollView,
 } from "react-native";
 import { generateProfileDescription } from "../utils/openai";
+import { generateEmbeddingFromProfile } from "../utils/openai";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Dropdown } from "react-native-element-dropdown";
@@ -20,9 +21,8 @@ import * as ImagePicker from "expo-image-picker";
 import { auth, db } from "../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-import * as Location from "expo-location";
+import useLocation from "../hooks/useLocation";
 
 export default function SignUpScreen({ navigation }) {
   const [firstName, setFirstName] = useState("");
@@ -42,28 +42,8 @@ export default function SignUpScreen({ navigation }) {
   const [loadingDesc, setLoadingDesc] = useState(false);
 
   // Fetch location automatically
-  useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert(
-          "Permission Denied",
-          "Location permission is required to match you with nearby users."
-        );
-        return;
-      }
-
-      const currentLocation = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Highest,
-      });
-
-      setLocation({
-        latitude: currentLocation.coords.latitude,
-        longitude: currentLocation.coords.longitude,
-      });
-    })();
-  }, []);
-
+  useLocation({ setLocation })
+  
   const handleSignUp = async () => {
     if (
       !firstName ||
@@ -74,8 +54,7 @@ export default function SignUpScreen({ navigation }) {
       !username ||
       !major ||
       !image ||
-      !date ||
-      !profileDescription
+      !date
     ) {
       alert("Please fill out all required fields.");
       return;
@@ -93,6 +72,7 @@ export default function SignUpScreen({ navigation }) {
     }
 
     try {
+      // Step 1: Create Firebase Auth account
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -100,7 +80,14 @@ export default function SignUpScreen({ navigation }) {
       );
       const user = userCredential.user;
 
-      // Create a user document in Firestore
+      // Step 2: Build text to embed
+      const ageString = getAgeString(date);
+      const profileText = `${ageString}\nTraits: ${traits}`;
+
+      // Step 3: Generate OpenAI embedding
+      const embedding = await generateEmbeddingFromProfile(profileText);
+
+      // Step 4: Create Firestore user document
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
         firstName,
@@ -112,7 +99,9 @@ export default function SignUpScreen({ navigation }) {
         major,
         image,
         location,
+        traits,
         profileDescription,
+        embedding,
         createdAt: serverTimestamp(),
         matchedWith: [],
       });
@@ -140,6 +129,21 @@ export default function SignUpScreen({ navigation }) {
       setLoadingDesc(false);
     }
   };
+
+  function getAgeString(dob) {
+    if (!dob) return "";
+
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+    const dayDiff = today.getDate() - dob.getDate();
+
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      age--;
+    }
+
+    return `Age: ${age}`;
+  }
 
   return (
     <KeyboardAvoidingView style={styles.MainContainer}>
@@ -434,7 +438,7 @@ const ImageInput = ({ image, setImage }) => {
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri)
+      setImage(result.assets[0].uri);
     }
   };
 
