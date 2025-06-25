@@ -5,7 +5,7 @@ import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 import { generateEmbeddingFromProfile } from "../utils/openai";
 
-import getAgeString from "../utils/getAgeString";
+import getAgeString from "../utils/GetAgeString";
 
 export default async function SignUpService({
   firstName,

@@ -12,17 +12,13 @@ import {
   ScrollView,
 } from "react-native";
 import { generateProfileDescription } from "../utils/openai";
-import { generateEmbeddingFromProfile } from "../utils/openai";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Dropdown } from "react-native-element-dropdown";
 import * as ImagePicker from "expo-image-picker";
 
-import { auth, db } from "../firebaseConfig";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
-
 import useLocation from "../hooks/useLocation";
+import SignUpService from "../services/SignUpService"
 
 export default function SignUpScreen({ navigation }) {
   const [firstName, setFirstName] = useState("");
@@ -73,38 +69,20 @@ export default function SignUpScreen({ navigation }) {
 
     try {
       // Step 1: Create Firebase Auth account
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
-
-      // Step 2: Build text to embed
-      const ageString = getAgeString(date);
-      const profileText = `${ageString}\nTraits: ${traits}`;
-
-      // Step 3: Generate OpenAI embedding
-      const embedding = await generateEmbeddingFromProfile(profileText);
-
-      // Step 4: Create Firestore user document
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
+      const user = await SignUpService({
         firstName,
         lastName,
-        gender: male ? "Male" : "Female",
-        dateOfBirth: date.toISOString().split("T")[0], // Format date as YYYY-MM-DD
-        username,
         email,
+        password,
+        male,
+        username,
         major,
         image,
-        location,
-        traits,
+        date,
         profileDescription,
-        embedding,
-        createdAt: serverTimestamp(),
-        matchedWith: [],
-      });
+        traits,
+        location
+      })
 
       console.log("User created:", user);
       alert("Account created successfully!");
@@ -129,21 +107,6 @@ export default function SignUpScreen({ navigation }) {
       setLoadingDesc(false);
     }
   };
-
-  function getAgeString(dob) {
-    if (!dob) return "";
-
-    const today = new Date();
-    let age = today.getFullYear() - dob.getFullYear();
-    const monthDiff = today.getMonth() - dob.getMonth();
-    const dayDiff = today.getDate() - dob.getDate();
-
-    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-      age--;
-    }
-
-    return `Age: ${age}`;
-  }
 
   return (
     <KeyboardAvoidingView style={styles.MainContainer}>

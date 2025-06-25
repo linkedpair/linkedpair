@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -12,48 +12,30 @@ import {
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
 
-import { auth, db } from '../firebaseConfig'
-import { doc, getDoc, updateDoc } from 'firebase/firestore'
-import { onAuthStateChanged } from 'firebase/auth'
+import { db } from '../firebaseConfig'
+import { doc, updateDoc } from 'firebase/firestore'
+import { UserContext } from "../contexts/UserContext";
+import LoadingScreen from "../components/LoadingScreen";
 
 export default function ProfileScreen({ navigation }) {
 
-  const [data, setData] = useState(null)
+  const { user, userData } = useContext(UserContext)
+
   const [birthdate, setBirthdate] = useState(null)
-  const [user, setUser] = useState(null)
   const [profilePhoto, setProfilePhoto] = useState(null)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setUser(user)
-        try {
-          const userRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(userRef);
-
-          if (docSnap.exists()) {
-            setData(docSnap.data())
-            setBirthdate(docSnap.data().dateOfBirth)
-            setProfilePhoto(docSnap.data().image)
-          } else {
-            alert("Missing data!");
-          }
-        } catch (error) {
-          alert("error fetching user data");
-        }
-      } else {
-        setData(null);
-      }
-    });
-
-    return () => unsubscribe();
+    if (!birthdate) {
+      setBirthdate(userData.dateOfBirth)
+    } 
+    if (!profilePhoto) {
+      setProfilePhoto(userData.image)
+    }
   }, []);
 
-  // Just a placeholder screen to ensure that the data loads before the program
-  // runs data.firstName below to prevent it from accessing a null object.
-  // In theory we will never reach this screen.
-  if (!data) {
-    return <Text>Loading...</Text>;
+  // Placeholder screen
+  if (!user || !userData) {
+    return <LoadingScreen />
   }
 
   return (
@@ -64,7 +46,7 @@ export default function ProfileScreen({ navigation }) {
             navigation={navigation}
           />
           <PhotoAndName 
-            username={data.firstName}
+            username={userData.firstName}
             photo={profilePhoto}
             setPhoto={setProfilePhoto}
             user={user}
@@ -78,19 +60,19 @@ export default function ProfileScreen({ navigation }) {
           <UserAttribute 
             type="first Name"
             displayType="First Name"
-            initialValue={data.firstName}
+            initialValue={userData.firstName}
           />
           <AttributeLineSeparator />
           <UserAttribute
             type="last Name"
             displayType="Last Name"            
-            initialValue={data.lastName}
+            initialValue={userData.lastName}
           />
           <AttributeLineSeparator />
           <UserAttribute
             type="username"
             displayType="Display Name"  
-            initialValue={data.username}
+            initialValue={userData.username}
             user={user}
           />
           <AttributeLineSeparator />
@@ -103,7 +85,7 @@ export default function ProfileScreen({ navigation }) {
           <UserAttribute
             type="major"
             displayType="Major"
-            initialValue={data.major}
+            initialValue={userData.major}
           />
           <View style={styles.AboutContainer}>
             <Text style={styles.AboutText}>Private Profile</Text>
@@ -113,13 +95,13 @@ export default function ProfileScreen({ navigation }) {
           <UserAttribute
             type="gender"
             displayType="Gender"
-            initialValue={data.gender}
+            initialValue={userData.gender}
           />
           <AttributeLineSeparator />
           <UserAttribute
             type="email"
             displayType="Email"
-            initialValue={data.email}
+            initialValue={userData.email}
             user={user}
           />
           <AttributeLineSeparator />
@@ -127,20 +109,6 @@ export default function ProfileScreen({ navigation }) {
       </ScrollView>
     </SafeAreaView>
   );
-}
-
-function calculateAge(birthday) {
-  const birthDate = new Date(birthday);
-  const today = new Date();
-
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const m = today.getMonth() - birthDate.getMonth();
-
-  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
-  }
-
-  return age;
 }
 
 const Header = ({ navigation }) => {
@@ -200,7 +168,7 @@ const PhotoAndName = ({ username, photo, user, setPhoto }) => {
         setPhoto={setPhoto}
       />
       <View>
-        {/* To extract name from database */}
+        {/* To extract name from userDatabase */}
         <Text style={styles.NameText}>{username}</Text>
       </View>
       <Text style={styles.BelowNameText}>Looking for One Night Stand</Text>
@@ -231,6 +199,20 @@ const AttributeLineSeparator = () => {
     />
   );
 };
+
+function calculateAge(birthday) {
+  const birthDate = new Date(birthday);
+  const today = new Date();
+
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+
+  return age;
+}
 
 const UserAttribute = ({ type, displayType, initialValue, user }) => {
 
@@ -278,7 +260,7 @@ const UserAttribute = ({ type, displayType, initialValue, user }) => {
           UneditableTypes ? (
             <TouchableOpacity 
               onPress={() => setIsEditing(true)}>
-              {/* initialValue will be extracted from database */}
+              {/* initialValue will be extracted from userDatabase */}
               <Text style={styles.EditableAttributeValue}>{value}</Text>
             </TouchableOpacity>
           ) : (

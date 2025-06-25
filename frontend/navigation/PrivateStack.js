@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Text, Image } from 'react-native';
+import React, { useContext } from 'react';
+import { Image } from 'react-native';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -10,43 +10,17 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import ChatStack from './ChatStack';
 
-import { db, auth } from "../firebaseConfig";
-import { doc, getDoc } from 'firebase/firestore'
-import { onAuthStateChanged } from 'firebase/auth'
+import LoadingScreen from '../components/LoadingScreen'
+import { UserContext } from '../contexts/UserContext';
 
 const Tab = createBottomTabNavigator();
 
 export default function MyTabs() {
 
-  const [user, setUser] = useState(null)
-  const [data, setData] = useState(null)
+  const { user, userData } = useContext(UserContext);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setUser(user)
-        try {
-          const userRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(userRef);
-
-          if (docSnap.exists()) {
-            setData(docSnap.data())
-          } else {
-            alert("Missing data!");
-          }
-        } catch (error) {
-          alert("error fetching user data");
-        }
-      } else {
-        setData(null);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  if (!data) {
-      return <Text>Loading...</Text>;
+  if (!user || !userData) {
+      return <LoadingScreen />
   }
 
   return (
@@ -70,7 +44,7 @@ export default function MyTabs() {
             return (
               iconName = focused
                 ? <Image 
-                    source={{ uri: data.image }}
+                    source={{ uri: userData.image }}
                     style={{ 
                       height: size,
                       width: size,
@@ -81,7 +55,7 @@ export default function MyTabs() {
                     }}
                   />
                 : <Image 
-                    source={{ uri: data.image }}
+                    source={{ uri: userData.image }}
                     style={{ 
                       height: size,
                       width: size,

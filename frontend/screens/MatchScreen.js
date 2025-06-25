@@ -26,6 +26,7 @@ import {
   aiRomanticMatch,
   geolocationMatch,
 } from "../utils/matching";
+import LoadingScreen from "../components/LoadingScreen";
 
 export default function MatchScreen({ navigation }) {
   const [currentUser, setCurrentUser] = useState(null);
@@ -61,10 +62,7 @@ export default function MatchScreen({ navigation }) {
 
   if (initialising) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#FE6B75" />
-        <Text>Loading user data...</Text>
-      </View>
+      <LoadingScreen />
     );
   }
 

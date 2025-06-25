@@ -1,30 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 
 import PublicStack from "./PublicStack";
 import PrivateStack from "./PrivateStack";
 
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebaseConfig";
+import { UserContext } from "../contexts/UserContext";
 
 export default function AppNavigator() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  if (loading) return null;
+  
+  const { user, userDataReady } = useContext(UserContext)
 
   return (
     <NavigationContainer>
-      {user ? <PrivateStack /> : <PublicStack />}
+      {user && userDataReady ? <PrivateStack /> : <PublicStack />}
     </NavigationContainer>
   );
 }
