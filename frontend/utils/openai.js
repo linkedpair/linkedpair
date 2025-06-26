@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const OPENAI_API_KEY = "FAKE"
+const OPENAI_API_KEY = "FAKE";
 
 export async function generateProfileDescription(traits) {
   const prompt = `Write a friendly and engaging social profile description based on these traits: ${traits}.`;

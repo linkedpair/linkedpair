@@ -19,7 +19,8 @@ export default async function SignUpService({
   date,
   profileDescription,
   traits,
-  location
+  location,
+  downloadURL
 }) {
 
   const userCredential = await createUserWithEmailAndPassword(
@@ -49,6 +50,7 @@ export default async function SignUpService({
     traits,
     profileDescription,
     embedding,
+    downloadURL,
     createdAt: serverTimestamp(),
     matchedWith: [],
   });

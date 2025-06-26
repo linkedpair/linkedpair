@@ -92,7 +92,7 @@ export default function ChatListScreen({ navigation }) {
                 >
                   <Photo
                     photo={
-                      matchedUser.image ||
+                      matchedUser.downloadURL ||
                       "https://milkmochabear.com/cdn/shop/files/mmb-carrots-a_2048x.jpg?v=1698799022"
                     }
                   />

@@ -29,7 +29,7 @@ export default function ProfileScreen({ navigation }) {
       setBirthdate(userData.dateOfBirth)
     } 
     if (!profilePhoto) {
-      setProfilePhoto(userData.image)
+      setProfilePhoto(userData.downloadURL)
     }
   }, []);
 
@@ -125,7 +125,7 @@ const Header = ({ navigation }) => {
   );
 };
 
-const Photo = ({ photo, user, setPhoto }) => {
+const Photo = ({ user, photo, setPhoto }) => {
 
   const PickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({

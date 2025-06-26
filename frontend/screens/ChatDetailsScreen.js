@@ -11,7 +11,6 @@ import {
   Image,
   TextInput,
   FlatList,
-  ScrollView,
   Platform
 } from 'react-native';
 
@@ -123,7 +122,7 @@ const Header = ({ matchedUser, navigation }) => {
         />
       </TouchableOpacity>
       <Photo 
-        image={matchedUser.image}
+        image={matchedUser.downloadURL}
       />
       <Text style={styles.HeaderText}>
         {matchedUser.firstName}

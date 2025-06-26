@@ -17,7 +17,7 @@ const Tab = createBottomTabNavigator();
 
 export default function MyTabs() {
 
-  const { user, userData } = useContext(UserContext);
+  const { user, userData}  = useContext(UserContext);
 
   if (!user || !userData) {
       return <LoadingScreen />
@@ -44,7 +44,7 @@ export default function MyTabs() {
             return (
               iconName = focused
                 ? <Image 
-                    source={{ uri: userData.image }}
+                    source={{ uri: userData.downloadURL }}
                     style={{ 
                       height: size,
                       width: size,
@@ -55,7 +55,7 @@ export default function MyTabs() {
                     }}
                   />
                 : <Image 
-                    source={{ uri: userData.image }}
+                    source={{ uri: userData.downloadURL }}
                     style={{ 
                       height: size,
                       width: size,
