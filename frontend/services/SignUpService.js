@@ -41,7 +41,8 @@ export default async function SignUpService({
     firstName,
     lastName,
     gender: male ? "Male" : "Female",
-    dateOfBirth: date.toISOString().split("T")[0], // Format date as YYYY-MM-DD
+    //included undefined for testing
+    dateOfBirth: date ? date.toISOString().split("T")[0] : undefined, 
     username,
     email,
     major,
