@@ -15,10 +15,12 @@ import {
 
 import { auth } from "../firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import PasswordInput from "../components/PasswordInput";
 
 export default function SignInScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [hidePassword, setHidePassword] = useState(true);
 
   // Simple email validation function
   const isValidEmail = (email) => {
@@ -72,12 +74,13 @@ export default function SignInScreen({ navigation }) {
               keyboardType="email-address"
               autoCapitalize="none"
             />
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
+            <PasswordInput
+              keyboardType="password"
+              placeholder="Enter your Password"
               value={password}
               onChangeText={setPassword}
-              secureTextEntry
+              hidePassword={hidePassword}
+              setHidePassword={setHidePassword}
             />
             <TouchableOpacity
               style={styles.customButton}

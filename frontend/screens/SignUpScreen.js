@@ -17,12 +17,12 @@ import { Dropdown } from "react-native-element-dropdown";
 import * as ImagePicker from "expo-image-picker";
 
 import useLocation from "../hooks/useLocation";
+import PasswordInput from "../components/PasswordInput";
 import SignUpService from "../services/SignUpService"
 import handleGenerateDescription from "../utils/HandleGenerateDescription";
 
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from "../firebaseConfig"
-import { generateProfileDescription } from "../utils/openai";
 
 export default function SignUpScreen({ navigation }) {
   const [firstName, setFirstName] = useState("");
@@ -148,14 +148,25 @@ export default function SignUpScreen({ navigation }) {
             setDatePickerOpen={setDatePickerOpen}
           />
           <MajorDropdownInput major={major} setMajor={setMajor} />
-          <StandardInput
-            type="Username"
+          <TextInput
+            style={styles.TextInput}
+            placeholder="Username"
             value={username}
             onChangeText={setUsername}
+            keyboardType="default"
+            autoCapitalize="none"
           />
-          <StandardInput type="Email" value={email} onChangeText={setEmail} />
+          <TextInput
+            style={styles.TextInput}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
           <PasswordInput
-            type="Password"
+            keyboardType="password"
+            placeholder="Enter your Password"
             value={password}
             onChangeText={setPassword}
             hidePassword={hidePassword}
@@ -331,53 +342,6 @@ const DateInput = ({ date, setDate, datePickerOpen, setDatePickerOpen }) => {
   );
 };
 
-const StandardInput = ({ type, value, onChangeText }) => {
-  return (
-    <View style={styles.StandardInput}>
-      <TextInput
-        style={styles.InputText}
-        placeholder={`Enter your ${type}`}
-        onChangeText={onChangeText}
-        defaultValue={value}
-        keyboardType={type === "Email" ? "email-address" : "default"}
-      />
-    </View>
-  );
-};
-
-const PasswordInput = ({
-  type,
-  value,
-  onChangeText,
-  hidePassword,
-  setHidePassword,
-}) => {
-  return (
-    <View>
-      <View style={styles.StandardInput}>
-        <TextInput
-          style={styles.InputText}
-          placeholder={`Enter your ${type}`}
-          onChangeText={onChangeText}
-          defaultValue={value}
-          keyboardType={"default"}
-          secureTextEntry={hidePassword}
-        />
-        <TouchableOpacity onPress={() => setHidePassword((prev) => !prev)}>
-          <Image
-            style={styles.PasswordImage}
-            source={
-              hidePassword
-                ? require("../assets/PasswordShow.jpg")
-                : require("../assets/PasswordHide.webp")
-            }
-          />
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-};
-
 const faculties = [
   "Arts and Social Sciences",
   "Business",
@@ -488,16 +452,14 @@ const styles = StyleSheet.create({
     height: 48,
     justifyContent: "center",
   },
-  StandardInput: {
-    flexDirection: "row",
+  TextInput: {
     borderWidth: 1,
     borderColor: "#aaa",
     borderRadius: 6,
     paddingHorizontal: 12,
     height: 48,
     marginBottom: 12,
-    justifyContent: "center",
-    alignItems: "center",
+    fontSize: 16,
   },
   CreateEmailButton: {
     backgroundColor: "#1E90FF",
@@ -540,10 +502,6 @@ const styles = StyleSheet.create({
   linkContainer: {
     marginTop: 32,
     alignItems: "center",
-  },
-  PasswordImage: {
-    width: 32,
-    height: 32,
   },
   InputText: {
     flex: 1,
