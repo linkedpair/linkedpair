@@ -18,8 +18,6 @@ import {
   orderBy,
   collection,
   where,
-  doc,
-  getDoc,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 

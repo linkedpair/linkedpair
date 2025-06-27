@@ -22,39 +22,45 @@ export default async function SignUpService({
   location,
   downloadURL
 }) {
-
-  const userCredential = await createUserWithEmailAndPassword(
-    auth,
-    email,
-    password
-  );
-  
-  const user = userCredential.user;
+  let user;
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    user = userCredential.user;
+  } catch (error) {
+    throw new Error("failed to create user")
+  }
       
   const ageString = getAgeString(date);
-  const profileText = `${ageString}\nTraits: ${traits}`;
+  const profileText = `${ageString}\ntraits: ${traits}`;
 
   const embedding = await generateEmbeddingFromProfile(profileText);
 
-  await setDoc(doc(db, "users", user.uid), {
-    uid: user.uid,
-    firstName,
-    lastName,
-    gender: male ? "Male" : "Female",
-    //included undefined for testing
-    dateOfBirth: date ? date.toISOString().split("T")[0] : undefined, 
-    username,
-    email,
-    major,
-    image,
-    location,
-    traits,
-    profileDescription,
-    embedding,
-    downloadURL,
-    createdAt: serverTimestamp(),
-    matchedWith: [],
-  });
-
+  try{
+    await setDoc(doc(db, "users", user.uid), {
+      uid: user.uid,
+      firstName,
+      lastName,
+      gender: male ? "Male" : "Female",
+      //included undefined for testing
+      dateOfBirth: date ? date.toISOString().split("T")[0] : undefined, 
+      username,
+      email,
+      major,
+      image,
+      location,
+      traits,
+      profileDescription,
+      embedding,
+      downloadURL,
+      createdAt: serverTimestamp(),
+      matchedWith: [],
+    });
+  } catch (error) {
+    throw new Error("failed to send data to firebase")
+  }
   return user;
 }

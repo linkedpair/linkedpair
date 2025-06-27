@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -12,17 +12,17 @@ import {
   ScrollView,
 } from "react-native";
 
-import { generateProfileDescription } from "../utils/openai";
-
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Dropdown } from "react-native-element-dropdown";
 import * as ImagePicker from "expo-image-picker";
 
 import useLocation from "../hooks/useLocation";
 import SignUpService from "../services/SignUpService"
+import handleGenerateDescription from "../utils/HandleGenerateDescription";
 
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from "../firebaseConfig"
+import { generateProfileDescription } from "../utils/openai";
 
 export default function SignUpScreen({ navigation }) {
   const [firstName, setFirstName] = useState("");
@@ -44,6 +44,10 @@ export default function SignUpScreen({ navigation }) {
 
   // Fetch location automatically
   useLocation({ setLocation })
+
+  const generateDescription = () => {
+    return handleGenerateDescription({ traits, setLoadingDesc, setProfileDescription })
+  }
   
   const handleSignUp = async () => {
     if (
@@ -97,22 +101,6 @@ export default function SignUpScreen({ navigation }) {
     } catch (error) {
       console.error("Sign up error:", error);
       alert(error.message || "Failed to create account");
-    }
-  };
-
-  const handleGenerateDescription = async () => {
-    if (!traits.trim()) {
-      alert("Please enter your traits first.");
-      return;
-    }
-    try {
-      setLoadingDesc(true);
-      const description = await generateProfileDescription(traits);
-      setProfileDescription(description);
-    } catch (error) {
-      alert("Failed to generate description. Please try again.");
-    } finally {
-      setLoadingDesc(false);
     }
   };
 
@@ -188,7 +176,7 @@ export default function SignUpScreen({ navigation }) {
           />
 
           <TouchableOpacity
-            onPress={handleGenerateDescription}
+            onPress={generateDescription}
             disabled={loadingDesc}
             style={{
               backgroundColor: "#28a745",

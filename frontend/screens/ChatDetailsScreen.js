@@ -90,6 +90,10 @@ export default function ChatDetailsScreen({ navigation }) {
 
 const SendMessage = async (chatId, text, senderId, setTextContent) => {
   
+  if (!text) {
+    return;
+  }
+
   // Upon sending a message add it to the corresponding document
   await addDoc(collection(db, "chats", chatId, "messages"), {
       text,

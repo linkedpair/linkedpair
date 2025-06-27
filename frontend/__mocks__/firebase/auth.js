@@ -1,5 +1,5 @@
 export const createUserWithEmailAndPassword = jest.fn(() =>
-    Promise.resolve({ user: { email: "test1@gmail.com", password: "password" }})
+    Promise.resolve({ user: { uid: "abc123", email: "test1@gmail.com", password: "password" }})
 )
 
 export const getAuth = jest.fn(() => ({}));
