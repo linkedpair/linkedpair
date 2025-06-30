@@ -31,7 +31,7 @@ export default async function SignUpService({
     );
     user = userCredential.user;
   } catch (error) {
-    throw new Error("failed to create user")
+    throw new Error("Email is already in use.")
   }
       
   const ageString = getAgeString(date);

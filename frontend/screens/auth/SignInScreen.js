@@ -13,9 +13,10 @@ import {
   Alert,
 } from "react-native";
 
-import { auth } from "../firebaseConfig";
+import { auth } from "../../firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import PasswordInput from "../components/PasswordInput";
+import EmailInput from "../../components/auth/EmailInput";
+import PasswordInput from "../../components/auth/PasswordInput";
 
 export default function SignInScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -66,13 +67,10 @@ export default function SignInScreen({ navigation }) {
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <View style={styles.innerContainer}>
             <Text style={styles.title}>Sign In</Text>
-            <TextInput
-              style={styles.input}
+            <EmailInput
               placeholder="Email"
               value={email}
               onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
             />
             <PasswordInput
               keyboardType="password"
@@ -94,7 +92,7 @@ export default function SignInScreen({ navigation }) {
                 Don't have an account?{" "}
                 <Text
                   style={styles.link}
-                  onPress={() => navigation.navigate("SignUp")}
+                  onPress={() => navigation.navigate("MainDetails")}
                 >
                   Sign Up
                 </Text>
@@ -120,21 +118,14 @@ const styles = StyleSheet.create({
   innerContainer: {
     flex: 1,
     justifyContent: "center",
+    flexDirection: "column",
+    gap: 12,
   },
   title: {
     fontSize: 24,
     marginBottom: 24,
     fontWeight: "bold",
     textAlign: "center",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#aaa",
-    borderRadius: 6,
-    marginBottom: 12,
-    paddingHorizontal: 12,
-    height: 48,
-    fontSize: 16,
   },
   customButton: {
     backgroundColor: "#1E90FF",

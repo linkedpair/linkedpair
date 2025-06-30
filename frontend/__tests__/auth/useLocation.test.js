@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { render, waitFor } from "@testing-library/react-native";
-import useLocation from "../hooks/useLocation"; 
+import useLocation from "../../hooks/useLocation"; 
 import * as Location from "expo-location";
 
 jest.mock("expo-location");

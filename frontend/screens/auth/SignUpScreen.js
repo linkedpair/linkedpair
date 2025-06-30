@@ -6,23 +6,20 @@ import {
   StyleSheet,
   TextInput,
   KeyboardAvoidingView,
-  Image,
   Button,
   Alert,
   ScrollView,
 } from "react-native";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Dropdown } from "react-native-element-dropdown";
-import * as ImagePicker from "expo-image-picker";
 
-import useLocation from "../hooks/useLocation";
-import PasswordInput from "../components/PasswordInput";
-import SignUpService from "../services/SignUpService"
-import handleGenerateDescription from "../utils/HandleGenerateDescription";
-
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from "../firebaseConfig"
+import useLocation from "../../hooks/useLocation";
+import EmailInput from "../../components/auth/EmailInput"
+import PasswordInput from "../../components/auth/PasswordInput";
+import ImageInput from "../../components/auth/ImageInput";
+import SignUpService from "../../services/SignUpService"
+import DropdownBar from "../../components/auth/DropdownBar";
+import handleGenerateDescription from "../../utils/HandleGenerateDescription";
 
 export default function SignUpScreen({ navigation }) {
   const [firstName, setFirstName] = useState("");
@@ -33,7 +30,6 @@ export default function SignUpScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [hidePassword, setHidePassword] = useState(true);
   const [major, setMajor] = useState("");
   const [image, setImage] = useState(null);
   const [downloadURL, setDownloadURL] = useState("")
@@ -41,6 +37,31 @@ export default function SignUpScreen({ navigation }) {
   const [traits, setTraits] = useState("");
   const [profileDescription, setProfileDescription] = useState("");
   const [loadingDesc, setLoadingDesc] = useState(false);
+
+
+  const faculties = [
+    "Arts and Social Sciences",
+    "Business",
+    "Computing",
+    "Continuing and Lifelong Education",
+    "Dentistry",
+    "Design and Engineering",
+    "Duke-NUS",
+    "Law",
+    "Medicine",
+    "Music",
+    "NUS College",
+    "NUS Graduate School",
+    "Public Health",
+    "Public Policy",
+    "Science",
+    "Yale-NUS",
+  ];
+
+  const facultiesData = faculties.map((faculty) => ({
+    label: faculty,
+    value: faculty,
+  }));
 
   // Fetch location automatically
   useLocation({ setLocation })
@@ -64,6 +85,11 @@ export default function SignUpScreen({ navigation }) {
       !traits
     ) {
       alert("Please fill out all required fields.");
+      return;
+    }
+
+    if (password.length < 8) {
+      alert("Password too Short!")
       return;
     }
 
@@ -110,19 +136,24 @@ export default function SignUpScreen({ navigation }) {
         contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.WhiteSpace} />
         <View style={styles.FormContainer}>
           <Text style={styles.SignUpText}>Sign Up</Text>
-          <View style={styles.NameRow}>
-            <NameInput
-              type="First Name"
+          <View style={styles.NameContainer}>
+            <TextInput
+              style={styles.NameInput}
+              placeholder="First Name"
               value={firstName}
               onChangeText={setFirstName}
+              keyboardType="default"
+              autoCapitalize="words"
             />
-            <NameInput
-              type="Last Name"
+            <TextInput
+              style={styles.NameInput}
+              placeholder="Last Name"
               value={lastName}
               onChangeText={setLastName}
+              keyboardType="default"
+              autoCapitalize="sentences"
             />
           </View>
           <View style={styles.GenderRow}>
@@ -147,7 +178,12 @@ export default function SignUpScreen({ navigation }) {
             datePickerOpen={datePickerOpen}
             setDatePickerOpen={setDatePickerOpen}
           />
-          <MajorDropdownInput major={major} setMajor={setMajor} />
+          <DropdownBar 
+            data={facultiesData}
+            placeholder={"Select your Major"}
+            value={major} 
+            setValue={setMajor} 
+          />
           <TextInput
             style={styles.TextInput}
             placeholder="Username"
@@ -156,13 +192,10 @@ export default function SignUpScreen({ navigation }) {
             keyboardType="default"
             autoCapitalize="none"
           />
-          <TextInput
-            style={styles.TextInput}
+          <EmailInput
             placeholder="Email"
             value={email}
             onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
           />
           <PasswordInput
             keyboardType="password"
@@ -171,6 +204,7 @@ export default function SignUpScreen({ navigation }) {
             onChangeText={setPassword}
             hidePassword={hidePassword}
             setHidePassword={setHidePassword}
+            checkPassword
           />
           <ImageInput image={image} setImage={setImage} setDownloadURL={setDownloadURL} />
 
@@ -182,7 +216,6 @@ export default function SignUpScreen({ navigation }) {
               borderWidth: 1,
               borderColor: "#ccc",
               padding: 10,
-              marginVertical: 10,
             }}
           />
 
@@ -227,65 +260,10 @@ export default function SignUpScreen({ navigation }) {
             </Text>
           </View>
         </View>
-        <View style={styles.WhiteSpace} />
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
-
-const ImageInput = ({ image, setImage, setDownloadURL }) => {
-  const PickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images", "videos"],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const uri = result.assets[0].uri;
-      setImage(uri);
-      uploadImageAsync(uri);
-    }
-  };
-
-  const uploadImageAsync = async (uri) => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-
-    const filename = uri.substring(uri.lastIndexOf('/') + 1);
-    const storageRef = ref(storage, `images/${filename}`);
-    await uploadBytes(storageRef, blob);
-
-    const url = await getDownloadURL(storageRef);
-    console.log('set url')
-    setDownloadURL(url);
-  };
-
-  return (
-    <View style={!image ? styles.StandardInput : styles.SelectedImage}>
-      {!image ? (
-        <Button title="Pick an image from camera roll" onPress={PickImage} />
-      ) : (
-        <Image source={{ uri: image }} style={styles.SelectedImage} />
-      )}
-    </View>
-  );
-};
-
-const NameInput = ({ type, value, onChangeText }) => {
-  return (
-    <View style={styles.NameInput}>
-      <TextInput
-        style={styles.InputText}
-        placeholder={`Enter your ${type}`}
-        onChangeText={onChangeText}
-        defaultValue={value}
-        keyboardType={"default"}
-      />
-    </View>
-  );
-};
 
 const MaleButton = ({ selected, onPress }) => {
   return (
@@ -342,52 +320,6 @@ const DateInput = ({ date, setDate, datePickerOpen, setDatePickerOpen }) => {
   );
 };
 
-const faculties = [
-  "Arts and Social Sciences",
-  "Business",
-  "Computing",
-  "Continuing and Lifelong Education",
-  "Dentistry",
-  "Design and Engineering",
-  "Duke-NUS",
-  "Law",
-  "Medicine",
-  "Music",
-  "NUS College",
-  "NUS Graduate School",
-  "Public Health",
-  "Public Policy",
-  "Science",
-  "Yale-NUS",
-];
-
-const data = faculties.map((faculty) => ({
-  label: faculty,
-  value: faculty,
-}));
-
-const MajorDropdownInput = ({ major, setMajor }) => {
-  return (
-    <Dropdown
-      style={styles.dropdown}
-      placeholderStyle={styles.placeholderStyle}
-      selectedTextStyle={styles.selectedTextStyle}
-      inputSearchStyle={styles.inputSearchStyle}
-      data={data}
-      search
-      maxHeight={300}
-      labelField="label"
-      valueField="value"
-      placeholder={"Select your Major"}
-      searchPlaceholder="Search..."
-      value={major}
-      onChange={(item) => {
-        setMajor(item.value);
-      }}
-    />
-  );
-};
-
 const SignUpButton = (NextAction) => {
   return (
     <TouchableOpacity
@@ -405,28 +337,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "white",
   },
-  WhiteSpace: {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-  },
   FormContainer: {
     flexDirection: "column",
+    gap: 12,
     paddingHorizontal: 20,
     width: "100%",
   },
   SignUpText: {
     fontSize: 24,
-    marginBottom: 24,
     fontWeight: "bold",
     textAlign: "center",
   },
-  NameRow: {
+  NameContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 6,
-    marginBottom: 12,
+    justifyContent: "center",
+    gap: 12,
   },
   NameInput: {
     flex: 1,
@@ -441,7 +366,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     gap: 6,
-    marginBottom: 12,
   },
   GenderButton: {
     flex: 1,
@@ -458,7 +382,6 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     paddingHorizontal: 12,
     height: 48,
-    marginBottom: 12,
     fontSize: 16,
   },
   CreateEmailButton: {
@@ -466,27 +389,8 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: "center",
-    marginTop: 20,
-    marginBottom: 16,
-  },
-  dropdown: {
-    marginBottom: 12,
-    height: 48,
-    borderWidth: 1,
-    borderColor: "#aaa",
-    paddingHorizontal: 12,
-    borderRadius: 6,
-  },
-  placeholderStyle: {
-    fontSize: 14,
-    color: "#aaa",
-  },
-  selectedTextStyle: {
-    fontSize: 16,
-  },
-  inputSearchStyle: {
-    height: 40,
-    fontSize: 16,
+    marginTop: 8,
+    marginBottom: 4,
   },
   ButtonText: {
     color: "#fff",
@@ -500,7 +404,7 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   linkContainer: {
-    marginTop: 32,
+    marginTop: 20,
     alignItems: "center",
   },
   InputText: {

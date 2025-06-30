@@ -1,10 +1,10 @@
-import handleGenerateDescription from "../utils/HandleGenerateDescription";
-import { generateProfileDescription } from "../utils/openai";
+import handleGenerateDescription from "../../utils/HandleGenerateDescription";
+import { generateProfileDescription } from "../../utils/openai";
 
 const setLoadingDesc = jest.fn();
 const setProfileDescription = jest.fn();
 
-jest.mock('../utils/openai', () => ({
+jest.mock('../../utils/openai', () => ({
     generateProfileDescription: jest.fn()
 }))
 

@@ -1,8 +1,8 @@
-import SignUpService from "../services/SignUpService";
-import { auth, db } from "../firebaseConfig";
+import SignUpService from "../../services/SignUpService";
+import { auth, db } from "../../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { generateEmbeddingFromProfile } from "../utils/openai";
+import { generateEmbeddingFromProfile } from "../../utils/openai";
 
 jest.mock("@react-native-async-storage/async-storage", () => ({
   setItem: jest.fn(() => Promise.resolve()),
@@ -14,10 +14,11 @@ jest.mock("@react-native-async-storage/async-storage", () => ({
   multiSet: jest.fn(() => Promise.resolve()),
   multiRemove: jest.fn(() => Promise.resolve()),
 }));
-jest.mock("../firebaseConfig", () => ({
+
+jest.mock("../../firebaseConfig", () => ({
   auth: "mockAuthObject",
 }));
-jest.mock('../utils/openai', () => ({
+jest.mock('../../utils/openai', () => ({
     generateEmbeddingFromProfile: jest.fn(() => Promise.resolve([0.1, 0.2, 0.3]))
 }));
 
@@ -142,8 +143,8 @@ describe("sign up service", () => {
         });
     })
     it("should gracefully return error if createUserWithEmailAndPassword fails", async () => {
-        createUserWithEmailAndPassword.mockRejectedValue(new Error("failed to create user"))
-        await expect(SignUpService(maleUserData)).rejects.toThrow("failed to create user")
+        createUserWithEmailAndPassword.mockRejectedValue(new Error("Email is already in use."))
+        await expect(SignUpService(maleUserData)).rejects.toThrow("Email is already in use.")
     });
     it("should gracefully return error if setDoc fails", async () => {
         createUserWithEmailAndPassword.mockResolvedValue({

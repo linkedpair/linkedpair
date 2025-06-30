@@ -231,7 +231,7 @@ const UserAttribute = ({ type, displayType, initialValue, user }) => {
 
   // If attribute is in the list below, we do not allow users to edit.
   // Otherwise, clicking on each attribute will turn it into a TextInput.
-  const UneditableTypes = (type != "age" &&
+  const editableTypes = (type != "age" &&
     type != "gender" &&
     type != "first Name" &&
     type != "last Name" &&
@@ -245,7 +245,7 @@ const UserAttribute = ({ type, displayType, initialValue, user }) => {
           {/* Type is fixed */}
           <Text style={styles.AttributeType}>{displayType}</Text>
         </View>
-        {isEditing && UneditableTypes 
+        {isEditing && editableTypes 
           ? (
           <TextInput
             style={styles.EditableAttributeValue}
@@ -257,7 +257,7 @@ const UserAttribute = ({ type, displayType, initialValue, user }) => {
             onSubmitEditing={handleUpdate}
           />
         ) : (
-          UneditableTypes ? (
+          editableTypes ? (
             <TouchableOpacity 
               onPress={() => setIsEditing(true)}>
               {/* initialValue will be extracted from userDatabase */}
