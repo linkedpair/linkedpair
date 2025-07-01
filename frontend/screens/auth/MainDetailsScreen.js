@@ -43,58 +43,69 @@ export default function MainDetailsScreen({ navigation }) {
       keyboardShouldPersistTaps="handled"
       ref={scrollViewRef}
       >
-        <Text style={styles.Title}>Profile Details</Text>
-        <Text style={styles.Subtitle}>Introduce Yourself to us!</Text>
         <View style={styles.FormContainer}>
-          <ImageInput 
-            image={image} 
-            setImage={setImage}
-            setDownloadURL={setDownloadURL}
-          />
-          <TextInput
-            style={styles.TextInput}
-            placeholder="First Name"
-            value={firstName}
-            onChangeText={setFirstName}
-            keyboardType="default"
-            autoCapitalize="words"
-            returnKeyType="next"
-            onSubmitEditing={() => lastNameRef.current.focus()}
-          />
-          <TextInput
-            ref={lastNameRef}
-            style={styles.TextInput}
-            placeholder="Last Name"
-            value={lastName}
-            onChangeText={setLastName}
-            keyboardType="default"
-            autoCapitalize="words"
-            returnKeyType="next"
-            onSubmitEditing={() => usernameRef.current.focus()}
-          />
-          <TextInput
-            ref={usernameRef}
-            style={styles.TextInput}
-            placeholder="Username"
-            value={username}
-            onChangeText={setUsername}
-            keyboardType="default"
-            autoCapitalize="words"
-            returnKeyType="next"
-            onSubmitEditing={() => emailRef.current.focus()}
-          />
-          <EmailInput
-            inputRef={emailRef}
-            value={email}
-            onChangeText={setEmail}
-            returnKeyType="done"
-          />
-          <DateInput 
-            date={dateOfBirth}
-            setDate={setDateOfBirth}
-            scrollViewRef={scrollViewRef}
-          />
-          <SignUpButton navigation={navigation}/>
+          <Text style={styles.Title}>Profile Details</Text>
+          <Text style={styles.Subtitle}>Introduce Yourself to us!</Text>
+          <View style={styles.InputContainer} >
+            <ImageInput 
+              image={image} 
+              setImage={setImage}
+              setDownloadURL={setDownloadURL}
+            />
+            <TextInput
+              style={styles.TextInput}
+              placeholder="First Name"
+              value={firstName}
+              onChangeText={setFirstName}
+              keyboardType="default"
+              autoCapitalize="words"
+              returnKeyType="next"
+              onSubmitEditing={() => lastNameRef.current.focus()}
+            />
+            <TextInput
+              ref={lastNameRef}
+              style={styles.TextInput}
+              placeholder="Last Name"
+              value={lastName}
+              onChangeText={setLastName}
+              keyboardType="default"
+              autoCapitalize="words"
+              returnKeyType="next"
+              onSubmitEditing={() => usernameRef.current.focus()}
+            />
+            <TextInput
+              ref={usernameRef}
+              style={styles.TextInput}
+              placeholder="Username"
+              value={username}
+              onChangeText={setUsername}
+              keyboardType="default"
+              autoCapitalize="words"
+              returnKeyType="next"
+              onSubmitEditing={() => emailRef.current.focus()}
+            />
+            <EmailInput
+              inputRef={emailRef}
+              value={email}
+              onChangeText={setEmail}
+              returnKeyType="done"
+            />
+            <DateInput 
+              date={dateOfBirth}
+              setDate={setDateOfBirth}
+              scrollViewRef={scrollViewRef}
+            />
+            <SignUpButton navigation={navigation}/>
+          </View>
+          <View style={styles.linkContainer}>
+            <Text style={styles.p}>Already Have an Account?{" "}</Text>
+            <Text
+              style={styles.RedirectToSignInText}
+              onPress={() => navigation.navigate("SignIn")}
+            >
+              Sign In
+            </Text>
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -115,8 +126,6 @@ const SignUpButton = ({ navigation }) => {
 const styles = StyleSheet.create({
   MainContainer: {
     width: '100%',
-    paddingVertical: responsiveHeight(8),
-    paddingHorizontal: responsiveWidth(10),
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
@@ -126,20 +135,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     alignSelf: 'flex-start',
     color: '#333',
+    marginBottom: 2,
   },
   Subtitle: {
     fontSize: 25,
     fontWeight: '400',
     alignSelf: 'flex-start',
     color: '#666',
-    marginBottom: 30,
+    marginBottom: 25,
   },
   FormContainer: {
+    paddingVertical: responsiveHeight(8),
+    paddingHorizontal: responsiveWidth(10),
+  },
+  InputContainer: {
     display: 'flex',
     flexDirection: 'column',
-    gap: 20,
+    gap: 16,
     width: '100%',
-    paddingBottom: 50,
   },
   TextInput: {
     borderWidth: 1,
@@ -163,5 +176,22 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
     fontFamily: 'Sk-Modernist',
+  },
+  RedirectToSignInText: {
+    color: "#FE6B75",
+    fontSize: 18,
+    fontWeight: "bold",
+    textDecorationLine: "underline",
+    paddingLeft: 5,
+  },
+  linkContainer: {
+    marginTop: 20,
+    alignItems: "center",
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  p: {
+    fontSize: 18,
   }
 })

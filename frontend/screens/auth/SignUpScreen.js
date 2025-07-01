@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -20,6 +20,7 @@ import ImageInput from "../../components/auth/ImageInput";
 import SignUpService from "../../services/SignUpService"
 import DropdownBar from "../../components/auth/DropdownBar";
 import handleGenerateDescription from "../../utils/HandleGenerateDescription";
+import DateInput from "../../components/auth/DateInput";
 
 export default function SignUpScreen({ navigation }) {
   const [firstName, setFirstName] = useState("");
@@ -38,6 +39,7 @@ export default function SignUpScreen({ navigation }) {
   const [profileDescription, setProfileDescription] = useState("");
   const [loadingDesc, setLoadingDesc] = useState(false);
 
+  const scrollViewRef = useRef();
 
   const faculties = [
     "Arts and Social Sciences",
@@ -135,6 +137,7 @@ export default function SignUpScreen({ navigation }) {
       <ScrollView
         contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
         keyboardShouldPersistTaps="handled"
+        ref={scrollViewRef}
       >
         <View style={styles.FormContainer}>
           <Text style={styles.SignUpText}>Sign Up</Text>
@@ -175,8 +178,7 @@ export default function SignUpScreen({ navigation }) {
           <DateInput
             date={date}
             setDate={setDate}
-            datePickerOpen={datePickerOpen}
-            setDatePickerOpen={setDatePickerOpen}
+            scrollViewRef={scrollViewRef}
           />
           <DropdownBar 
             data={facultiesData}
@@ -193,17 +195,13 @@ export default function SignUpScreen({ navigation }) {
             autoCapitalize="none"
           />
           <EmailInput
-            placeholder="Email"
             value={email}
             onChangeText={setEmail}
           />
           <PasswordInput
             keyboardType="password"
-            placeholder="Enter your Password"
             value={password}
             onChangeText={setPassword}
-            hidePassword={hidePassword}
-            setHidePassword={setHidePassword}
             checkPassword
           />
           <ImageInput image={image} setImage={setImage} setDownloadURL={setDownloadURL} />
@@ -295,31 +293,6 @@ const FemaleButton = ({ selected, onPress }) => {
   );
 };
 
-const DateInput = ({ date, setDate, datePickerOpen, setDatePickerOpen }) => {
-  return (
-    <View style={styles.StandardInput}>
-      <Button
-        title={date ? date.toDateString() : "Select Date"}
-        onPress={() => setDatePickerOpen(true)}
-      />
-      {/* If datepicker is open, datetimepicker will be called */}
-      {datePickerOpen && (
-        <DateTimePicker
-          mode="date"
-          open={datePickerOpen}
-          value={date || new Date()}
-          onChange={(event, SelectedDate) => {
-            setDatePickerOpen(false);
-            if (SelectedDate) {
-              setDate(SelectedDate);
-            }
-          }}
-        />
-      )}
-    </View>
-  );
-};
-
 const SignUpButton = (NextAction) => {
   return (
     <TouchableOpacity
@@ -342,6 +315,7 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingHorizontal: 20,
     width: "100%",
+    paddingVertical: 60,
   },
   SignUpText: {
     fontSize: 24,

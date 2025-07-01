@@ -21,9 +21,7 @@ import PasswordInput from "../../components/auth/PasswordInput";
 export default function SignInScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [hidePassword, setHidePassword] = useState(true);
 
-  // Simple email validation function
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -77,16 +75,8 @@ export default function SignInScreen({ navigation }) {
               placeholder="Enter your Password"
               value={password}
               onChangeText={setPassword}
-              hidePassword={hidePassword}
-              setHidePassword={setHidePassword}
             />
-            <TouchableOpacity
-              style={styles.customButton}
-              onPress={handleSignIn}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.buttonText}>Sign In</Text>
-            </TouchableOpacity>
+            <SignInButton handleSignIn={handleSignIn} />
             <View style={styles.linkWrapper}>
               <Text style={styles.linkText}>
                 Don't have an account?{" "}
@@ -104,6 +94,17 @@ export default function SignInScreen({ navigation }) {
     </KeyboardAvoidingView>
   );
 }
+
+const SignInButton = ({ handleSignIn }) => {
+  return (
+    <TouchableOpacity 
+      style={styles.SignInButton} 
+      onPress={handleSignIn}
+    >
+      <Text style={styles.ButtonText}>Sign In</Text>
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   keyboardAvoidingContainer: {
@@ -153,5 +154,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     textDecorationLine: "underline",
+  },
+  SignInButton: {
+    borderRadius: 12,
+    height: 55,
+    backgroundColor: "#FE6B75",
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  ButtonText: {
+    fontSize: 20,
+    color: 'white',
+    fontWeight: '600',
+    fontFamily: 'Sk-Modernist',
   },
 });

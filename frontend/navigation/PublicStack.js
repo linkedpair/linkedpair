@@ -11,7 +11,7 @@ const Stack = createNativeStackNavigator();
 export default function PublicStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="MainDetails" component={MainDetailsScreen} />
+      <Stack.Screen name="MainDetails" component={MainDetailsScreen} /> 
       <Stack.Screen name="AdditionalDetails" component={AdditionalDetailsScreen} />
       <Stack.Screen name="SignIn" component={SignInScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />

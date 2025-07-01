@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -9,7 +9,6 @@ import {
 import Feather from '@expo/vector-icons/Feather';
 
 export default function PasswordInput({
-  placeholder,
   value,
   onChangeText,
   checkPassword
@@ -24,7 +23,7 @@ export default function PasswordInput({
         <TextInput
           style={styles.Input}
           keyboardType="default"
-          placeholder={placeholder}
+          placeholder="Password"
           value={value}
           onChangeText={onChangeText}
           secureTextEntry={hidePassword}
@@ -61,7 +60,7 @@ const styles = StyleSheet.create({
     borderColor: "#aaa",
     borderRadius: 6,
     paddingHorizontal: 12,
-    height: 48,
+    height: 50,
   },
   Input: {
     flex: 1,

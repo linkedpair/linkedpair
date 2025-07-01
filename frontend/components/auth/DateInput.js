@@ -14,7 +14,7 @@ const DateInput = ({ date, setDate, scrollViewRef }) => {
   const handleOpen = () => {
     setDatePickerOpen(true);
     setTimeout(() => {
-      scrollViewRef.current?.scrollTo({ x: 0, y: 2000, animated: true });
+      scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true }); // changed***
     }, 100);
   }
 
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingLeft: 25,
     gap: 25,
-    marginVertical: 10, 
+    marginVertical: 5, 
   },
   Description: {
     fontSize: 18,
