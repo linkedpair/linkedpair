@@ -30,17 +30,24 @@ const ImageInput = ({ image, setImage, setDownloadURL }) => {
   };
 
   const uploadImageAsync = async (uri) => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
+    try {
+      const response = await fetch(uri);
+      const blob = await response.blob();
 
-    const filename = uri.substring(uri.lastIndexOf('/') + 1);
-    const storageRef = ref(storage, `images/${filename}`);
-    await uploadBytes(storageRef, blob);
+      const filename = uri.substring(uri.lastIndexOf('/') + 1);
+      const storageRef = ref(storage, `images/${filename}`);
 
-    const url = await getDownloadURL(storageRef);
-    setDownloadURL(url);
-    alert('set url')
+      await uploadBytes(storageRef, blob);
+
+      const url = await getDownloadURL(storageRef);
+      setDownloadURL(url);
+      alert('set url');
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("Failed to upload image");
+    }
   };
+
 
   return (
     <View style={styles.Container}>

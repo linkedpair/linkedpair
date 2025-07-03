@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Text,
   View,
@@ -18,14 +18,39 @@ import NextActionButton from "../../components/auth/NextActionButton";
 import RedirectToSignInOrUp from "../../components/auth/RedirectToSignInOrUp";
 import CustomTextInput from "../../components/auth/CustomTextInput";
 
+import { SignUpContext } from "../../contexts/SignUpContext";
+
 export default function SchoolDetailsScreen({ navigation }) {
   const [faculty, setFaculty] = useState('');
   const [stayOnCampus, setStayOnCampus] = useState(null);
   const [yearOfStudy, setYearOfStudy] = useState('');
   const [courses, setCourses] = useState('');
 
-  const handleNext = () => {}
-  
+  const { signUpData, updateSignUpData } = useContext(SignUpContext)
+
+  const handleNext = () => {
+    if (!faculty || 
+      stayOnCampus == null ||
+      !yearOfStudy ||
+      !courses
+    ) {
+      alert('Please fill in all required fields.');
+      return;
+    } else {
+      try {
+        updateSignUpData({
+          faculty: faculty,
+          stayOnCampus: stayOnCampus,
+          yearOfStudy: yearOfStudy,
+          courses: courses
+        })
+        navigation.navigate("Auth")
+      } catch (error) {
+        alert('An error has occured', 'Please try Again.')
+      }
+    }
+  }
+
   const faculties = [
     "Arts and Social Sciences",
     "Business",
@@ -73,21 +98,21 @@ export default function SchoolDetailsScreen({ navigation }) {
       contentContainerStyle={{ flexGrow: 1, gap: 5 }}
       keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.Title}>Hello</Text>
-        <Text style={styles.Subtitle}>Penguin</Text>
+        <Text style={styles.Title}>Your Uni Life</Text>
+        <Text style={styles.Subtitle}>Tell us what you study and more!</Text>
         <View style={styles.FormContainer}>
           <Text style={[styles.Subtitle, { fontSize: 22, color: 'black' }]}>
             Do you Stay on Campus?
           </Text>
-          <View style={styles.GenderContainer} >
+          <View style={styles.OptionsContainer} >
             <CustomButton
               buttonText={"Yes"}
-              isSelected={stayOnCampus}
+              isSelected={stayOnCampus == true}
               onPress={() => setStayOnCampus(true)}
             />
             <CustomButton
               buttonText={"No"}
-              isSelected={!stayOnCampus}
+              isSelected={stayOnCampus == false}
               onPress={() => setStayOnCampus(false)}
             />
           </View>
@@ -104,7 +129,7 @@ export default function SchoolDetailsScreen({ navigation }) {
             setValue={setYearOfStudy} 
           />
           <CustomTextInput
-            placeholder="What are Some Courses you are Taking"
+            placeholder="Current courses"
             value={courses}
             onChangeText={setCourses}
             autoCapitalize="words"
@@ -140,7 +165,7 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingTop: responsiveHeight(9),
     paddingBottom: responsiveHeight(6),
-    paddingHorizontal: responsiveWidth(10),
+    paddingHorizontal: responsiveWidth(9.5),
   },
   Title: {
     fontSize: 32,
@@ -161,31 +186,12 @@ const styles = StyleSheet.create({
     gap: responsiveHeight(2.5),
     width: '100%',
   },
-  GenderContainer: {
+  OptionsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     gap: 20,
-    width: '100%'
-  },
-  ProfileDescriptionContainer: {
     width: '100%',
-    gap: 15,
-  },
-  GenerateDescriptionButton: {
-    backgroundColor: "#74aa9c",
-    padding: 12,
-    alignItems: "center",
-    borderRadius: 8,
-  },
-  GenerateDescriptionButtonText: {
-    color: "#fff", 
-    fontWeight: "bold",
-    fontSize: 16
-  },
-  ProfileDescription:{
-    padding: 12,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
+    paddingBottom: 20,
   },
   ButtonAndLinkContainer: {
     width: '100%',

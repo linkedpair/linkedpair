@@ -13,6 +13,7 @@ export default function CustomButton({ buttonText, isSelected, onPress }) {
         ? styles.SelectedButton 
         : styles.UnselectedButton}
       onPress={onPress}
+      activeOpacity={0.7}
     >
       <Text style={isSelected 
         ? styles.SelectedButtonText 
@@ -26,7 +27,7 @@ export default function CustomButton({ buttonText, isSelected, onPress }) {
 
 const styles = StyleSheet.create({
   UnselectedButton: {
-    backgroundColor: '#F9F9F9',      // soft light grey
+    backgroundColor: '#F9F9F9', 
     borderColor: '#DDD',
     borderWidth: 0.5,
     borderRadius: 12,

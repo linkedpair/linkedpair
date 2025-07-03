@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   StyleSheet,
@@ -10,51 +10,53 @@ import {
   Alert,
 } from "react-native";
 
-import { auth } from "../../firebaseConfig";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import EmailInput from "../../components/auth/EmailInput";
-import PasswordInput from "../../components/auth/PasswordInput";
-import NextActionButton from "../../components/auth/NextActionButton";
-import RedirectToSignInOrUp from "../../components/auth/RedirectToSignInOrUp";
-
 import {
   responsiveHeight,
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 
-export default function SignInScreen({ navigation }) {
+import EmailInput from "../../components/auth/EmailInput";
+import PasswordInput from "../../components/auth/PasswordInput";
+import NextActionButton from "../../components/auth/NextActionButton";
+import RedirectToSignInOrUp from "../../components/auth/RedirectToSignInOrUp";
+
+import { SignUpContext } from "../../contexts/SignUpContext";
+
+import SignUpService from "../../services/SignUpService";
+
+export default function AuthScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+  const { signUpData, updateSignUpData } = useContext(SignUpContext);
 
-  const handleSignIn = async () => {
+  const handleSignUp = async () => {
     if (!email || !password) {
-      Alert.alert("Error", "Please enter both email and password.");
+      alert("Please enter both email and password.");
       return;
     }
-    if (!isValidEmail(email)) {
-      Alert.alert("Error", "Please enter a valid email address.");
+    if (password.length < 8) {
+      alert("Password too Short!")
       return;
     }
-
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    } 
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
-      console.log("User signed in:", user);
-      Alert.alert("Success", "Signed in successfully!");
+      const user = await SignUpService({
+        ...signUpData,
+        email: email,
+        password: password,
+      });
+      console.log("User created:", user);
+      alert("Account created successfully!");
     } catch (error) {
-      console.error("Error signing in:", error);
-      Alert.alert("Error", "Failed to sign in. Please check your credentials.");
+      console.error("Sign up error:", error);
+      alert(error.message || "Failed to create account");
     }
-  };
+  }
 
   return (
     <KeyboardAvoidingView
@@ -68,7 +70,7 @@ export default function SignInScreen({ navigation }) {
       >
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <View style={styles.FormContainer}>
-            <Text style={styles.Title}>Welcome back! Let's get you signed in.</Text>
+            <Text style={styles.Title}>Create an Account with us!</Text>
             <View style={styles.CenteredContent}>
               <View style={styles.InputContainer} >
                 <EmailInput
@@ -81,16 +83,17 @@ export default function SignInScreen({ navigation }) {
                   placeholder="Enter your Password"
                   value={password}
                   onChangeText={setPassword}
+                  checkPassword
                 />
               </View>
               <View style={styles.ButtonAndLinkContainer}>
                 <NextActionButton 
-                  handleNext={handleSignIn} 
-                  buttonText={"Sign In"}
+                  handleNext={handleSignUp} 
+                  buttonText={"Create Account"}
                 />
               <RedirectToSignInOrUp
                 text={"Sign Up"}
-                onPress={() => navigation.navigate("MainDetails")}
+                onPress={() => navigation.navigate("AdditionalDetails")}
               />
               </View>
             </View>

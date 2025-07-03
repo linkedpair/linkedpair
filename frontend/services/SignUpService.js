@@ -4,63 +4,74 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 import { generateEmbeddingFromProfile } from "../utils/openai";
-
 import getAgeString from "../utils/GetAgeString";
 
-export default async function SignUpService({
-  firstName,
-  lastName,
-  email,
-  password,
-  male,
-  username,
-  major,
-  image,
-  date,
-  profileDescription,
-  traits,
-  location,
-  downloadURL
-}) {
+export default async function SignUpService(signUpData) {
+
   let user;
+
+  const {
+    firstName,
+    lastName,
+    username,
+    dateOfBirth,
+    location,
+    image,
+    downloadURL,
+    gender,
+    zodiac,
+    traits,
+    profileDescription,
+    faculty,
+    stayOnCampus,
+    yearOfStudy,
+    courses,
+    email
+  } = signUpData;
+
   try {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
-      email,
-      password
+      signUpData.email,
+      signUpData.password
     );
     user = userCredential.user;
   } catch (error) {
-    throw new Error("Email is already in use.")
+    throw new Error("Email is already in use.");
   }
-      
-  const ageString = getAgeString(date);
-  const profileText = `${ageString}\ntraits: ${traits}`;
+
+  const ageString = getAgeString(signUpData.date);
+  const profileText = `${ageString}\ntraits: ${signUpData.traits}`;
 
   const embedding = await generateEmbeddingFromProfile(profileText);
 
-  try{
+  try {
     await setDoc(doc(db, "users", user.uid), {
       uid: user.uid,
       firstName,
       lastName,
-      gender: male ? "Male" : "Female",
-      //included undefined for testing
-      dateOfBirth: date ? date.toISOString().split("T")[0] : undefined, 
       username,
-      email,
-      major,
-      image,
+      dateOfBirth: dateOfBirth.toISOString().split("T")[0],
       location,
+      image,
+      downloadURL,
+      gender,
+      zodiac,
       traits,
       profileDescription,
+      faculty,
+      stayOnCampus,
+      yearOfStudy,
+      courses,
+      email,
       embedding,
-      downloadURL,
       createdAt: serverTimestamp(),
       matchedWith: [],
     });
   } catch (error) {
-    throw new Error("failed to send data to firebase")
+    alert(error);
+    throw new Error("Failed to send data to firebase.");
   }
+
   return user;
 }

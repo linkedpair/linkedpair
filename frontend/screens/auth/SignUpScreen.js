@@ -25,8 +25,8 @@ export default function SignUpScreen({ navigation }) {
   const [male, setMale] = useState(null); // done
   const [date, setDate] = useState(null); // done
   const [username, setUsername] = useState(""); // done
-  const [email, setEmail] = useState(""); 
-  const [password, setPassword] = useState(""); 
+  const [email, setEmail] = useState(""); // done
+  const [password, setPassword] = useState(""); // done
   const [major, setMajor] = useState(""); // done
   const [image, setImage] = useState(null); // done
   const [downloadURL, setDownloadURL] = useState("") // done

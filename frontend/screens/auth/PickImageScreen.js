@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Text,
   View,
@@ -14,16 +14,28 @@ import ImageInput from "../../components/auth/ImageInput";
 import NextActionButton from "../../components/auth/NextActionButton";
 import RedirectToSignInOrUp from "../../components/auth/RedirectToSignInOrUp";
 
+import { SignUpContext } from "../../contexts/SignUpContext";
+
 export default function PickImageScreen({ navigation }) {
   const [image, setImage] = useState('');
   const [downloadURL, setDownloadURL] = useState('');
+
+  const { signUpData, updateSignUpData } = useContext(SignUpContext)
   
   const handleNext = () => {
-    if (!image) {
-      alert('Please Select your Profile Picture');
+    if (!image || !downloadURL) {
+      alert('Please wait for the upload to finish');
       return;
     } else {
-      navigation.navigate("AdditionalDetails");
+      try {
+        updateSignUpData({
+          image: image,
+          downloadURL: downloadURL,
+        })
+        navigation.navigate("AdditionalDetails")
+      } catch (error) {
+        alert('An error has occured', 'Please try Again.')
+      }
     }
   }
 

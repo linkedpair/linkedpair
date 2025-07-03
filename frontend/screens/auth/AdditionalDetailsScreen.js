@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -18,7 +18,9 @@ import DropdownBar from "../../components/auth/DropdownBar";
 import CustomButton from "../../components/auth/CustomButton";
 import NextActionButton from "../../components/auth/NextActionButton";
 import RedirectToSignInOrUp from "../../components/auth/RedirectToSignInOrUp";
+
 import handleGenerateDescription from "../../utils/HandleGenerateDescription";
+import { SignUpContext } from "../../contexts/SignUpContext";
 
 export default function AdditionalDetailsScreen({ navigation }) {
   const [zodiac, setZodiac] = useState('');
@@ -28,14 +30,29 @@ export default function AdditionalDetailsScreen({ navigation }) {
   const [profileDescription, setProfileDescription] = useState("");
   const [loadingDesc, setLoadingDesc] = useState(false);
 
+  const { signUpData, updateSignUpData } = useContext(SignUpContext)
+
   const handleNext = () => {
     if (!zodiac ||
-      !hobbies
+      !hobbies ||
+      !gender ||
+      !traits
     ) {
       alert('Please Fill in All Required Fields.');
       return;
     } else {
-      navigation.navigate("SchoolDetails");
+      try {
+        updateSignUpData({
+          zodiac: zodiac,
+          hobbies: hobbies,
+          gender: gender,
+          traits: traits,
+          profileDescription: profileDescription
+        })
+        navigation.navigate("SchoolDetails");
+      } catch (error) {
+        alert("upload failed. Please try again.")
+      }
     }
   }
 

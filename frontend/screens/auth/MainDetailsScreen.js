@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import {
   Text,
   View,
@@ -14,9 +14,12 @@ import {
 
 import CustomTextInput from "../../components/auth/CustomTextInput";
 import DateInput from "../../components/auth/DateInput";
-import useLocation from "../../hooks/useLocation";
 import NextActionButton from "../../components/auth/NextActionButton";
 import RedirectToSignInOrUp from "../../components/auth/RedirectToSignInOrUp";
+
+import useLocation from "../../hooks/useLocation";
+
+import { SignUpContext } from "../../contexts/SignUpContext";
 
 export default function MainDetailsScreen({ navigation }) {
   const [location, setLocation] = useState(null);
@@ -29,6 +32,8 @@ export default function MainDetailsScreen({ navigation }) {
   const usernameRef = useRef();
   const scrollViewRef = useRef();
 
+  const { signUpData, updateSignUpData } = useContext(SignUpContext)
+
   const handleNext = () => {
     if (!firstName ||
       !lastName ||
@@ -38,7 +43,19 @@ export default function MainDetailsScreen({ navigation }) {
       alert('Please Fill in All Required Fields.');
       return;
     } else {
-      navigation.navigate("PickImage");
+      try {
+        updateSignUpData({
+          firstName: firstName,
+          lastName: lastName,
+          username: username,
+          dateOfBirth: dateOfBirth,
+          location: location
+        })
+        navigation.navigate("PickImage");
+      }
+      catch (error) {
+        alert('Please try again.')
+      }
     }
   }
 
