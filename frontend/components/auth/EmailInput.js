@@ -26,6 +26,7 @@ export default function EmailInput({
         value={value}
         onChangeText={onChangeText}
         returnKeyType={returnKeyType}
+        autoCapitalize="none"
       />
       {requirements &&
         <Text style={styles.Warning}>Please Enter a Valid Email!</Text> 

@@ -1,15 +1,12 @@
 import React, { useState } from "react";
 import {
   View,
-  TextInput,
   StyleSheet,
   Text,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
   ScrollView,
   KeyboardAvoidingView,
-  Platform,
   Alert,
 } from "react-native";
 
@@ -17,6 +14,13 @@ import { auth } from "../../firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import EmailInput from "../../components/auth/EmailInput";
 import PasswordInput from "../../components/auth/PasswordInput";
+import NextActionButton from "../../components/auth/NextActionButton";
+import RedirectToSignInOrUp from "../../components/auth/RedirectToSignInOrUp";
+
+import {
+  responsiveHeight,
+  responsiveWidth,
+} from "react-native-responsive-dimensions";
 
 export default function SignInScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -54,39 +58,41 @@ export default function SignInScreen({ navigation }) {
 
   return (
     <KeyboardAvoidingView
-      style={styles.keyboardAvoidingContainer}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+      style={styles.MainContainer} 
+      behavior={"padding"}
     >
       <ScrollView
-        contentContainerStyle={styles.scrollContainer}
+        style={styles.ScrollContainer} 
+        contentContainerStyle={{ flexGrow: 1, gap: 5 }}
         keyboardShouldPersistTaps="handled"
       >
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          <View style={styles.innerContainer}>
-            <Text style={styles.title}>Sign In</Text>
-            <EmailInput
-              placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
-            />
-            <PasswordInput
-              keyboardType="password"
-              placeholder="Enter your Password"
-              value={password}
-              onChangeText={setPassword}
-            />
-            <SignInButton handleSignIn={handleSignIn} />
-            <View style={styles.linkWrapper}>
-              <Text style={styles.linkText}>
-                Don't have an account?{" "}
-                <Text
-                  style={styles.link}
-                  onPress={() => navigation.navigate("MainDetails")}
-                >
-                  Sign Up
-                </Text>
-              </Text>
+          <View style={styles.FormContainer}>
+            <Text style={styles.Title}>Welcome back! Let's get you signed in.</Text>
+            <View style={styles.CenteredContent}>
+              <View style={styles.InputContainer} >
+                <EmailInput
+                  placeholder="Email"
+                  value={email}
+                  onChangeText={setEmail}
+                />
+                <PasswordInput
+                  keyboardType="password"
+                  placeholder="Enter your Password"
+                  value={password}
+                  onChangeText={setPassword}
+                />
+              </View>
+              <View style={styles.ButtonAndLinkContainer}>
+                <NextActionButton 
+                  handleNext={handleSignIn} 
+                  buttonText={"Sign In"}
+                />
+              <RedirectToSignInOrUp
+                text={"Sign Up"}
+                onPress={() => navigation.navigate("AdditionalDetails")}
+              />
+              </View>
             </View>
           </View>
         </TouchableWithoutFeedback>
@@ -95,77 +101,43 @@ export default function SignInScreen({ navigation }) {
   );
 }
 
-const SignInButton = ({ handleSignIn }) => {
-  return (
-    <TouchableOpacity 
-      style={styles.SignInButton} 
-      onPress={handleSignIn}
-    >
-      <Text style={styles.ButtonText}>Sign In</Text>
-    </TouchableOpacity>
-  );
-};
-
 const styles = StyleSheet.create({
-  keyboardAvoidingContainer: {
+  MainContainer: {
+    width: '100%',
     flex: 1,
-    backgroundColor: "#fff",
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
-  innerContainer: {
-    flex: 1,
-    justifyContent: "center",
-    flexDirection: "column",
-    gap: 12,
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  customButton: {
-    backgroundColor: "#1E90FF",
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 20,
-    marginBottom: 16,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  linkWrapper: {
-    marginTop: 32,
-    alignItems: "center",
-  },
-  linkText: {
-    color: "#000",
-    fontSize: 14,
-  },
-  link: {
-    color: "#007AFF",
-    fontSize: 14,
-    fontWeight: "bold",
-    textDecorationLine: "underline",
-  },
-  SignInButton: {
-    borderRadius: 12,
-    height: 55,
-    backgroundColor: "#FE6B75",
+    flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center'
   },
-  ButtonText: {
-    fontSize: 20,
-    color: 'white',
-    fontWeight: '600',
-    fontFamily: 'Sk-Modernist',
+  ScrollContainer: {
+    flex: 1, 
+    width: '100%',
   },
-});
+  Title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#3b3b3b',
+    marginVertical: 50,
+    textAlign: 'center',
+  },
+  FormContainer: {
+    paddingVertical: responsiveHeight(6),
+    paddingHorizontal: responsiveWidth(10),
+    flex: 1,
+    width: '100%',
+  },
+  CenteredContent: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+  },
+  InputContainer: {
+    flexDirection: 'column',
+    width: '100%',
+    gap: 20,
+  },
+  ButtonAndLinkContainer: {
+    width: '100%',
+    position: 'absolute',
+    bottom: 0
+  }
+})

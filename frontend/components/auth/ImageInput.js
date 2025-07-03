@@ -46,7 +46,7 @@ const ImageInput = ({ image, setImage, setDownloadURL }) => {
     <View style={styles.Container}>
       {!image ? (
         <>
-          <Text style={styles.Title}>Add a Photo Showing your Face!</Text>
+          <Text style={styles.Title}>Add a Profile Photo!</Text>
           <TouchableOpacity style={styles.Input} onPress={PickImage}>
             <MaterialCommunityIcons 
               style={styles.SelectImageIcon}
@@ -57,7 +57,7 @@ const ImageInput = ({ image, setImage, setDownloadURL }) => {
         </>
       ) : (
         <>
-          <Text style={styles.Title}>Here's how Others will See you!</Text>
+          <Text style={styles.Title}>How Others See You.</Text>
           <TouchableOpacity onPress={PickImage}>
             <Image source={{ uri: image }} style={styles.SelectedImage} />
           </TouchableOpacity>
@@ -73,17 +73,18 @@ const styles = StyleSheet.create({
   Container: {
     width: '100%',
     alignItems: 'center',
-    paddingVertical: 25, 
+    paddingHorizontal: 15,
+    paddingVertical: 50,
     backgroundColor: '#FAEBEE',
     borderRadius: 25,
+    marginBottom: 10,
   },
   Title: {
-    fontSize: 22,
+    fontSize: 20,
     color: '#FE6B75',
     marginBottom: 20, 
     fontWeight: '600',
     textAlign: 'center',
-    paddingTop: 10
   },
   Input: {
     alignItems: 'center',

@@ -6,12 +6,9 @@ import {
   StyleSheet,
   TextInput,
   KeyboardAvoidingView,
-  Button,
   Alert,
   ScrollView,
 } from "react-native";
-
-import DateTimePicker from "@react-native-community/datetimepicker";
 
 import useLocation from "../../hooks/useLocation";
 import EmailInput from "../../components/auth/EmailInput"
@@ -23,21 +20,24 @@ import handleGenerateDescription from "../../utils/HandleGenerateDescription";
 import DateInput from "../../components/auth/DateInput";
 
 export default function SignUpScreen({ navigation }) {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [male, setMale] = useState(null);
-  const [date, setDate] = useState(null);
-  const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [major, setMajor] = useState("");
-  const [image, setImage] = useState(null);
-  const [downloadURL, setDownloadURL] = useState("")
-  const [location, setLocation] = useState(null);
-  const [traits, setTraits] = useState("");
-  const [profileDescription, setProfileDescription] = useState("");
-  const [loadingDesc, setLoadingDesc] = useState(false);
+  const [firstName, setFirstName] = useState(""); // done
+  const [lastName, setLastName] = useState(""); // done
+  const [male, setMale] = useState(null); // done
+  const [date, setDate] = useState(null); // done
+  const [username, setUsername] = useState(""); // done
+  const [email, setEmail] = useState(""); 
+  const [password, setPassword] = useState(""); 
+  const [major, setMajor] = useState(""); // done
+  const [image, setImage] = useState(null); // done
+  const [downloadURL, setDownloadURL] = useState("") // done
+  const [location, setLocation] = useState(null); // done
+  const [traits, setTraits] = useState(""); // done
+  const [profileDescription, setProfileDescription] = useState(""); // done
+  const [loadingDesc, setLoadingDesc] = useState(false); // done
+  // hobbies DONE
+  // year of study DONE
+  // courses currently taking DONE
+  // stay on campus or not DONE
 
   const scrollViewRef = useRef();
 
@@ -66,7 +66,7 @@ export default function SignUpScreen({ navigation }) {
   }));
 
   // Fetch location automatically
-  useLocation({ setLocation })
+  useLocation({ setLocation });
 
   const generateDescription = () => {
     return handleGenerateDescription({ traits, setLoadingDesc, setProfileDescription })
@@ -204,8 +204,11 @@ export default function SignUpScreen({ navigation }) {
             onChangeText={setPassword}
             checkPassword
           />
-          <ImageInput image={image} setImage={setImage} setDownloadURL={setDownloadURL} />
-
+          <ImageInput 
+            image={image} 
+            setImage={setImage} 
+            setDownloadURL={setDownloadURL} 
+          />
           <TextInput
             placeholder="Enter traits (e.g. adventurous, kind, loves books)"
             value={traits}

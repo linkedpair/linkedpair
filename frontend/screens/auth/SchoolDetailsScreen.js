@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
-  TouchableOpacity,
   View,
   StyleSheet,
   KeyboardAvoidingView,
@@ -13,56 +12,20 @@ import {
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 
-import CustomTextInput from "../../components/auth/CustomTextInput";
-import DropdownBar from "../../components/auth/DropdownBar";
 import CustomButton from "../../components/auth/CustomButton";
+import DropdownBar from "../../components/auth/DropdownBar";
 import NextActionButton from "../../components/auth/NextActionButton";
 import RedirectToSignInOrUp from "../../components/auth/RedirectToSignInOrUp";
-import handleGenerateDescription from "../../utils/HandleGenerateDescription";
+import CustomTextInput from "../../components/auth/CustomTextInput";
 
-export default function AdditionalDetailsScreen({ navigation }) {
-  const [zodiac, setZodiac] = useState('');
-  const [gender, setGender] = useState('');
-  const [hobbies, setHobbies] = useState('');
-  const [traits, setTraits] = useState(""); 
-  const [profileDescription, setProfileDescription] = useState("");
-  const [loadingDesc, setLoadingDesc] = useState(false);
+export default function SchoolDetailsScreen({ navigation }) {
+  const [faculty, setFaculty] = useState('');
+  const [stayOnCampus, setStayOnCampus] = useState(null);
+  const [yearOfStudy, setYearOfStudy] = useState('');
+  const [courses, setCourses] = useState('');
 
-  const handleNext = () => {
-    if (!zodiac ||
-      !hobbies
-    ) {
-      alert('Please Fill in All Required Fields.');
-      return;
-    } else {
-      navigation.navigate("SchoolDetails");
-    }
-  }
-
-  const generateDescription = () => {
-    return handleGenerateDescription({ traits, setLoadingDesc, setProfileDescription })
-  }
-
-  const zodiacSigns = [
-    "Aries",
-    "Taurus",
-    "Gemini",
-    "Cancer",
-    "Leo",
-    "Virgo",
-    "Libra",
-    "Scorpio",
-    "Sagittarius",
-    "Capricorn",
-    "Aquarius",
-    "Pisces"
-  ]
-
-  const zodiacSignsData = zodiacSigns.map((zodiac) => ({
-    label: zodiac,
-    value: zodiac,
-  }));
-
+  const handleNext = () => {}
+  
   const faculties = [
     "Arts and Social Sciences",
     "Business",
@@ -87,6 +50,19 @@ export default function AdditionalDetailsScreen({ navigation }) {
     value: faculty,
   }));
 
+  const yearsOfStudy = [
+    "Year 1",
+    "Year 2",
+    "Year 3",
+    "Year 4",
+    "Year 5",
+  ];
+
+  const yearsOfStudyData = yearsOfStudy.map((year) => ({
+    label: year,
+    value: year,
+  }));
+
   return(
     <KeyboardAvoidingView 
       style={styles.MainContainer} 
@@ -97,58 +73,43 @@ export default function AdditionalDetailsScreen({ navigation }) {
       contentContainerStyle={{ flexGrow: 1, gap: 5 }}
       keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.Title}>Additional Details</Text>
-        <Text style={styles.Subtitle}>Tell Us More!</Text>
+        <Text style={styles.Title}>Hello</Text>
+        <Text style={styles.Subtitle}>Penguin</Text>
         <View style={styles.FormContainer}>
-          <Text style={[styles.Subtitle, { color: 'black' }]}>I am a...</Text>
+          <Text style={[styles.Subtitle, { fontSize: 22, color: 'black' }]}>
+            Do you Stay on Campus?
+          </Text>
           <View style={styles.GenderContainer} >
             <CustomButton
-              buttonText={"Male"}
-              isSelected={gender == "Male"}
-              onPress={() => setGender("Male")}
+              buttonText={"Yes"}
+              isSelected={stayOnCampus}
+              onPress={() => setStayOnCampus(true)}
             />
             <CustomButton
-              buttonText={"Female"}
-              isSelected={gender == "Female"}
-              onPress={() => setGender("Female")}
+              buttonText={"No"}
+              isSelected={!stayOnCampus}
+              onPress={() => setStayOnCampus(false)}
             />
           </View>
           <DropdownBar 
-            data={zodiacSignsData}
-            placeholder={"Select your Zodiac Sign"}
-            value={zodiac} 
-            setValue={setZodiac} 
+            data={facultiesData}
+            placeholder={"Select your Faculty"}
+            value={faculty} 
+            setValue={setFaculty} 
+          />
+          <DropdownBar 
+            data={yearsOfStudyData}
+            placeholder={"Select your Year of Study"}
+            value={yearOfStudy} 
+            setValue={setYearOfStudy} 
           />
           <CustomTextInput
-            placeholder="What are Some of your Hobbies?"
-            value={hobbies}
-            onChangeText={setHobbies}
-            autoCapitalize="none"
+            placeholder="What are Some Courses you are Taking"
+            value={courses}
+            onChangeText={setCourses}
+            autoCapitalize="words"
             returnKeyType="next"
           />
-          <View style={styles.ProfileDescriptionContainer}>
-            <CustomTextInput
-              placeholder="Enter traits (e.g. adventurous, kind, loves books)"
-              value={traits}
-              onChangeText={setTraits}
-              autoCapitalize="none"
-              returnKeyType="next"
-            />
-            <TouchableOpacity
-              onPress={generateDescription}
-              disabled={loadingDesc}
-              style={styles.GenerateDescriptionButton}
-            >
-              <Text style={styles.GenerateDescriptionButtonText}>
-                {loadingDesc ? "Generating..." : "Generate your AI Profile Description"}
-              </Text>
-            </TouchableOpacity>
-            {profileDescription ? (
-              <View style={styles.ProfileDescription}>
-                <Text>{profileDescription}</Text>
-              </View>
-            ) : null}
-          </View>
         </View>
         <View style={styles.ButtonAndLinkContainer}>
           <NextActionButton 

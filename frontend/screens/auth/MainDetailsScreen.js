@@ -1,10 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Text,
-  TouchableOpacity,
   View,
   StyleSheet,
-  TextInput,
   KeyboardAvoidingView,
   ScrollView,
 } from "react-native";
@@ -14,114 +12,102 @@ import {
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 
-import ImageInput from "../../components/auth/ImageInput";
-import EmailInput from "../../components/auth/EmailInput";
+import CustomTextInput from "../../components/auth/CustomTextInput";
 import DateInput from "../../components/auth/DateInput";
+import useLocation from "../../hooks/useLocation";
+import NextActionButton from "../../components/auth/NextActionButton";
+import RedirectToSignInOrUp from "../../components/auth/RedirectToSignInOrUp";
 
 export default function MainDetailsScreen({ navigation }) {
+  const [location, setLocation] = useState(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [image, setImage] = useState(null);
-  const [downloadURL, setDownloadURL] = useState(null)
   const [dateOfBirth, setDateOfBirth] = useState(null)
 
   const lastNameRef = useRef();
   const usernameRef = useRef();
-  const emailRef = useRef();
   const scrollViewRef = useRef();
 
+  const handleNext = () => {
+    if (!firstName ||
+      !lastName ||
+      !username ||
+      !dateOfBirth
+    ) {
+      alert('Please Fill in All Required Fields.');
+      return;
+    } else {
+      navigation.navigate("PickImage");
+    }
+  }
+
+  // Automatically Collect Location at the Start.
+  useLocation({ setLocation });
+  
   return(
     <KeyboardAvoidingView 
       style={styles.MainContainer} 
       behavior={"padding"}
     >
       <ScrollView 
-      style={{ flex: 1, width: '100%' }} 
-      contentContainerStyle={{ flexGrow: 1, gap: 5 }}
+      style={styles.ScrollContainer} 
+      contentContainerStyle={{ 
+        flexGrow: 1, 
+        gap: 5, 
+        paddingBottom: responsiveHeight(6) 
+      }}
       keyboardShouldPersistTaps="handled"
       ref={scrollViewRef}
       >
-        <View style={styles.FormContainer}>
-          <Text style={styles.Title}>Profile Details</Text>
-          <Text style={styles.Subtitle}>Introduce Yourself to us!</Text>
-          <View style={styles.InputContainer} >
-            <ImageInput 
-              image={image} 
-              setImage={setImage}
-              setDownloadURL={setDownloadURL}
-            />
-            <TextInput
-              style={styles.TextInput}
-              placeholder="First Name"
-              value={firstName}
-              onChangeText={setFirstName}
-              keyboardType="default"
-              autoCapitalize="words"
-              returnKeyType="next"
-              onSubmitEditing={() => lastNameRef.current.focus()}
-            />
-            <TextInput
-              ref={lastNameRef}
-              style={styles.TextInput}
-              placeholder="Last Name"
-              value={lastName}
-              onChangeText={setLastName}
-              keyboardType="default"
-              autoCapitalize="words"
-              returnKeyType="next"
-              onSubmitEditing={() => usernameRef.current.focus()}
-            />
-            <TextInput
-              ref={usernameRef}
-              style={styles.TextInput}
-              placeholder="Username"
-              value={username}
-              onChangeText={setUsername}
-              keyboardType="default"
-              autoCapitalize="words"
-              returnKeyType="next"
-              onSubmitEditing={() => emailRef.current.focus()}
-            />
-            <EmailInput
-              inputRef={emailRef}
-              value={email}
-              onChangeText={setEmail}
-              returnKeyType="done"
-            />
-            <DateInput 
-              date={dateOfBirth}
-              setDate={setDateOfBirth}
-              scrollViewRef={scrollViewRef}
-            />
-            <SignUpButton navigation={navigation}/>
-          </View>
-          <View style={styles.linkContainer}>
-            <Text style={styles.p}>Already Have an Account?{" "}</Text>
-            <Text
-              style={styles.RedirectToSignInText}
-              onPress={() => navigation.navigate("SignIn")}
-            >
-              Sign In
-            </Text>
-          </View>
+        <Text style={styles.Title}>Profile Details</Text>
+        <Text style={styles.Subtitle}>Introduce Yourself to us!</Text>
+        <View style={styles.InputContainer} >
+          <CustomTextInput
+            placeholder="First Name"
+            value={firstName}
+            onChangeText={setFirstName}
+            autoCapitalize="words"
+            returnKeyType="next"
+            onSubmitEditing={() => lastNameRef.current.focus()}
+          />
+          <CustomTextInput
+            ref={lastNameRef}
+            placeholder="Last Name"
+            value={lastName}
+            onChangeText={setLastName}
+            autoCapitalize="words"
+            returnKeyType="next"
+            onSubmitEditing={() => usernameRef.current.focus()}
+          />
+          <CustomTextInput
+            ref={usernameRef}
+            placeholder="Username"
+            value={username}
+            onChangeText={setUsername}
+            autoCapitalize="none"
+            returnKeyType="next"
+          />
+          <DateInput 
+            date={dateOfBirth}
+            setDate={setDateOfBirth}
+            scrollViewRef={scrollViewRef}
+          />
+        </View>
+        <View style={styles.ButtonAndLinkContainer}>
+          <NextActionButton 
+            handleNext={handleNext}
+            buttonText={"Next"}
+          />
+          <RedirectToSignInOrUp
+          text={"Sign In"}
+          onPress={() => navigation.navigate("SignIn")}
+          />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   )
 }
-
-const SignUpButton = ({ navigation }) => {
-  return (
-    <TouchableOpacity 
-      style={styles.NextScreenButton} 
-      onPress={() => navigation.navigate("AdditionalDetails")}
-    >
-      <Text style={styles.ButtonText}>Next</Text>
-    </TouchableOpacity>
-  );
-};
 
 const styles = StyleSheet.create({
   MainContainer: {
@@ -130,11 +116,17 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
   },
+  ScrollContainer: {
+    flex: 1, 
+    width: '100%',
+    paddingTop: responsiveHeight(9),
+    paddingHorizontal: responsiveWidth(10),
+  },
   Title: {
     fontSize: 32,
     fontWeight: 'bold',
     alignSelf: 'flex-start',
-    color: '#333',
+    color: '#FE6B75',
     marginBottom: 2,
   },
   Subtitle: {
@@ -142,56 +134,16 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     alignSelf: 'flex-start',
     color: '#666',
-    marginBottom: 25,
-  },
-  FormContainer: {
-    paddingVertical: responsiveHeight(8),
-    paddingHorizontal: responsiveWidth(10),
+    marginBottom: 50,
   },
   InputContainer: {
-    display: 'flex',
+    flex: 1,
     flexDirection: 'column',
-    gap: 16,
+    gap: responsiveHeight(2.5),    
     width: '100%',
   },
-  TextInput: {
-    borderWidth: 1,
-    borderColor: "#aaa",
-    borderRadius: 6,
-    paddingHorizontal: 12,
-    height: 50,
-    fontSize: 16,
+  ButtonAndLinkContainer: {
     width: '100%',
-  },
-  NextScreenButton: {
-    borderRadius: 12,
-    height: 55,
-    backgroundColor: "#FE6B75",
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  ButtonText: {
-    fontSize: 20,
-    color: 'white',
-    fontWeight: '600',
-    fontFamily: 'Sk-Modernist',
-  },
-  RedirectToSignInText: {
-    color: "#FE6B75",
-    fontSize: 18,
-    fontWeight: "bold",
-    textDecorationLine: "underline",
-    paddingLeft: 5,
-  },
-  linkContainer: {
-    marginTop: 20,
-    alignItems: "center",
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  p: {
-    fontSize: 18,
+    alignSelf: 'flex-end',
   }
 })
