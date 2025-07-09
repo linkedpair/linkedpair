@@ -11,7 +11,9 @@ import Feather from '@expo/vector-icons/Feather';
 export default function PasswordInput({
   value,
   onChangeText,
-  checkPassword
+  checkPassword,
+  ref,
+  returnKeyType,
 }) {
   
   const [hidePassword, setHidePassword] = useState(true);
@@ -21,12 +23,14 @@ export default function PasswordInput({
     <View style={styles.MainContainer}>
       <View style={styles.InputContainer}>
         <TextInput
+          ref={ref}
           style={styles.Input}
           keyboardType="default"
           placeholder="Password"
           value={value}
           onChangeText={onChangeText}
           secureTextEntry={hidePassword}
+          returnKeyType={returnKeyType}
         />
         <TouchableOpacity 
           onPress={() => setHidePassword((prev) => !prev)}
@@ -64,7 +68,7 @@ const styles = StyleSheet.create({
   },
   Input: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 18,
   },
   PasswordImage: {
     paddingRight: '1%'
@@ -72,7 +76,7 @@ const styles = StyleSheet.create({
   Warning: {
     color: "red",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 18,
     marginTop: 8,
   },
 });

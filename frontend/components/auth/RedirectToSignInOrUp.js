@@ -8,7 +8,11 @@ import {
 export default function RedirectToSignInOrUp({ text, onPress }) {
   return(
     <View style={styles.linkContainer}>
-        <Text style={styles.p}>Already Have an Account?{" "}</Text>
+        <Text style={styles.p}>
+          {text == "Sign Up" 
+            ? "Don't have an Account?"
+            : "Already have an Account?"}
+        </Text>
         <Text
         style={styles.RedirectToSignInText}
         onPress={onPress}
@@ -25,7 +29,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     textDecorationLine: "underline",
-    paddingLeft: 5,
+    paddingLeft: 10,
   },
   linkContainer: {
     marginTop: 22,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -11,7 +11,10 @@ import {
   LogBox,
 } from "react-native";
 
-import { auth, db } from "../firebaseConfig";
+import { responsiveHeight, responsiveWidth } from "react-native-responsive-dimensions";
+
+import { auth, db } from "../config/firebaseConfig";
+
 import {
   onSnapshot,
   query,
@@ -21,6 +24,10 @@ import {
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
+import { UserContext } from "../contexts/UserContext";
+
+import NoProfilePicture from "../assets/NoPicture.jpg"
+
 export default function ChatListScreen({ navigation }) {
   // Turning off an error because i need my flatlist to be in a
   // scrollview else it refuses to scroll
@@ -28,19 +35,14 @@ export default function ChatListScreen({ navigation }) {
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
   }, []);
 
-  const [user, setUser] = useState(null);
   const [chats, setChats] = useState([]);
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUser(user);
         subscribeToChats(user.uid);
-      } else {
-        setUser(null);
-      }
+      } 
     });
-
     return () => unsubscribeAuth();
   }, []);
 
@@ -64,21 +66,27 @@ export default function ChatListScreen({ navigation }) {
     return unsubscribeChats;
   };
 
+  const { user, userData } = useContext(UserContext)
+
   return (
-    <SafeAreaView style={styles.SafeAreaViewContainer}>
-      <ScrollView>
-        <View style={styles.WhiteSpace} />
-        <Header />
+    <SafeAreaView style={styles.MainContainer}>
+      <ScrollView
+        contentContainerStyle={styles.FormContainer}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Text style={styles.HeaderText}>Messages</Text>
         <View style={{ flex: 1 }}>
           <FlatList
             data={chats}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => {
-              const matchedUser = item.users.find(
-                (otherUser) => otherUser.uid != user.uid
-              );
+              const matchedUser = Array.isArray(item.users)
+                ? item.users.find((otherUser) => otherUser.uid !== user.uid)
+                : null;
 
+              if (!matchedUser) return null;
               return (
+                <>
                 <TouchableOpacity
                   style={styles.ChatContainer}
                   onPress={async () => {
@@ -90,8 +98,8 @@ export default function ChatListScreen({ navigation }) {
                 >
                   <Photo
                     photo={
-                      matchedUser.downloadURL ||
-                      "https://milkmochabear.com/cdn/shop/files/mmb-carrots-a_2048x.jpg?v=1698799022"
+                      matchedUser.image ||
+                      NoProfilePicture
                     }
                   />
                   <View style={styles.TextDisplay}>
@@ -106,23 +114,17 @@ export default function ChatListScreen({ navigation }) {
                   </View>
                   {/* <NotificationSymbol /> */}
                 </TouchableOpacity>
+                <View style={styles.GreyLine}/>
+                </>
               );
             }}
-            contentContainerStyle={{ flex: 1 }}
+            contentContainerStyle={styles.FlatListContainer}
           />
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const Header = () => {
-  return (
-    <View style={{ flexDirection: "row" }}>
-      <Text style={styles.HeaderText}>Messages</Text>
-    </View>
-  );
-};
 
 const Photo = ({ photo }) => {
   return (
@@ -141,40 +143,34 @@ const NotificationSymbol = () => {
 };
 
 const styles = StyleSheet.create({
-  SafeAreaViewContainer: {
+  MainContainer: {
     flex: 1,
     backgroundColor: "white",
+    width: '100%'
   },
-  MainContainer: {
-    flexGrow: 1,
-    justifyContent: "flex-start",
-    backgroundColor: "white",
+  FormContainer: {
+    paddingHorizontal: responsiveWidth(6),
+    paddingBottom: responsiveHeight(2),
+    paddingTop: responsiveHeight(1)
   },
-  WhiteSpace: {
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
+  FlatListContainer: {
+    flex: 1,
+    marginVertical: responsiveHeight(2)
   },
   HeaderText: {
-    flex: 6,
-    fontSize: 36,
-    fontWeight: "medium",
-    color: "#FE6B75",
-    marginLeft: 21,
-    marginBottom: 33,
+    fontSize: 35,
+    fontWeight: "bold",
+    color: "#FF7A83",
   },
   Circle: {
-    width: 57,
-    height: 57,
-    borderRadius: 29,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
     overflow: "hidden",
-    marginBottom: 20,
-    marginHorizontal: 15,
   },
   Image: {
-    flex: 2,
     height: "100%",
     width: "100%",
     resizeMode: "cover",
@@ -182,26 +178,27 @@ const styles = StyleSheet.create({
   ChatContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginRight: "2%",
+    gap: 15,
+    marginVertical: 9,
   },
   TextDisplay: {
-    justifyContent: "center",
-    flex: 8,
+    flex: 1,
+    justifyContent: 'center',
+    gap: 5,
   },
   NameText: {
-    flex: 1,
-    marginTop: "3%",
     fontSize: 22,
     fontWeight: "bold",
     color: "#4A4A4A",
   },
   ContentText: {
-    flex: 1,
-    marginBottom: "3%",
     fontSize: 18,
     fontWeight: "regular",
     color: "#9B9B9B",
+  },
+  GreyLine: {
+    backgroundColor: "#D3D3D3",
+    height: 0.2,
   },
   NotificationSymbol: {
     width: 24,

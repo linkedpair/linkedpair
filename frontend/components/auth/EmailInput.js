@@ -10,7 +10,8 @@ export default function EmailInput({
   inputRef,
   value,
   onChangeText,
-  returnKeyType
+  returnKeyType,
+  onSubmitEditing
 }) {
   
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -27,6 +28,7 @@ export default function EmailInput({
         onChangeText={onChangeText}
         returnKeyType={returnKeyType}
         autoCapitalize="none"
+        onSubmitEditing={onSubmitEditing}
       />
       {requirements &&
         <Text style={styles.Warning}>Please Enter a Valid Email!</Text> 
@@ -49,13 +51,13 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     paddingHorizontal: 12,
     height: 50,
-    fontSize: 16,
+    fontSize: 18,
     width: '100%',
   },
   Warning: {
     color: "red",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 18,
     marginTop: 8,
     marginBottom: 5,
   },

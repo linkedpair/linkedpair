@@ -5,7 +5,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { SignUpProvider } from "../contexts/SignUpContext";
 
 import SignInScreen from "../screens/auth/SignInScreen";
-import SignUpScreen from "../screens/auth/SignUpScreen";
 import MainDetailsScreen from "../screens/auth/MainDetailsScreen";
 import PickImageScreen from "../screens/auth/PickImageScreen";
 import AdditionalDetailsScreen from "../screens/auth/AdditionalDetailsScreen";
@@ -25,7 +24,6 @@ export default function PublicStack() {
         <Stack.Screen name="SchoolDetails" component={SchoolDetailsScreen} />
         <Stack.Screen name="Auth" component={AuthScreen} />
         <Stack.Screen name="SignIn" component={SignInScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
       </Stack.Navigator>
     </SignUpProvider>
   );

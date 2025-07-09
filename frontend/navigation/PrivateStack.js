@@ -1,16 +1,20 @@
 import React, { useContext } from 'react';
 import { Image } from 'react-native';
+import { responsiveWidth } from 'react-native-responsive-dimensions';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+import BuddyMatch from '../screens/matching/BuddyMatch';
+import RomanticMatch from '../screens/matching/RomanticMatch';
+import LocationMatch from '../screens/matching/LocationMatch';
+import ChatStack from './ChatStack';
 import ProfileStack from './ProfileStack';
-import MatchScreen from '../screens/MatchScreen';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import ChatStack from './ChatStack';
 
 import LoadingScreen from '../components/LoadingScreen'
+
 import { UserContext } from '../contexts/UserContext';
 
 const Tab = createBottomTabNavigator();
@@ -20,7 +24,7 @@ export default function MyTabs() {
   const { user, userData}  = useContext(UserContext);
 
   if (!user || !userData) {
-      return <LoadingScreen />
+      return <LoadingScreen loadingText={"Loading user data..."}/>
   }
 
   return (
@@ -30,11 +34,21 @@ export default function MyTabs() {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === 'Match') {
+          if (route.name === 'Buddy') {
+            iconName = focused 
+              ? 'people-sharp'
+              : 'people-outline'
+            return <Ionicons name={iconName} size={size} color={color} />;
+          } else if (route.name === 'Romantic') {
             iconName = focused 
               ? 'heart'
               : 'hearto'
             return <AntDesign name={iconName} size={size} color={color} />;
+          } else if (route.name === 'Location') {
+            iconName = focused 
+              ? 'location'
+              : 'location-outline'
+            return <Ionicons name={iconName} size={size} color={color} />;
           } else if (route.name === 'Chat') {
             iconName = focused
               ? 'chatbubble-ellipses-sharp'
@@ -44,7 +58,7 @@ export default function MyTabs() {
             return (
               iconName = focused
                 ? <Image 
-                    source={{ uri: userData.downloadURL }}
+                    source={{ uri: userData.image }}
                     style={{ 
                       height: size,
                       width: size,
@@ -55,7 +69,7 @@ export default function MyTabs() {
                     }}
                   />
                 : <Image 
-                    source={{ uri: userData.downloadURL }}
+                    source={{ uri: userData.image }}
                     style={{ 
                       height: size,
                       width: size,
@@ -71,9 +85,14 @@ export default function MyTabs() {
 
         tabBarActiveTintColor: '#FE6B75',
         tabBarInactiveTintColor: 'gray',
+        tabBarStyle: {
+          paddingHorizontal: responsiveWidth(1.5),
+        },
       })}
     >
-      <Tab.Screen name="Match" component={MatchScreen} />
+      <Tab.Screen name="Buddy" component={BuddyMatch} />
+      <Tab.Screen name="Romantic" component={RomanticMatch} />
+      <Tab.Screen name="Location" component={LocationMatch} />
       <Tab.Screen name="Chat" component={ChatStack} />
       <Tab.Screen name="You" component={ProfileStack} />
     </Tab.Navigator>

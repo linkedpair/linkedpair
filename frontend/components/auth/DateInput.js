@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import {
+  View,
   Text,
   StyleSheet,
   TouchableOpacity,
+  Button,
 } from "react-native";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -10,13 +12,20 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 
 const DateInput = ({ date, setDate, scrollViewRef }) => {
   const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [tempDate, setTempDate] = useState(new Date());
 
   const handleOpen = () => {
-    setDatePickerOpen(true);
+    setTempDate(date || new Date());
+    setDatePickerOpen(prev => !prev);
     setTimeout(() => {
-      scrollViewRef.current?.scrollTo({ x: 0, y: 2000, animated: true }); // changed***
+      scrollViewRef.current?.scrollTo({ x: 0, y: 2000, animated: true }); 
     }, 100);
   }
+
+  const handleConfirm = () => {
+    setDate(tempDate);
+    setDatePickerOpen(false);
+  };
 
   return (
     <>
@@ -36,18 +45,25 @@ const DateInput = ({ date, setDate, scrollViewRef }) => {
         </Text>
       </TouchableOpacity>
       {datePickerOpen && (
-        <DateTimePicker
-          style={styles.DateTimePicker}
-          mode="date"
-          display="inline"
-          value={date || new Date()}
-          onChange={(event, SelectedDate) => {
-            setDatePickerOpen(false);
-            if (SelectedDate) {
-              setDate(SelectedDate);
-            }
-          }}
-        />
+        <View style={styles.DateTimePickerContainer}>
+          <DateTimePicker
+            style={styles.DateTimePicker}
+            mode="date"
+            display="spinner"
+            value={tempDate}
+            maximumDate={new Date()}
+            onChange={(event, selectedDate) => {
+              if (selectedDate) {
+                setTempDate(selectedDate);
+              }
+            }}
+          />
+          <Button 
+            style={styles.ConfirmButton}
+            title="Confirm" 
+            onPress={handleConfirm} 
+          />        
+        </View>
       )}
     </>
   );
@@ -64,12 +80,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingLeft: 25,
     gap: 25,
-    marginVertical: 10,
   },
   Description: {
     fontSize: 18,
     fontWeight: '600',
     color: '#FE6B75',
+  },
+  DateTimePickerContainer: {
+    margin: 0,
+    padding: 0
+  },
+  DateTimePicker: {
+    margin: 0,
+    padding: 0,
   },
 })
 

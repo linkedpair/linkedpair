@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -19,6 +19,7 @@ import EmailInput from "../../components/auth/EmailInput";
 import PasswordInput from "../../components/auth/PasswordInput";
 import NextActionButton from "../../components/auth/NextActionButton";
 import RedirectToSignInOrUp from "../../components/auth/RedirectToSignInOrUp";
+import Header from "../../components/auth/Header";
 
 import { SignUpContext } from "../../contexts/SignUpContext";
 
@@ -29,6 +30,8 @@ export default function AuthScreen({ navigation }) {
   const [password, setPassword] = useState("");
 
   const { signUpData, updateSignUpData } = useContext(SignUpContext);
+
+  const passwordRef = useRef();
 
   const handleSignUp = async () => {
     if (!email || !password) {
@@ -63,6 +66,7 @@ export default function AuthScreen({ navigation }) {
       style={styles.MainContainer} 
       behavior={"padding"}
     >
+      <Header onPress={() => navigation.navigate("SchoolDetails")} />
       <ScrollView
         style={styles.ScrollContainer} 
         contentContainerStyle={{ flexGrow: 1, gap: 5 }}
@@ -70,31 +74,35 @@ export default function AuthScreen({ navigation }) {
       >
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <View style={styles.FormContainer}>
-            <Text style={styles.Title}>Create an Account with us!</Text>
+            <Text style={styles.Title}>Create an Account</Text>
             <View style={styles.CenteredContent}>
               <View style={styles.InputContainer} >
                 <EmailInput
                   placeholder="Email"
                   value={email}
                   onChangeText={setEmail}
+                  onSubmitEditing={() => passwordRef.current.focus()}
+                  returnKeyType={"next"}
                 />
                 <PasswordInput
+                  ref={passwordRef}
                   keyboardType="password"
                   placeholder="Enter your Password"
                   value={password}
                   onChangeText={setPassword}
+                  returnKeyType={"done"}
                   checkPassword
                 />
-              </View>
-              <View style={styles.ButtonAndLinkContainer}>
-                <NextActionButton 
-                  handleNext={handleSignUp} 
-                  buttonText={"Create Account"}
-                />
-              <RedirectToSignInOrUp
-                text={"Sign Up"}
-                onPress={() => navigation.navigate("AdditionalDetails")}
-              />
+                <View style={styles.ButtonAndLinkContainer}>
+                  <NextActionButton 
+                    handleNext={handleSignUp} 
+                    buttonText={"Create Account"}
+                  />
+                  <RedirectToSignInOrUp
+                    text={"Sign Up"}
+                    onPress={() => navigation.navigate("SignIn")}
+                  />
+                </View>
               </View>
             </View>
           </View>
@@ -123,7 +131,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   FormContainer: {
-    paddingVertical: responsiveHeight(6),
+    paddingTop: responsiveHeight(9),
+    paddingBottom: responsiveHeight(6),
     paddingHorizontal: responsiveWidth(10),
     flex: 1,
     width: '100%',
@@ -140,7 +149,6 @@ const styles = StyleSheet.create({
   },
   ButtonAndLinkContainer: {
     width: '100%',
-    position: 'absolute',
-    bottom: 0
+    marginTop: 5,
   }
 })

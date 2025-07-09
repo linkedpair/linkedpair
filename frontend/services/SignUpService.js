@@ -1,5 +1,5 @@
 import React from "react";
-import { auth, db } from "../firebaseConfig";
+import { auth, db } from "../config/firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
@@ -17,9 +17,9 @@ export default async function SignUpService(signUpData) {
     dateOfBirth,
     location,
     image,
-    downloadURL,
     gender,
     zodiac,
+    hobbies,
     traits,
     profileDescription,
     faculty,
@@ -54,9 +54,9 @@ export default async function SignUpService(signUpData) {
       dateOfBirth: dateOfBirth.toISOString().split("T")[0],
       location,
       image,
-      downloadURL,
       gender,
       zodiac,
+      hobbies,
       traits,
       profileDescription,
       faculty,

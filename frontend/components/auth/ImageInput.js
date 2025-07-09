@@ -7,47 +7,21 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import * as ImagePicker from "expo-image-picker";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from "../../firebaseConfig"
+import HandleImage from "../../utils/HandleImage";
 
 const ImageInput = ({ image, setImage, setDownloadURL }) => {
+
   const PickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images", "videos"],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+    const result = await HandleImage();
+    if (!result) return;
 
-    if (!result.canceled) {
-      const uri = result.assets[0].uri;
-      setImage(uri);
-      uploadImageAsync(uri);
-    }
-  };
+    const { uri, downloadURL } = result;
 
-  const uploadImageAsync = async (uri) => {
-    try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
-
-      const filename = uri.substring(uri.lastIndexOf('/') + 1);
-      const storageRef = ref(storage, `images/${filename}`);
-
-      await uploadBytes(storageRef, blob);
-
-      const url = await getDownloadURL(storageRef);
-      setDownloadURL(url);
-      alert('set url');
-    } catch (error) {
-      console.error("Upload error:", error);
-      alert("Failed to upload image");
-    }
-  };
-
+    setImage(uri);           
+    setDownloadURL(downloadURL);
+  }
 
   return (
     <View style={styles.Container}>
@@ -56,7 +30,6 @@ const ImageInput = ({ image, setImage, setDownloadURL }) => {
           <Text style={styles.Title}>Add a Profile Photo!</Text>
           <TouchableOpacity style={styles.Input} onPress={PickImage}>
             <MaterialCommunityIcons 
-              style={styles.SelectImageIcon}
               name="camera-plus-outline" 
               size={50} 
               color="#FE6B75" />

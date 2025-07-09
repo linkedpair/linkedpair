@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import {
   Text,
   View,
@@ -17,6 +17,7 @@ import DropdownBar from "../../components/auth/DropdownBar";
 import NextActionButton from "../../components/auth/NextActionButton";
 import RedirectToSignInOrUp from "../../components/auth/RedirectToSignInOrUp";
 import CustomTextInput from "../../components/auth/CustomTextInput";
+import Header from "../../components/auth/Header";
 
 import { SignUpContext } from "../../contexts/SignUpContext";
 
@@ -27,6 +28,8 @@ export default function SchoolDetailsScreen({ navigation }) {
   const [courses, setCourses] = useState('');
 
   const { signUpData, updateSignUpData } = useContext(SignUpContext)
+
+  const scrollViewRef = useRef();
 
   const handleNext = () => {
     if (!faculty || 
@@ -93,10 +96,12 @@ export default function SchoolDetailsScreen({ navigation }) {
       style={styles.MainContainer} 
       behavior={"padding"}
     >
+      <Header onPress={() => navigation.navigate("AdditionalDetails")} />
       <ScrollView 
-      style={styles.ScrollContainer} 
-      contentContainerStyle={{ flexGrow: 1, gap: 5 }}
-      keyboardShouldPersistTaps="handled"
+        ref={scrollViewRef}
+        style={styles.ScrollContainer} 
+        contentContainerStyle={{ flexGrow: 1, gap: 5, paddingBottom: 30 }}
+        keyboardShouldPersistTaps="handled"
       >
         <Text style={styles.Title}>Your Uni Life</Text>
         <Text style={styles.Subtitle}>Tell us what you study and more!</Text>
@@ -133,18 +138,23 @@ export default function SchoolDetailsScreen({ navigation }) {
             value={courses}
             onChangeText={setCourses}
             autoCapitalize="words"
-            returnKeyType="next"
+            returnKeyType="done"
+            onFocus={() => (
+              setTimeout(() => {
+                scrollViewRef.current?.scrollTo({ x: 0, y: 2000, animated: true }); 
+              }, 250)
+            )}
           />
-        </View>
-        <View style={styles.ButtonAndLinkContainer}>
-          <NextActionButton 
-            handleNext={handleNext}
-            buttonText={"Next"}
-          />
-          <RedirectToSignInOrUp
-          text={"Sign In"}
-          onPress={() => navigation.navigate("SignIn")}
-          />
+          <View style={styles.ButtonAndLinkContainer}>
+            <NextActionButton 
+              handleNext={handleNext}
+              buttonText={"Next"}
+            />
+            <RedirectToSignInOrUp
+              text={"Sign In"}
+              onPress={() => navigation.navigate("SignIn")}
+            />
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -163,7 +173,7 @@ const styles = StyleSheet.create({
     flex: 1, 
     flexDirection: 'column',
     width: '100%',
-    paddingTop: responsiveHeight(9),
+    paddingTop: responsiveHeight(12),
     paddingBottom: responsiveHeight(6),
     paddingHorizontal: responsiveWidth(9.5),
   },
@@ -195,7 +205,6 @@ const styles = StyleSheet.create({
   },
   ButtonAndLinkContainer: {
     width: '100%',
-    position: 'absolute',
-    bottom: 0
+    marginTop: 5,
   }
 })

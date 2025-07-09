@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -10,7 +10,7 @@ import {
   Alert,
 } from "react-native";
 
-import { auth } from "../../firebaseConfig";
+import { auth } from "../../config/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import EmailInput from "../../components/auth/EmailInput";
 import PasswordInput from "../../components/auth/PasswordInput";
@@ -25,6 +25,8 @@ import {
 export default function SignInScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const passwordRef = useRef();
 
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -75,23 +77,27 @@ export default function SignInScreen({ navigation }) {
                   placeholder="Email"
                   value={email}
                   onChangeText={setEmail}
+                  returnKeyType={"next"}
+                  onSubmitEditing={() => passwordRef.current.focus()}
                 />
                 <PasswordInput
+                  ref={passwordRef}
                   keyboardType="password"
                   placeholder="Enter your Password"
                   value={password}
                   onChangeText={setPassword}
+                  returnKeyType={"done"}
                 />
-              </View>
-              <View style={styles.ButtonAndLinkContainer}>
-                <NextActionButton 
-                  handleNext={handleSignIn} 
-                  buttonText={"Sign In"}
-                />
-              <RedirectToSignInOrUp
-                text={"Sign Up"}
-                onPress={() => navigation.navigate("MainDetails")}
-              />
+                <View style={styles.ButtonAndLinkContainer}>
+                  <NextActionButton 
+                    handleNext={handleSignIn} 
+                    buttonText={"Sign In"}
+                  />
+                  <RedirectToSignInOrUp
+                    text={"Sign Up"}
+                    onPress={() => navigation.navigate("MainDetails")}
+                  />
+                </View>
               </View>
             </View>
           </View>
@@ -137,7 +143,6 @@ const styles = StyleSheet.create({
   },
   ButtonAndLinkContainer: {
     width: '100%',
-    position: 'absolute',
-    bottom: 0
+    marginTop: 15,
   }
 })

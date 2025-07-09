@@ -1,4 +1,4 @@
-import { db } from "../firebaseConfig";
+import { db } from "../../config/firebaseConfig";
 import {
   collection,
   getDocs,
@@ -10,7 +10,7 @@ import {
 } from "firebase/firestore";
 
 // Helper: Calculate distance between two coords in km (Haversine formula)
-function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+export function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   const R = 6371; // Earth radius in km
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
@@ -70,7 +70,7 @@ export async function aiBuddyMatch(currentUser) {
 
   const q = query(
     usersRef,
-    where("major", "==", currentUser.major),
+    where("faculty", "==", currentUser.faculty),
     where("gender", "==", currentUser.gender),
     where("uid", "!=", currentUser.uid)
   );
@@ -135,7 +135,7 @@ export async function aiRomanticMatch(currentUser) {
     const candidate = docSnap.data();
 
     // Filter out in app logic
-    const isDifferentMajor = candidate.major !== currentUser.major;
+    const isDifferentMajor = candidate.faculty !== currentUser.faculty;
     const isNotCurrentUser = candidate.uid !== currentUser.uid;
 
     if (

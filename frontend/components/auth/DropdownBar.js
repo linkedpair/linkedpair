@@ -7,11 +7,14 @@ export default function DropdownBar({
     data,
     placeholder,
     value,
-    setValue
+    setValue,
+    purpose,
+    onChangeComplete
 }) {
+
   return (
     <Dropdown
-      style={styles.Dropdown}
+      style={purpose == "profile" ? styles.ProfileDropdown : styles.AuthDropdown}
       placeholderStyle={styles.PlaceholderStyle}
       selectedTextStyle={styles.SelectedTextStyle}
       inputSearchStyle={styles.InputSearchStyle}
@@ -20,18 +23,27 @@ export default function DropdownBar({
       maxHeight={300}
       labelField="label"
       valueField="value"
-      placeholder={placeholder}
-      searchPlaceholder="Search..."
+      placeholder={value || placeholder}
+      searchPlaceholder={"Search..."}
       value={value}
       onChange={(event) => {
         setValue(event.value);
+        if (onChangeComplete) {
+          onChangeComplete(event.value);
+        }
       }}
     />
   );
 };
 
 const styles = StyleSheet.create({
-  Dropdown: {
+  ProfileDropdown: {
+    fontSize: 18,
+    borderWidth: 0,
+    marginTop: 10,
+    marginBottom: 15,
+  },
+  AuthDropdown: {
     height: 48,
     borderWidth: 1,
     borderColor: "#aaa",
@@ -44,7 +56,7 @@ const styles = StyleSheet.create({
       fontWeight: '500',
   },
   SelectedTextStyle: {
-      fontSize: 16,
+      fontSize: 18,
   },
   InputSearchStyle: {
       height: 40,

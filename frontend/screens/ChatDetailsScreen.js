@@ -13,12 +13,12 @@ import {
   FlatList,
   Platform
 } from 'react-native';
-
+import { responsiveWidth, responsiveHeight } from 'react-native-responsive-dimensions';
 
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-import { auth, db } from "../firebaseConfig";
+import { auth, db } from "../config/firebaseConfig";
 import { 
   onSnapshot, 
   query, 
@@ -29,6 +29,8 @@ import {
   serverTimestamp, 
   setDoc, 
 } from "firebase/firestore";
+
+import NoProfilePicture from "../assets/NoPicture.jpg"
 
 export default function ChatDetailsScreen({ navigation }) {
 
@@ -67,7 +69,7 @@ export default function ChatDetailsScreen({ navigation }) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset
     >
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={styles.MainContainer}>
         <View style={styles.WhiteSpace} />
         <Header
           navigation={navigation}
@@ -121,12 +123,12 @@ const Header = ({ matchedUser, navigation }) => {
         <AntDesign 
           name="arrowleft" 
           size={28} 
-          color="black" 
+          color="#FE6B75" 
           style={styles.BackButton}
         />
       </TouchableOpacity>
       <Photo 
-        image={matchedUser.downloadURL}
+        image={matchedUser.image}
       />
       <Text style={styles.HeaderText}>
         {matchedUser.firstName}
@@ -141,7 +143,7 @@ const Photo = ({ image }) => {
     <Image 
       style={styles.Image}
       source={{ uri: image || 
-        'https://milkmochabear.com/cdn/shop/files/mmb-carrots-a_2048x.jpg?v=1698799022' 
+        NoProfilePicture
       }} />
   </View>
   )
@@ -155,11 +157,17 @@ const Messages = ({ messages, userId }) => {
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
         item.senderId === userId
-          ? <View style={styles.MessageSentByMe}>
-              <Text style={{fontSize: 16}}>{item.text}</Text>
+          ? <View style={[
+              styles.MessageContainer, 
+              { backgroundColor: '#FFF0F0', alignSelf: 'flex-end'}
+            ]}>
+              <Text style={styles.Message}>{item.text}</Text>
             </View>
-          : <View style={styles.MessageNotSentByMe}>
-              <Text style={{fontSize: 16}}>{item.text}</Text>
+          : <View style={[
+              styles.MessageNotSentByMe,
+              { backgroundColor: '#F1F1F1', alignSelf: 'flex-start'}
+            ]}>
+              <Text style={styles.Message}>{item.text}</Text>
             </View>
       )}
       contentContainerStyle={{ justifyContent:'flex-start', flexDirection:'column' }}
@@ -195,20 +203,15 @@ const styles = StyleSheet.create({
   MainContainer: {
     flexGrow: 1,
     justifyContent: 'flex-start',
-    backgroundColor: 'white'
-  },
-  WhiteSpace: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center'
+    backgroundColor: 'white',
   },
   BackButton: {
-    marginRight: '8%'
+    marginRight: responsiveWidth(8)
   },
   HeaderContainer: {
     flexDirection: 'row',
-    marginLeft: '5%',
-    marginTop: '4%',
+    paddingLeft: responsiveWidth(5),
+    paddingTop: responsiveHeight(1),
     alignItems: 'center',
     justifyContent: 'flex-start'
   },
@@ -227,10 +230,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   HeaderText: {
-    fontSize: 27,
+    fontSize: 30,
     fontWeight: 'bold',
-    color: '#fe969d',
-    marginLeft: '3%'
+    color: '#FE6B75',
+    marginLeft: 20
   },
   TextBoxContainer: {
     flexDirection: 'row',
@@ -241,11 +244,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F1F1',
     height: 50,
     borderRadius: 30,
-    marginLeft: '4%',
+    marginLeft: responsiveWidth(5),
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: '6%',
-    paddingHorizontal: '6%',
+    marginBottom: responsiveHeight(3),
+    paddingHorizontal: 24,
     fontSize: 20
   },
   SendMessageButton: {
@@ -256,26 +259,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  MessageSentByMe: {
-    backgroundColor: '#FFF0F0',
-    maxWidth: '80%',
-    minWidth: '10%',
-    alignSelf: 'flex-end',
-    padding: 17,
-    borderRadius: 20,
-    marginRight: '6%',
-    marginBottom: '4.5%',
-    alignItems: 'center',
-  },
-  MessageNotSentByMe: {
-    backgroundColor: '#F1F1F1',
-    maxWidth: '70%',
-    minWidth: '10%',
-    alignSelf: 'flex-start',
+  MessageContainer: {
+    maxWidth: responsiveWidth(80),
+    minWidth: responsiveWidth(15),
     padding: 16,
     borderRadius: 20,
-    marginLeft: '6%',
-    marginBottom: '4%',
+    marginRight: responsiveWidth(6),
+    marginBottom: 15,
     alignItems: 'center',
+  },
+  Message: {
+    fontSize: 16,
   }
 })

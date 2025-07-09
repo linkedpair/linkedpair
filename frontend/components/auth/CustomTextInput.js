@@ -9,6 +9,7 @@ export default function CustomTextInput({
     returnKeyType,
     onSubmitEditing,
     autoCapitalize,
+    onFocus
 }) {
   return(
     <TextInput
@@ -21,6 +22,7 @@ export default function CustomTextInput({
       autoCapitalize={autoCapitalize}
       returnKeyType={returnKeyType}
       onSubmitEditing={onSubmitEditing}
+      onFocus={onFocus}
     />
   )
 }
@@ -32,7 +34,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     paddingHorizontal: 12,
     height: 50,
-    fontSize: 16,
+    fontSize: 18,
     width: '100%',
   },
 })

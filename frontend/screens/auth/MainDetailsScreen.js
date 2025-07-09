@@ -26,7 +26,7 @@ export default function MainDetailsScreen({ navigation }) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState(null)
+  const [dateOfBirth, setDateOfBirth] = useState(null);
 
   const lastNameRef = useRef();
   const usernameRef = useRef();
@@ -60,7 +60,7 @@ export default function MainDetailsScreen({ navigation }) {
   }
 
   // Automatically Collect Location at the Start.
-  useLocation({ setLocation });
+  useLocation(setLocation);
   
   return(
     <KeyboardAvoidingView 
@@ -110,16 +110,16 @@ export default function MainDetailsScreen({ navigation }) {
             setDate={setDateOfBirth}
             scrollViewRef={scrollViewRef}
           />
-        </View>
-        <View style={styles.ButtonAndLinkContainer}>
-          <NextActionButton 
-            handleNext={handleNext}
-            buttonText={"Next"}
-          />
-          <RedirectToSignInOrUp
-          text={"Sign In"}
-          onPress={() => navigation.navigate("SignIn")}
-          />
+          <View style={styles.ButtonAndLinkContainer}>
+            <NextActionButton 
+              handleNext={handleNext}
+              buttonText={"Next"}
+            />
+            <RedirectToSignInOrUp
+            text={"Sign In"}
+            onPress={() => navigation.navigate("SignIn")}
+            />
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     alignSelf: 'flex-start',
-    color: '#FE6B75',
+    color: '#3b3b3b',
     marginBottom: 2,
   },
   Subtitle: {

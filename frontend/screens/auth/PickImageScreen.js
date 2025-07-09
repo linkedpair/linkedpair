@@ -13,8 +13,10 @@ import {
 import ImageInput from "../../components/auth/ImageInput";
 import NextActionButton from "../../components/auth/NextActionButton";
 import RedirectToSignInOrUp from "../../components/auth/RedirectToSignInOrUp";
+import Header from "../../components/auth/Header";
 
 import { SignUpContext } from "../../contexts/SignUpContext";
+import LoadingScreen from "../../components/LoadingScreen";
 
 export default function PickImageScreen({ navigation }) {
   const [image, setImage] = useState('');
@@ -23,14 +25,13 @@ export default function PickImageScreen({ navigation }) {
   const { signUpData, updateSignUpData } = useContext(SignUpContext)
   
   const handleNext = () => {
-    if (!image || !downloadURL) {
-      alert('Please wait for the upload to finish');
+    if (!image) {
+      alert('Please select your Profile Photo.');
       return;
     } else {
       try {
         updateSignUpData({
-          image: image,
-          downloadURL: downloadURL,
+          image: downloadURL,
         })
         navigation.navigate("AdditionalDetails")
       } catch (error) {
@@ -39,8 +40,15 @@ export default function PickImageScreen({ navigation }) {
     }
   }
 
+  if (image && !downloadURL) {
+    return(
+      <LoadingScreen loadingText={"Uploading image..."}/>
+    )
+  }
+
   return(
     <View style={styles.MainContainer}>
+      <Header onPress={() => navigation.navigate("MainDetails")}/>
       <View style={styles.ContentContainer} >
         <Text style={styles.Title}>Profile Photo</Text>
         <Text style={styles.Subtitle}>Add a cute photo which shows your face</Text>
@@ -72,7 +80,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   ContentContainer: {
-    paddingTop: responsiveHeight(9),
+    paddingTop: responsiveHeight(12),
     paddingBottom: responsiveHeight(6),
     paddingHorizontal: responsiveWidth(10),
     justifyContent: 'center',
@@ -99,7 +107,6 @@ const styles = StyleSheet.create({
   },
   ButtonAndLinkContainer: {
     width: '100%',
-    position: 'absolute',
-    bottom: 0
+    marginTop: 5,
   }
 })

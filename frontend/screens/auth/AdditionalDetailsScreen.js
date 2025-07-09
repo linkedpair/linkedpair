@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -21,6 +21,7 @@ import RedirectToSignInOrUp from "../../components/auth/RedirectToSignInOrUp";
 
 import handleGenerateDescription from "../../utils/HandleGenerateDescription";
 import { SignUpContext } from "../../contexts/SignUpContext";
+import Header from "../../components/auth/Header";
 
 export default function AdditionalDetailsScreen({ navigation }) {
   const [zodiac, setZodiac] = useState('');
@@ -31,6 +32,9 @@ export default function AdditionalDetailsScreen({ navigation }) {
   const [loadingDesc, setLoadingDesc] = useState(false);
 
   const { signUpData, updateSignUpData } = useContext(SignUpContext)
+
+  const traitsRef = useRef();
+  const scrollViewRef = useRef();
 
   const handleNext = () => {
     if (!zodiac ||
@@ -80,39 +84,17 @@ export default function AdditionalDetailsScreen({ navigation }) {
     value: zodiac,
   }));
 
-  const faculties = [
-    "Arts and Social Sciences",
-    "Business",
-    "Computing",
-    "Continuing and Lifelong Education",
-    "Dentistry",
-    "Design and Engineering",
-    "Duke-NUS",
-    "Law",
-    "Medicine",
-    "Music",
-    "NUS College",
-    "NUS Graduate School",
-    "Public Health",
-    "Public Policy",
-    "Science",
-    "Yale-NUS",
-  ];
-
-  const facultiesData = faculties.map((faculty) => ({
-    label: faculty,
-    value: faculty,
-  }));
-
   return(
     <KeyboardAvoidingView 
       style={styles.MainContainer} 
       behavior={"padding"}
     >
+      <Header onPress={() => navigation.navigate("PickImage")} />
       <ScrollView 
-      style={styles.ScrollContainer} 
-      contentContainerStyle={{ flexGrow: 1, gap: 5 }}
-      keyboardShouldPersistTaps="handled"
+        ref={scrollViewRef}
+        style={styles.ScrollContainer} 
+        contentContainerStyle={{ flexGrow: 1, gap: 5, paddingBottom: 30, }}
+        keyboardShouldPersistTaps="handled"
       >
         <Text style={styles.Title}>Additional Details</Text>
         <Text style={styles.Subtitle}>Tell Us More!</Text>
@@ -141,10 +123,17 @@ export default function AdditionalDetailsScreen({ navigation }) {
             value={hobbies}
             onChangeText={setHobbies}
             autoCapitalize="none"
-            returnKeyType="next"
+            returnKeyType="done"
+            onSubmitEditing={() => {
+              traitsRef.current.focus()
+              setTimeout(() => {
+                scrollViewRef.current?.scrollTo({ x: 0, y: 2000, animated: true }); 
+              }, 100);
+            }}
           />
           <View style={styles.ProfileDescriptionContainer}>
             <CustomTextInput
+              ref={traitsRef}
               placeholder="Enter traits (e.g. adventurous, kind, loves books)"
               value={traits}
               onChangeText={setTraits}
@@ -166,16 +155,16 @@ export default function AdditionalDetailsScreen({ navigation }) {
               </View>
             ) : null}
           </View>
-        </View>
-        <View style={styles.ButtonAndLinkContainer}>
-          <NextActionButton 
-            handleNext={handleNext}
-            buttonText={"Next"}
-          />
-          <RedirectToSignInOrUp
-          text={"Sign In"}
-          onPress={() => navigation.navigate("SignIn")}
-          />
+          <View style={styles.ButtonAndLinkContainer}>
+            <NextActionButton 
+              handleNext={handleNext}
+              buttonText={"Next"}
+            />
+            <RedirectToSignInOrUp
+            text={"Sign In"}
+            onPress={() => navigation.navigate("SignIn")}
+            />
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -194,7 +183,7 @@ const styles = StyleSheet.create({
     flex: 1, 
     flexDirection: 'column',
     width: '100%',
-    paddingTop: responsiveHeight(9),
+    paddingTop: responsiveHeight(12),
     paddingBottom: responsiveHeight(6),
     paddingHorizontal: responsiveWidth(10),
   },
@@ -245,7 +234,6 @@ const styles = StyleSheet.create({
   },
   ButtonAndLinkContainer: {
     width: '100%',
-    position: 'absolute',
-    bottom: 0
+    marginTop: 10,
   }
 })
