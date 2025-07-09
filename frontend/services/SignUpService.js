@@ -3,8 +3,8 @@ import { auth, db } from "../config/firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
-import { generateEmbeddingFromProfile } from "../utils/openai";
-import getAgeString from "../utils/GetAgeString";
+import { generateEmbeddingFromProfile } from "../utils/auth/openai";
+import getAgeString from "../utils/dateFunctions/GetAgeString";
 
 export default async function SignUpService(signUpData) {
 

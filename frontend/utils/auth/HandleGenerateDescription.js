@@ -1,4 +1,4 @@
-import { generateProfileDescription } from "../utils/openai";
+import { generateProfileDescription } from "../auth/openai"
 
 const handleGenerateDescription = async ({
     traits,

@@ -9,7 +9,7 @@ import {
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import HandleImage from "../../utils/HandleImage";
+import HandleImage from "../../utils/auth/HandleImage";
 
 const ImageInput = ({ image, setImage, setDownloadURL }) => {
 

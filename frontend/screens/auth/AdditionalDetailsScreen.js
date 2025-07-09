@@ -19,7 +19,7 @@ import CustomButton from "../../components/auth/CustomButton";
 import NextActionButton from "../../components/auth/NextActionButton";
 import RedirectToSignInOrUp from "../../components/auth/RedirectToSignInOrUp";
 
-import handleGenerateDescription from "../../utils/HandleGenerateDescription";
+import handleGenerateDescription from "../../utils/auth/HandleGenerateDescription";
 import { SignUpContext } from "../../contexts/SignUpContext";
 import Header from "../../components/auth/Header";
 

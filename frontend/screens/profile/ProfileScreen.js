@@ -12,24 +12,24 @@ import {
 } from 'react-native';
 import { responsiveHeight, responsiveWidth } from "react-native-responsive-dimensions";
 
-import { db } from '../config/firebaseConfig'
+import { db } from '../../config/firebaseConfig'
 import { doc, updateDoc } from 'firebase/firestore'
 
-import { UserContext } from "../contexts/UserContext";
+import { UserContext } from "../../contexts/UserContext";
 
-import LoadingScreen from "../components/LoadingScreen";
-import Header from "../components/profile/Header";
-import DropdownBar from "../components/auth/DropdownBar"
+import LoadingScreen from "../../components/LoadingScreen";
+import Header from "../../components/profile/Header";
+import DropdownBar from "../../components/auth/DropdownBar"
 
 import {
   facultiesData,
   yearsOfStudyData,
   yesNoData,
   zodiacSignsData
-} from '../constants/DropdownData';
+} from '../../constants/DropdownData';
 
-import HandleImage from "../utils/HandleImage";
-import calculateAge from "../utils/CalculateAge";
+import HandleImage from "../../utils/auth/HandleImage";
+import calculateAge from "../../utils/dateFunctions/CalculateAge";
 
 export default function ProfileScreen({ navigation }) {
 

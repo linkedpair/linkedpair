@@ -9,7 +9,7 @@ import { responsiveHeight } from "react-native-responsive-dimensions";
 
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
-import calculateAge from "../../utils/CalculateAge";
+import calculateAge from "../../utils/dateFunctions/CalculateAge"
 import GetRegionFromCoordinates from "../../utils/matching/GetRegionFromCoordinates";
 
 const MatchedUserCard = ({ fields, matchedUser, purpose }) => {

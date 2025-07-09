@@ -1,6 +1,6 @@
 import * as ImagePicker from "expo-image-picker";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from "../config/firebaseConfig";
+import { storage } from "../../config/firebaseConfig";
 
 export default async function HandleImage() {
   try {
