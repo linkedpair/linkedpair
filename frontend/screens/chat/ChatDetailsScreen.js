@@ -18,7 +18,7 @@ import { responsiveWidth, responsiveHeight } from 'react-native-responsive-dimen
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-import { auth, db } from "../config/firebaseConfig";
+import { auth, db } from "../../config/firebaseConfig";
 import { 
   onSnapshot, 
   query, 
@@ -30,7 +30,7 @@ import {
   setDoc, 
 } from "firebase/firestore";
 
-import NoProfilePicture from "../assets/NoPicture.jpg"
+import NoProfilePicture from "../../assets/NoPicture.jpg"
 
 export default function ChatDetailsScreen({ navigation }) {
 
@@ -74,6 +74,7 @@ export default function ChatDetailsScreen({ navigation }) {
         <Header
           navigation={navigation}
           matchedUser={matchedUser}
+          chatId={chatId}
         />
         <Messages 
           messages={messages}
@@ -115,7 +116,7 @@ const SendMessage = async (chatId, text, senderId, setTextContent) => {
   }
 
 
-const Header = ({ matchedUser, navigation }) => {
+const Header = ({ chatId, matchedUser, navigation }) => {
   return(
     <View style={styles.HeaderContainer}>
       <TouchableOpacity
@@ -127,12 +128,13 @@ const Header = ({ matchedUser, navigation }) => {
           style={styles.BackButton}
         />
       </TouchableOpacity>
-      <Photo 
-        image={matchedUser.image}
-      />
-      <Text style={styles.HeaderText}>
-        {matchedUser.firstName}
-      </Text>
+      <TouchableOpacity 
+        style={styles.ImageAndNameContainer}
+        onPress={() => navigation.navigate("ChatProfile", { chatId, matchedUser })}
+      >
+        <Photo image={matchedUser.image}/>
+        <Text style={styles.HeaderText}>{matchedUser.firstName}</Text>
+      </TouchableOpacity>
     </View>
   )
 }
@@ -214,6 +216,11 @@ const styles = StyleSheet.create({
     paddingTop: responsiveHeight(1),
     alignItems: 'center',
     justifyContent: 'flex-start'
+  },
+  ImageAndNameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   Circle: {
     width: 40,

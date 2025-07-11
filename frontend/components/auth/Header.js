@@ -21,14 +21,14 @@ export default function Header({ onPress }) {
 const styles = StyleSheet.create({
   Header: {
     position: 'absolute',
-    marginTop: responsiveHeight(6),     // fixed at top
+    marginTop: responsiveHeight(6),     
     top: 0,
     left: 0,
     right: 0,
     height: 50,
     justifyContent: 'flex-start',
     paddingHorizontal: responsiveWidth(4.5),
-    zIndex: 1000,              // make sure it's on top
+    zIndex: 1000,             
   },
   Icon: {
     left: 0,

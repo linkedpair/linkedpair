@@ -66,7 +66,7 @@ export default function LocationMatch({ navigation }) {
           </Text>
         </View>
         <View style={styles.FieldContainer}>
-          <MaterialCommunityIcons name="map-marker-distance" size={24} color="#4CAF50" />
+          <MaterialCommunityIcons name="map-marker-distance" size={25} color="#4CAF50" />
           <Text style={styles.LocationText}>{distance} km from you</Text>
         </View>
       </>
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     color: '#FF7A83',
   },
   LocationText: {
-    fontSize: 24,
+    fontSize: 25,
     fontWeight: '500',
     color: '#4CAF50',
   }

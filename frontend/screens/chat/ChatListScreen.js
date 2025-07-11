@@ -13,7 +13,7 @@ import {
 
 import { responsiveHeight, responsiveWidth } from "react-native-responsive-dimensions";
 
-import { auth, db } from "../config/firebaseConfig";
+import { auth, db } from "../../config/firebaseConfig";
 
 import {
   onSnapshot,
@@ -24,9 +24,9 @@ import {
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
-import { UserContext } from "../contexts/UserContext";
+import { UserContext } from "../../contexts/UserContext";
 
-import NoProfilePicture from "../assets/NoPicture.jpg"
+import NoProfilePicture from "../../assets/NoPicture.jpg"
 
 export default function ChatListScreen({ navigation }) {
   // Turning off an error because i need my flatlist to be in a
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   FormContainer: {
-    paddingHorizontal: responsiveWidth(6),
+    paddingHorizontal: responsiveWidth(8),
     paddingBottom: responsiveHeight(2),
     paddingTop: responsiveHeight(1)
   },
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 15,
-    marginVertical: 9,
+    marginVertical: 10,
   },
   TextDisplay: {
     flex: 1,
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   NameText: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#4A4A4A",
   },
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   },
   GreyLine: {
     backgroundColor: "#D3D3D3",
-    height: 0.2,
+    height: 0.25,
   },
   NotificationSymbol: {
     width: 24,

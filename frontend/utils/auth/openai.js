@@ -3,9 +3,8 @@ import axios from "axios";
 const OPENAI_API_KEY = "FAKE";
 
 export async function generateProfileDescription(traits) {
-  //const prompt = `Write a friendly and engaging description for a dating app 'AboutMe' section based on these traits: ${traits}. 
-  //Keep it below 25 words and don't make it so cringey. Also make it casual`;
-  const prompt = 'reply with a random balkan food'
+  const prompt = `Write a friendly and engaging description for a dating app 'AboutMe' section based on these traits: ${traits}. 
+  Keep it below 50 words and don't make it so cringey. Also make it casual`;
 
   try {
     const response = await axios.post(

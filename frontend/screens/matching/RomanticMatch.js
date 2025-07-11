@@ -45,7 +45,6 @@ export default function RomanticMatch({ navigation }) {
       <LoadingScreen loadingText={"Looking for a matching..."}/>
   }
 
-
   const RomanticFields = ({ matchedUser }) => {
     return (
       <>
@@ -60,12 +59,16 @@ export default function RomanticMatch({ navigation }) {
           </Text>
         </View>
         <View style={styles.FieldContainer}>
-          <MaterialCommunityIcons name="zodiac-capricorn" size={20} color="#FF7A83" />
-          <Text style={styles.PinkText}>Zodiac Sign: {matchedUser.zodiac}</Text>
+          <MaterialCommunityIcons 
+            name={`zodiac-${matchedUser.zodiac.toLowerCase()}`} 
+            size={20} 
+            color="#C77DFF" 
+          />
+          <Text style={styles.ZodiacText}>Zodiac Sign: {matchedUser.zodiac}</Text>
         </View>
         <View style={styles.FieldContainer}>
-          <MaterialCommunityIcons name="book-open-page-variant-outline" size={20} color="#FF7A83" />
-          <Text style={styles.PinkText}>Likes {matchedUser.hobbies}</Text>
+          <Ionicons name="basketball" size={20} color="#4D96FF" />
+          <Text style={styles.HobbiesText}>Likes {matchedUser.hobbies}</Text>
         </View>
       </>
     )
@@ -132,4 +135,14 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#FF7A83',
   },
+  ZodiacText: {
+    color: "#C77DFF",
+    fontSize: 20,
+    fontWeight: '500',
+  },
+  HobbiesText: {
+    color: "#4D96FF",
+    fontSize: 20,
+    fontWeight: '500',  
+  }
 })
