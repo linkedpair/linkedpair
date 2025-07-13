@@ -7,7 +7,6 @@ import { generateEmbeddingFromProfile } from "../utils/auth/openai";
 import getAgeString from "../utils/dateFunctions/GetAgeString";
 
 export default async function SignUpService(signUpData) {
-
   let user;
 
   const {
@@ -26,23 +25,24 @@ export default async function SignUpService(signUpData) {
     stayOnCampus,
     yearOfStudy,
     courses,
-    email
+    email,
+    password,
   } = signUpData;
 
   try {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
-      signUpData.email,
-      signUpData.password
+      email,
+      password
     );
     user = userCredential.user;
   } catch (error) {
     throw new Error("Email is already in use.");
   }
 
-  const ageString = getAgeString(signUpData.date);
-  const profileText = `${ageString}\ntraits: ${signUpData.traits}`;
-
+  const ageString = getAgeString(dateOfBirth);
+  const profileText = `${ageString}\ntraits: ${traits}\nzodiac: ${zodiac}\nhobbies: ${hobbies}\nstays on campus: ${stayOnCampus}\nyear of study: ${yearOfStudy}\ncourses currently taking: ${courses}`;
+  // Generate embedding for the profile text
   const embedding = await generateEmbeddingFromProfile(profileText);
 
   try {
