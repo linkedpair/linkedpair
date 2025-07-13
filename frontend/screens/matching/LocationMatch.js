@@ -10,7 +10,6 @@ import { responsiveHeight, responsiveWidth } from "react-native-responsive-dimen
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { UserContext } from "../../contexts/UserContext";
 
@@ -66,7 +65,7 @@ export default function LocationMatch({ navigation }) {
           </Text>
         </View>
         <View style={styles.FieldContainer}>
-          <MaterialCommunityIcons name="map-marker-distance" size={25} color="#4CAF50" />
+          <Ionicons name="location-outline" size={24} color="4CAF50" />
           <Text style={styles.LocationText}>{distance} km from you</Text>
         </View>
       </>

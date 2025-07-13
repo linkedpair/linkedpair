@@ -77,9 +77,12 @@ const styles = StyleSheet.create({
   UsernameText: {
     color: "#2C2C2C",
     fontSize: 35,
+    fontFamily: "CircularStd-Medium",
+    fontWeight: 'light'
   },
   LabelText: {
     fontSize: 18,
     color: "#898989",
+    fontFamily: "CircularStd-Medium"
   },
 });

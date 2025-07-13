@@ -82,8 +82,6 @@ export default function SignInScreen({ navigation }) {
                 />
                 <PasswordInput
                   ref={passwordRef}
-                  keyboardType="password"
-                  placeholder="Enter your Password"
                   value={password}
                   onChangeText={setPassword}
                   returnKeyType={"done"}
@@ -113,6 +111,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
+    backgroundColor: 'white'
   },
   ScrollContainer: {
     flex: 1, 

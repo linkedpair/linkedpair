@@ -22,6 +22,7 @@ export default function PasswordInput({
   return (
     <View style={styles.MainContainer}>
       <View style={styles.InputContainer}>
+        <Text style={styles.FieldDescriptor}>Password</Text>
         <TextInput
           ref={ref}
           style={styles.Input}
@@ -79,4 +80,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginTop: 8,
   },
+  FieldDescriptor: {
+    position: 'absolute',
+    color: '#888888',
+    fontWeight: '250',
+    left: 15,
+    bottom: 44.5,
+    paddingHorizontal: 7,
+    zIndex: 1000,
+    backgroundColor: 'white',
+    fontFamily: 'SkModernist-Medium',
+    fontSize: 14
+  },  
 });

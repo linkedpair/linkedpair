@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
+    backgroundColor: 'white'
   },
   ScrollContainer: {
     flex: 1, 
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     alignSelf: 'flex-start',
-    color: '#3b3b3b',
+    color: '#fe6b75',
     marginBottom: 2,
   },
   Subtitle: {

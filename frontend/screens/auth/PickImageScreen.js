@@ -21,6 +21,7 @@ import LoadingScreen from "../../components/LoadingScreen";
 export default function PickImageScreen({ navigation }) {
   const [image, setImage] = useState('');
   const [downloadURL, setDownloadURL] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
 
   const { signUpData, updateSignUpData } = useContext(SignUpContext)
   
@@ -40,7 +41,7 @@ export default function PickImageScreen({ navigation }) {
     }
   }
 
-  if (image && !downloadURL) {
+  if (isUploading) {
     return(
       <LoadingScreen loadingText={"Uploading image..."}/>
     )
@@ -57,6 +58,7 @@ export default function PickImageScreen({ navigation }) {
             image={image}
             setImage={setImage}
             setDownloadURL={setDownloadURL}
+            setIsUploading={setIsUploading}
           />
           <NextActionButton 
             handleNext={handleNext}
@@ -78,6 +80,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
+    backgroundColor: 'white'
   },
   ContentContainer: {
     paddingTop: responsiveHeight(12),

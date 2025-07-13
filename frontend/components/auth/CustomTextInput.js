@@ -1,5 +1,5 @@
 import React from "react";
-import { TextInput, StyleSheet } from "react-native";
+import { Text, View, TextInput, StyleSheet } from "react-native";
 
 export default function CustomTextInput({
     ref,
@@ -9,25 +9,44 @@ export default function CustomTextInput({
     returnKeyType,
     onSubmitEditing,
     autoCapitalize,
-    onFocus
+    onFocus,
+    inputType,
+    keyboardType,
+    secureTextEntry,
 }) {
   return(
-    <TextInput
-      ref={ref || null}
-      style={styles.TextInput}
-      placeholder={placeholder}
-      value={value}
-      onChangeText={onChangeText}
-      keyboardType="default"
-      autoCapitalize={autoCapitalize}
-      returnKeyType={returnKeyType}
-      onSubmitEditing={onSubmitEditing}
-      onFocus={onFocus}
-    />
+    <View>
+      <Text style={styles.FieldDescriptor}>{inputType || placeholder}</Text>
+      <TextInput
+        ref={ref || null}
+        style={styles.TextInput}
+        placeholder={placeholder}
+        value={value}
+        onChangeText={onChangeText}
+        keyboardType={keyboardType || "default"}
+        autoCapitalize={autoCapitalize}
+        returnKeyType={returnKeyType}
+        onSubmitEditing={onSubmitEditing}
+        onFocus={onFocus}
+        secureTextEntry={secureTextEntry}
+      />
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
+  FieldDescriptor: {
+    position: 'absolute',
+    color: '#999999',
+    fontWeight: '250',
+    left: 15,
+    bottom: 44.5,
+    paddingHorizontal: 7,
+    zIndex: 1000,
+    backgroundColor: 'white',
+    fontFamily: 'SkModernist-Medium',
+    fontSize: 14
+  },
   TextInput: {
     borderWidth: 1,
     borderColor: "#aaa",
@@ -36,5 +55,6 @@ const styles = StyleSheet.create({
     height: 50,
     fontSize: 18,
     width: '100%',
+    flex: 1,
   },
 })

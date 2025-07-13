@@ -19,7 +19,7 @@ const MatchedUserCard = ({ fields, matchedUser, purpose }) => {
       if (matchedUser?.location) {
         GetRegionFromCoordinates(matchedUser.location, setCity);
       }
-    }, []);
+    }, [matchedUser]);
     
   return (
     <>

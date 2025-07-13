@@ -18,10 +18,13 @@ import DropdownBar from "../../components/auth/DropdownBar";
 import CustomButton from "../../components/auth/CustomButton";
 import NextActionButton from "../../components/auth/NextActionButton";
 import RedirectToSignInOrUp from "../../components/auth/RedirectToSignInOrUp";
+import Header from "../../components/auth/Header";
+
+import { SignUpContext } from "../../contexts/SignUpContext";
+
+import { zodiacSignsData } from "../../constants/DropdownData";
 
 import handleGenerateDescription from "../../utils/auth/HandleGenerateDescription";
-import { SignUpContext } from "../../contexts/SignUpContext";
-import Header from "../../components/auth/Header";
 
 export default function AdditionalDetailsScreen({ navigation }) {
   const [zodiac, setZodiac] = useState('');
@@ -41,6 +44,7 @@ export default function AdditionalDetailsScreen({ navigation }) {
       !hobbies ||
       !gender ||
       !traits
+      //|| !profileDescription
     ) {
       alert('Please Fill in All Required Fields.');
       return;
@@ -63,26 +67,6 @@ export default function AdditionalDetailsScreen({ navigation }) {
   const generateDescription = () => {
     return handleGenerateDescription({ traits, setLoadingDesc, setProfileDescription })
   }
-
-  const zodiacSigns = [
-    "Aries",
-    "Taurus",
-    "Gemini",
-    "Cancer",
-    "Leo",
-    "Virgo",
-    "Libra",
-    "Scorpio",
-    "Sagittarius",
-    "Capricorn",
-    "Aquarius",
-    "Pisces"
-  ]
-
-  const zodiacSignsData = zodiacSigns.map((zodiac) => ({
-    label: zodiac,
-    value: zodiac,
-  }));
 
   return(
     <KeyboardAvoidingView 
@@ -119,6 +103,7 @@ export default function AdditionalDetailsScreen({ navigation }) {
             setValue={setZodiac} 
           />
           <CustomTextInput
+            inputType="Hobbies"
             placeholder="What are Some of your Hobbies?"
             value={hobbies}
             onChangeText={setHobbies}
@@ -134,6 +119,7 @@ export default function AdditionalDetailsScreen({ navigation }) {
           <View style={styles.ProfileDescriptionContainer}>
             <CustomTextInput
               ref={traitsRef}
+              inputType="Traits"
               placeholder="Enter traits (e.g. adventurous, kind, loves books)"
               value={traits}
               onChangeText={setTraits}

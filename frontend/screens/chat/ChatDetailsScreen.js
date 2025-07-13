@@ -30,7 +30,7 @@ import {
   setDoc, 
 } from "firebase/firestore";
 
-import NoProfilePicture from "../../assets/NoPicture.jpg"
+import NoProfilePicture from "../../assets/images/NoPicture.jpg"
 
 export default function ChatDetailsScreen({ navigation }) {
 

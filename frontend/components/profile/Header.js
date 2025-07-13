@@ -40,5 +40,6 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: "bold",
     color: "#FE6B75",
+    fontFamily: "CircularStd-Bold"
   },
 })

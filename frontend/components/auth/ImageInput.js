@@ -11,9 +11,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import HandleImage from "../../utils/auth/HandleImage";
 
-const ImageInput = ({ image, setImage, setDownloadURL }) => {
+const ImageInput = ({ image, setImage, setDownloadURL, setIsUploading }) => {
 
   const PickImage = async () => {
+    setIsUploading(true)
     const result = await HandleImage();
     if (!result) return;
 
@@ -21,6 +22,7 @@ const ImageInput = ({ image, setImage, setDownloadURL }) => {
 
     setImage(uri);           
     setDownloadURL(downloadURL);
+    setIsUploading(false);
   }
 
   return (

@@ -26,7 +26,9 @@ import { onAuthStateChanged } from "firebase/auth";
 
 import { UserContext } from "../../contexts/UserContext";
 
-import NoProfilePicture from "../../assets/NoPicture.jpg"
+import NoProfilePicture from "../../assets/images/NoPicture.jpg"
+
+import FormatTimestamp from "../../utils/dateFunctions/formatTimestamp";
 
 export default function ChatListScreen({ navigation }) {
   // Turning off an error because i need my flatlist to be in a
@@ -85,6 +87,10 @@ export default function ChatListScreen({ navigation }) {
                 : null;
 
               if (!matchedUser) return null;
+
+              const lastMessageTime = item.lastMessage?.timestamp
+                ? FormatTimestamp(item.lastMessage.timestamp)
+                : "";
               return (
                 <>
                 <TouchableOpacity
@@ -112,6 +118,7 @@ export default function ChatListScreen({ navigation }) {
                       {item.lastMessage?.text || "start chatting..."}
                     </Text>
                   </View>
+                  <Text style={styles.Timestamp}>{lastMessageTime}</Text>
                   {/* <NotificationSymbol /> */}
                 </TouchableOpacity>
                 <View style={styles.GreyLine}/>
@@ -199,6 +206,13 @@ const styles = StyleSheet.create({
   GreyLine: {
     backgroundColor: "#D3D3D3",
     height: 0.25,
+  },
+  Timestamp: {
+    alignSelf:'flex-start',
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#999999',
+    paddingTop: 10
   },
   NotificationSymbol: {
     width: 24,

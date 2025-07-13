@@ -86,8 +86,6 @@ export default function AuthScreen({ navigation }) {
                 />
                 <PasswordInput
                   ref={passwordRef}
-                  keyboardType="password"
-                  placeholder="Enter your Password"
                   value={password}
                   onChangeText={setPassword}
                   returnKeyType={"done"}
@@ -99,7 +97,7 @@ export default function AuthScreen({ navigation }) {
                     buttonText={"Create Account"}
                   />
                   <RedirectToSignInOrUp
-                    text={"Sign Up"}
+                    text={"Sign In"}
                     onPress={() => navigation.navigate("SignIn")}
                   />
                 </View>
@@ -118,6 +116,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
+    backgroundColor: 'white'
   },
   ScrollContainer: {
     flex: 1, 

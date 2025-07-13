@@ -73,7 +73,7 @@ const UserAttribute = ({ type, displayType, initialValue }) => {
           <Text style={styles.LabelText}>{value}</Text>
           <Image 
             style={styles.UneditableImage}
-            source={require('../../assets/CannotEdit.png')} 
+            source={require('../../assets/images/CannotEdit.png')} 
           />
         </View>
       ) : isDropdown ? (

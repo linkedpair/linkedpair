@@ -21,6 +21,8 @@ import Header from "../../components/auth/Header";
 
 import { SignUpContext } from "../../contexts/SignUpContext";
 
+import { facultiesData, yearsOfStudyData } from "../../constants/DropdownData";
+
 export default function SchoolDetailsScreen({ navigation }) {
   const [faculty, setFaculty] = useState('');
   const [stayOnCampus, setStayOnCampus] = useState(null);
@@ -53,43 +55,6 @@ export default function SchoolDetailsScreen({ navigation }) {
       }
     }
   }
-
-  const faculties = [
-    "Arts and Social Sciences",
-    "Business",
-    "Computing",
-    "Continuing and Lifelong Education",
-    "Dentistry",
-    "Design and Engineering",
-    "Duke-NUS",
-    "Law",
-    "Medicine",
-    "Music",
-    "NUS College",
-    "NUS Graduate School",
-    "Public Health",
-    "Public Policy",
-    "Science",
-    "Yale-NUS",
-  ];
-
-  const facultiesData = faculties.map((faculty) => ({
-    label: faculty,
-    value: faculty,
-  }));
-
-  const yearsOfStudy = [
-    "Year 1",
-    "Year 2",
-    "Year 3",
-    "Year 4",
-    "Year 5",
-  ];
-
-  const yearsOfStudyData = yearsOfStudy.map((year) => ({
-    label: year,
-    value: year,
-  }));
 
   return(
     <KeyboardAvoidingView 
@@ -135,6 +100,7 @@ export default function SchoolDetailsScreen({ navigation }) {
           />
           <CustomTextInput
             placeholder="Current courses"
+            inputType="Courses"
             value={courses}
             onChangeText={setCourses}
             autoCapitalize="words"
