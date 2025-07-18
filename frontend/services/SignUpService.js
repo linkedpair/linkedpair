@@ -5,6 +5,7 @@ import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 import { generateEmbeddingFromProfile } from "../utils/auth/openai";
 import getAgeString from "../utils/dateFunctions/GetAgeString";
+import { parseToArray } from "../utils/stringUtils";
 
 export default async function SignUpService(signUpData) {
   let user;
@@ -40,8 +41,18 @@ export default async function SignUpService(signUpData) {
     throw new Error("Email is already in use.");
   }
 
+  // Parse inputs first
+  const hobbiesArray = parseToArray(hobbies);
+  const traitsArray = parseToArray(traits);
+  const coursesArray = parseToArray(courses);
+
+  // Then join arrays into strings for the profile text
+  const hobbiesStr = hobbiesArray.join(", ");
+  const traitsStr = traitsArray.join(", ");
+  const coursesStr = coursesArray.join(", ");
+
   const ageString = getAgeString(dateOfBirth);
-  const profileText = `${ageString}\ntraits: ${traits}\nzodiac: ${zodiac}\nhobbies: ${hobbies}\nstays on campus: ${stayOnCampus}\nyear of study: ${yearOfStudy}\ncourses currently taking: ${courses}`;
+  const profileText = `${ageString}\ntraits: ${traitsStr}\nzodiac: ${zodiac}\nhobbies: ${hobbiesStr}\nstays on campus: ${stayOnCampus}\nyear of study: ${yearOfStudy}\ncourses currently taking: ${coursesStr}`;
   // Generate embedding for the profile text
   const embedding = await generateEmbeddingFromProfile(profileText);
 
@@ -56,13 +67,16 @@ export default async function SignUpService(signUpData) {
       image,
       gender,
       zodiac,
-      hobbies,
-      traits,
+      hobbiesArray,
+      hobbies: hobbiesStr,
+      traitsArray,
+      traits: traitsStr,
       profileDescription,
       faculty,
       stayOnCampus,
       yearOfStudy,
-      courses,
+      coursesArray,
+      courses: coursesStr,
       email,
       embedding,
       createdAt: serverTimestamp(),

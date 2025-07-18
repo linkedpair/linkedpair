@@ -24,22 +24,18 @@ import { SignUpContext } from "../../contexts/SignUpContext";
 import { facultiesData, yearsOfStudyData } from "../../constants/DropdownData";
 
 export default function SchoolDetailsScreen({ navigation }) {
-  const [faculty, setFaculty] = useState('');
+  const [faculty, setFaculty] = useState("");
   const [stayOnCampus, setStayOnCampus] = useState(null);
-  const [yearOfStudy, setYearOfStudy] = useState('');
-  const [courses, setCourses] = useState('');
+  const [yearOfStudy, setYearOfStudy] = useState("");
+  const [courses, setCourses] = useState("");
 
-  const { signUpData, updateSignUpData } = useContext(SignUpContext)
+  const { signUpData, updateSignUpData } = useContext(SignUpContext);
 
   const scrollViewRef = useRef();
 
   const handleNext = () => {
-    if (!faculty || 
-      stayOnCampus == null ||
-      !yearOfStudy ||
-      !courses
-    ) {
-      alert('Please fill in all required fields.');
+    if (!faculty || stayOnCampus == null || !yearOfStudy || !courses) {
+      alert("Please fill in all required fields.");
       return;
     } else {
       try {
@@ -47,34 +43,31 @@ export default function SchoolDetailsScreen({ navigation }) {
           faculty: faculty,
           stayOnCampus: stayOnCampus,
           yearOfStudy: yearOfStudy,
-          courses: courses
-        })
-        navigation.navigate("Auth")
+          courses: courses,
+        });
+        navigation.navigate("Auth");
       } catch (error) {
-        alert('An error has occured', 'Please try Again.')
+        alert("An error has occured", "Please try Again.");
       }
     }
-  }
+  };
 
-  return(
-    <KeyboardAvoidingView 
-      style={styles.MainContainer} 
-      behavior={"padding"}
-    >
+  return (
+    <KeyboardAvoidingView style={styles.MainContainer} behavior={"padding"}>
       <Header onPress={() => navigation.navigate("AdditionalDetails")} />
-      <ScrollView 
+      <ScrollView
         ref={scrollViewRef}
-        style={styles.ScrollContainer} 
+        style={styles.ScrollContainer}
         contentContainerStyle={{ flexGrow: 1, gap: 5, paddingBottom: 30 }}
         keyboardShouldPersistTaps="handled"
       >
         <Text style={styles.Title}>Your Uni Life</Text>
         <Text style={styles.Subtitle}>Tell us what you study and more!</Text>
         <View style={styles.FormContainer}>
-          <Text style={[styles.Subtitle, { fontSize: 22, color: 'black' }]}>
+          <Text style={[styles.Subtitle, { fontSize: 22, color: "black" }]}>
             Do you Stay on Campus?
           </Text>
-          <View style={styles.OptionsContainer} >
+          <View style={styles.OptionsContainer}>
             <CustomButton
               buttonText={"Yes"}
               isSelected={stayOnCampus == true}
@@ -86,36 +79,37 @@ export default function SchoolDetailsScreen({ navigation }) {
               onPress={() => setStayOnCampus(false)}
             />
           </View>
-          <DropdownBar 
+          <DropdownBar
             data={facultiesData}
             placeholder={"Select your Faculty"}
-            value={faculty} 
-            setValue={setFaculty} 
+            value={faculty}
+            setValue={setFaculty}
           />
-          <DropdownBar 
+          <DropdownBar
             data={yearsOfStudyData}
             placeholder={"Select your Year of Study"}
-            value={yearOfStudy} 
-            setValue={setYearOfStudy} 
+            value={yearOfStudy}
+            setValue={setYearOfStudy}
           />
           <CustomTextInput
-            placeholder="Current courses"
-            inputType="Courses"
+            placeholder="Eg: CS1101S, GEA1000, ES2660"
+            inputType="Current Courses"
             value={courses}
             onChangeText={setCourses}
             autoCapitalize="words"
             returnKeyType="done"
-            onFocus={() => (
+            onFocus={() =>
               setTimeout(() => {
-                scrollViewRef.current?.scrollTo({ x: 0, y: 2000, animated: true }); 
+                scrollViewRef.current?.scrollTo({
+                  x: 0,
+                  y: 2000,
+                  animated: true,
+                });
               }, 250)
-            )}
+            }
           />
           <View style={styles.ButtonAndLinkContainer}>
-            <NextActionButton 
-              handleNext={handleNext}
-              buttonText={"Next"}
-            />
+            <NextActionButton handleNext={handleNext} buttonText={"Next"} />
             <RedirectToSignInOrUp
               text={"Sign In"}
               onPress={() => navigation.navigate("SignIn")}
@@ -124,53 +118,53 @@ export default function SchoolDetailsScreen({ navigation }) {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   MainContainer: {
-    width: '100%',
+    width: "100%",
     flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    backgroundColor: 'white',
+    flexDirection: "column",
+    alignItems: "center",
+    backgroundColor: "white",
   },
   ScrollContainer: {
-    flex: 1, 
-    flexDirection: 'column',
-    width: '100%',
+    flex: 1,
+    flexDirection: "column",
+    width: "100%",
     paddingTop: responsiveHeight(12),
     paddingBottom: responsiveHeight(6),
     paddingHorizontal: responsiveWidth(9.5),
   },
   Title: {
     fontSize: 32,
-    fontWeight: 'bold',
-    alignSelf: 'flex-start',
-    color: '#FE6B75',
+    fontWeight: "bold",
+    alignSelf: "flex-start",
+    color: "#FE6B75",
   },
   Subtitle: {
     fontSize: 25,
-    fontWeight: '400',
-    alignSelf: 'flex-start',
-    color: '#666',
+    fontWeight: "400",
+    alignSelf: "flex-start",
+    color: "#666",
   },
   FormContainer: {
     paddingTop: responsiveHeight(4),
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     gap: responsiveHeight(2.5),
-    width: '100%',
+    width: "100%",
   },
   OptionsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     gap: 20,
-    width: '100%',
+    width: "100%",
     paddingBottom: 20,
   },
   ButtonAndLinkContainer: {
-    width: '100%',
+    width: "100%",
     marginTop: 5,
-  }
-})
+  },
+});
