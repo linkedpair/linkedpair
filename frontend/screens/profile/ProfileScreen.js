@@ -5,9 +5,12 @@ import {
   StyleSheet,
   ScrollView,
   SafeAreaView,
-  KeyboardAvoidingView
-} from 'react-native';
-import { responsiveHeight, responsiveWidth } from "react-native-responsive-dimensions";
+  KeyboardAvoidingView,
+} from "react-native";
+import {
+  responsiveHeight,
+  responsiveWidth,
+} from "react-native-responsive-dimensions";
 
 import { UserContext } from "../../contexts/UserContext";
 
@@ -19,32 +22,33 @@ import PhotoAndName from "../../components/profile/PhotoAndName";
 import calculateAge from "../../utils/dateFunctions/CalculateAge";
 
 export default function ProfileScreen({ navigation }) {
-
-  const { user, userData } = useContext(UserContext)
+  const { user, userData } = useContext(UserContext);
 
   // Placeholder screen
   if (!user || !userData) {
-    return <LoadingScreen loadingText={"Loading user data..."}/>
+    return <LoadingScreen loadingText={"Loading user data..."} />;
   }
 
   return (
     <KeyboardAvoidingView behavior={"padding"} style={styles.MainContainer}>
       <SafeAreaView>
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.FormContainer}
           keyboardShouldPersistTaps="handled"
         >
-          <Header navigation={navigation}/>
-          <PhotoAndName/>
-          <PinkLineSeparator/>
+          <Header navigation={navigation} />
+          <PhotoAndName />
+          <PinkLineSeparator />
           <View style={styles.SectionContainer}>
             <Text style={styles.SectionTitle}>Public Profile</Text>
-            <Text style={styles.DisclamerText}>This will be shown to others</Text>
+            <Text style={styles.DisclamerText}>
+              This will be shown to others
+            </Text>
           </View>
           <AttributeLineSeparator />
           <UserAttribute
             type="username"
-            displayType="Username"  
+            displayType="Username"
             initialValue={userData.username}
           />
           <AttributeLineSeparator />
@@ -73,7 +77,9 @@ export default function ProfileScreen({ navigation }) {
           />
           <View style={styles.SectionContainer}>
             <Text style={styles.SectionTitle}>School Profile</Text>
-            <Text style={styles.DisclamerText}>This will be shown to others</Text>
+            <Text style={styles.DisclamerText}>
+              This will be shown to others
+            </Text>
           </View>
           <AttributeLineSeparator />
           <UserAttribute
@@ -85,7 +91,7 @@ export default function ProfileScreen({ navigation }) {
           <UserAttribute
             type="stayOnCampus"
             displayType="Stay On Campus?"
-            initialValue={userData.stayOnCampus ? "Yes" : "No"}
+            initialValue={userData.stayOnCampus}
           />
           <AttributeLineSeparator />
           <UserAttribute
@@ -97,14 +103,16 @@ export default function ProfileScreen({ navigation }) {
           <UserAttribute
             type="courses"
             displayType="Courses Taken"
-            initialValue={userData.courses.split(' ').join('\n')}
+            initialValue={userData.courses}
           />
           <View style={styles.SectionContainer}>
             <Text style={styles.SectionTitle}>Private Profile</Text>
-            <Text style={styles.DisclamerText}>This will not be shown to others</Text>
+            <Text style={styles.DisclamerText}>
+              This will not be shown to others
+            </Text>
           </View>
           <AttributeLineSeparator />
-          <UserAttribute 
+          <UserAttribute
             type="firstName"
             displayType="First Name"
             initialValue={userData.firstName}
@@ -112,7 +120,7 @@ export default function ProfileScreen({ navigation }) {
           <AttributeLineSeparator />
           <UserAttribute
             type="lastName"
-            displayType="Last Name"            
+            displayType="Last Name"
             initialValue={userData.lastName}
           />
           <AttributeLineSeparator />
@@ -127,15 +135,15 @@ export default function ProfileScreen({ navigation }) {
   );
 }
 
-const PinkLineSeparator = () => <View style={styles.PinkLine}/>;
+const PinkLineSeparator = () => <View style={styles.PinkLine} />;
 
-const AttributeLineSeparator = () => <View style={styles.GreyLine}/>;
+const AttributeLineSeparator = () => <View style={styles.GreyLine} />;
 
 const styles = StyleSheet.create({
   MainContainer: {
     flex: 1,
     backgroundColor: "white",
-    width: '100%',
+    width: "100%",
   },
   FormContainer: {
     paddingHorizontal: responsiveWidth(6),
@@ -163,4 +171,3 @@ const styles = StyleSheet.create({
     height: 0.7,
   },
 });
-

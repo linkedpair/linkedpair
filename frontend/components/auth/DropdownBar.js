@@ -1,20 +1,21 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { Keyboard, StyleSheet } from "react-native";
 
 import { Dropdown } from "react-native-element-dropdown";
 
 export default function DropdownBar({
-    data,
-    placeholder,
-    value,
-    setValue,
-    purpose,
-    onChangeComplete
+  data,
+  placeholder,
+  value,
+  setValue,
+  purpose,
+  onChangeComplete,
 }) {
-
   return (
     <Dropdown
-      style={purpose == "profile" ? styles.ProfileDropdown : styles.AuthDropdown}
+      style={
+        purpose == "profile" ? styles.ProfileDropdown : styles.AuthDropdown
+      }
       placeholderStyle={styles.PlaceholderStyle}
       selectedTextStyle={styles.SelectedTextStyle}
       inputSearchStyle={styles.InputSearchStyle}
@@ -26,6 +27,7 @@ export default function DropdownBar({
       placeholder={value || placeholder}
       searchPlaceholder={"Search..."}
       value={value}
+      onFocus={() => Keyboard.dismiss()}
       onChange={(event) => {
         setValue(event.value);
         if (onChangeComplete) {
@@ -34,7 +36,7 @@ export default function DropdownBar({
       }}
     />
   );
-};
+}
 
 const styles = StyleSheet.create({
   ProfileDropdown: {
@@ -51,15 +53,15 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   PlaceholderStyle: {
-      fontSize: 16,
-      color: "#aaa",
-      fontWeight: '500',
+    fontSize: 16,
+    color: "#aaa",
+    fontWeight: "500",
   },
   SelectedTextStyle: {
-      fontSize: 18,
+    fontSize: 18,
   },
   InputSearchStyle: {
-      height: 40,
-      fontSize: 16,
+    height: 40,
+    fontSize: 16,
   },
-})
+});

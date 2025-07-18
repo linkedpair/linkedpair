@@ -8,6 +8,7 @@ import {
   updateDoc,
   arrayUnion,
 } from "firebase/firestore";
+import calculateAge from "../dateFunctions/CalculateAge";
 
 // Helper: Calculate distance between two coords in km (Haversine formula)
 export function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
@@ -46,56 +47,92 @@ function similarityToScore(similarity) {
   return Math.round(((similarity + 1) / 2) * 100);
 }
 
-// Match 1 user who satisfies criteria and has not matched with currentUser yet
-async function tryMatch(currentUser, candidate) {
-  if (
-    !candidate.matchedWith?.includes(currentUser.uid) &&
-    !currentUser.matchedWith?.includes(candidate.uid)
-  ) {
-    // Update both users' matchedWith arrays
-    await updateDoc(doc(db, "users", currentUser.uid), {
-      matchedWith: arrayUnion(candidate.uid),
-    });
-    await updateDoc(doc(db, "users", candidate.uid), {
-      matchedWith: arrayUnion(currentUser.uid),
-    });
-    return candidate;
-  }
+// Helper: Get the opposite gender
+function oppositeGender(gender) {
+  if (gender === "Male") return "Female";
+  if (gender === "Female") return "Male";
   return null;
 }
 
-// AI Buddy Match: same gender AND same major
-export async function aiBuddyMatch(currentUser) {
+// Helper: Filter users based on various criteria
+async function filterUsersSmart(filters = {}) {
   const usersRef = collection(db, "users");
+  const snapshot = await getDocs(usersRef);
 
-  const q = query(
-    usersRef,
-    where("faculty", "==", currentUser.faculty),
-    where("gender", "==", currentUser.gender),
-    where("uid", "!=", currentUser.uid)
+  const {
+    gender,
+    faculty,
+    yearOfStudy,
+    minAge,
+    maxAge,
+    zodiac,
+    hobbies,
+    stayOnCampus,
+    courses,
+  } = filters;
+
+  const result = [];
+
+  snapshot.forEach((docSnap) => {
+    const user = docSnap.data();
+    const age = calculateAge(user.dateOfBirth);
+
+    // Apply filters
+    if (gender && user.gender !== gender) return;
+    if (faculty && user.faculty !== faculty) return;
+    if (yearOfStudy && user.yearOfStudy !== yearOfStudy) return;
+    if (minAge && age < minAge) return;
+    if (maxAge && age > maxAge) return;
+    if (zodiac && user.zodiac !== zodiac) return;
+    if (stayOnCampus !== undefined && user.stayOnCampus !== stayOnCampus)
+      return;
+
+    // Check hobbies overlap (if filter provided)
+    if (hobbies?.length > 0) {
+      const match = hobbies.some((h) =>
+        user.hobbiesArray?.includes(h.toLowerCase())
+      );
+      if (!match) return;
+    }
+
+    // Check courses overlap (if filter provided)
+    if (courses?.length > 0) {
+      const match = courses.some((c) =>
+        user.coursesArray?.includes(c.toLowerCase())
+      );
+      if (!match) return;
+    }
+
+    // If passed all filters, add to result
+    result.push(user);
+  });
+
+  return result;
+}
+
+// AI Buddy Match: same gender AND same major
+export async function aiBuddyMatch(currentUser, filters = {}) {
+  const filteredUsers = await filterUsersSmart({
+    ...filters,
+    gender: currentUser.gender,
+    faculty: currentUser.faculty,
+  });
+
+  const candidates = filteredUsers.filter(
+    (u) =>
+      u.uid !== currentUser.uid &&
+      !currentUser.matchedWith?.includes(u.uid) &&
+      !u.matchedWith?.includes(currentUser.uid)
   );
-
-  const querySnapshot = await getDocs(q);
 
   let bestMatch = null;
   let bestSimilarity = -Infinity;
 
-  for (const docSnap of querySnapshot.docs) {
-    const candidate = docSnap.data();
-
-    // Skip if already matched
-    if (
-      currentUser.matchedWith?.includes(candidate.uid) ||
-      candidate.matchedWith?.includes(currentUser.uid)
-    ) {
-      continue;
-    }
-
+  for (const candidate of candidates) {
     const similarity = cosineSimilarity(
       currentUser.embedding,
       candidate.embedding
     );
-
     if (similarity > bestSimilarity) {
       bestSimilarity = similarity;
       bestMatch = candidate;
@@ -103,7 +140,6 @@ export async function aiBuddyMatch(currentUser) {
   }
 
   if (bestMatch) {
-    // Save mutual match
     await updateDoc(doc(db, "users", currentUser.uid), {
       matchedWith: arrayUnion(bestMatch.uid),
     });
@@ -121,38 +157,31 @@ export async function aiBuddyMatch(currentUser) {
 }
 
 // AI Romantic Match: different gender AND different major
-export async function aiRomanticMatch(currentUser) {
-  const usersRef = collection(db, "users");
+export async function aiRomanticMatch(currentUser, filters = {}) {
+  const filteredUsers = await filterUsersSmart({
+    ...filters,
+    gender: oppositeGender(currentUser.gender),
+  });
 
-  const q = query(usersRef, where("gender", "!=", currentUser.gender)); // Only one inequality allowed
-
-  const querySnapshot = await getDocs(q);
+  const candidates = filteredUsers.filter(
+    (u) =>
+      u.faculty !== currentUser.faculty &&
+      u.uid !== currentUser.uid &&
+      !currentUser.matchedWith?.includes(u.uid) &&
+      !u.matchedWith?.includes(currentUser.uid)
+  );
 
   let bestMatch = null;
   let bestSimilarity = -Infinity;
 
-  for (const docSnap of querySnapshot.docs) {
-    const candidate = docSnap.data();
-
-    // Filter out in app logic
-    const isDifferentMajor = candidate.faculty !== currentUser.faculty;
-    const isNotCurrentUser = candidate.uid !== currentUser.uid;
-
-    if (
-      isDifferentMajor &&
-      isNotCurrentUser &&
-      !currentUser.matchedWith?.includes(candidate.uid) &&
-      !candidate.matchedWith?.includes(currentUser.uid)
-    ) {
-      const similarity = cosineSimilarity(
-        currentUser.embedding,
-        candidate.embedding
-      );
-
-      if (similarity > bestSimilarity) {
-        bestSimilarity = similarity;
-        bestMatch = candidate;
-      }
+  for (const candidate of candidates) {
+    const similarity = cosineSimilarity(
+      currentUser.embedding,
+      candidate.embedding
+    );
+    if (similarity > bestSimilarity) {
+      bestSimilarity = similarity;
+      bestMatch = candidate;
     }
   }
 
@@ -174,31 +203,23 @@ export async function aiRomanticMatch(currentUser) {
 }
 
 // Geolocation Match: within 5km radius
-export async function geolocationMatch(currentUser) {
-  if (
-    !currentUser.location ||
-    !currentUser.location.latitude ||
-    !currentUser.location.longitude
-  ) {
-    return null; // Cannot match without location
-  }
+export async function geolocationMatch(currentUser, filters = {}) {
+  if (!currentUser.location?.latitude || !currentUser.location?.longitude)
+    return null;
 
-  const usersRef = collection(db, "users");
-  const q = query(usersRef, where("uid", "!=", currentUser.uid));
+  const filteredUsers = await filterUsersSmart(filters);
 
-  const querySnapshot = await getDocs(q);
-
-  for (const docSnap of querySnapshot.docs) {
-    const candidate = docSnap.data();
-
+  for (const candidate of filteredUsers) {
     if (
-      !candidate.location ||
-      !candidate.location.latitude ||
-      !candidate.location.longitude
-    )
+      candidate.uid === currentUser.uid ||
+      currentUser.matchedWith?.includes(candidate.uid) ||
+      candidate.matchedWith?.includes(currentUser.uid) ||
+      !candidate.location?.latitude ||
+      !candidate.location?.longitude
+    ) {
       continue;
+    }
 
-    // Calculate distance
     const dist = getDistanceFromLatLonInKm(
       currentUser.location.latitude,
       currentUser.location.longitude,
@@ -207,9 +228,14 @@ export async function geolocationMatch(currentUser) {
     );
 
     if (dist <= 5) {
-      // within 5 km
-      const matched = await tryMatch(currentUser, candidate);
-      if (matched) return matched;
+      await updateDoc(doc(db, "users", currentUser.uid), {
+        matchedWith: arrayUnion(candidate.uid),
+      });
+      await updateDoc(doc(db, "users", candidate.uid), {
+        matchedWith: arrayUnion(currentUser.uid),
+      });
+
+      return candidate;
     }
   }
 
