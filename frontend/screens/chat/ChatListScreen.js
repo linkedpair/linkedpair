@@ -9,6 +9,7 @@ import {
   FlatList,
   ScrollView,
   LogBox,
+  Platform,
 } from "react-native";
 
 import {
@@ -158,7 +159,8 @@ const styles = StyleSheet.create({
   FormContainer: {
     paddingHorizontal: responsiveWidth(8),
     paddingBottom: responsiveHeight(2),
-    paddingTop: responsiveHeight(1),
+    paddingTop:
+      Platform.OS === "android" ? responsiveHeight(6) : responsiveHeight(1),
   },
   FlatListContainer: {
     flex: 1,

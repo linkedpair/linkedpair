@@ -6,6 +6,7 @@ import {
   ScrollView,
   SafeAreaView,
   KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import {
   responsiveHeight,
@@ -148,7 +149,8 @@ const styles = StyleSheet.create({
   FormContainer: {
     paddingHorizontal: responsiveWidth(6),
     paddingBottom: responsiveHeight(2),
-    paddingTop: responsiveHeight(1),
+    paddingTop:
+      Platform.OS === "android" ? responsiveHeight(6) : responsiveHeight(1),
   },
   SectionContainer: {
     marginVertical: responsiveHeight(1.5),

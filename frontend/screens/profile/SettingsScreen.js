@@ -284,7 +284,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#f7f8fa",
   },
   scrollContainer: {
-    paddingTop: responsiveHeight(6) + 50,
+    paddingTop:
+      Platform.OS === "android"
+        ? responsiveHeight(11) + 50
+        : responsiveHeight(6) + 50,
     paddingHorizontal: 20,
     paddingBottom: 40,
     alignItems: "center",

@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Text, View, StyleSheet, SafeAreaView, ScrollView } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  Platform,
+} from "react-native";
 import {
   responsiveHeight,
   responsiveWidth,
@@ -113,7 +120,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   FormContainer: {
-    paddingTop: responsiveHeight(1),
+    paddingTop:
+      Platform.OS === "android" ? responsiveHeight(6) : responsiveHeight(1),
     paddingHorizontal: responsiveWidth(6),
     flex: 1,
   },
