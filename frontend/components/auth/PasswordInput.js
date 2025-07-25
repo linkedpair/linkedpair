@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     borderColor: "#aaa",
     borderRadius: 6,
     paddingHorizontal: 12,
-    height: 50,
+    height: 58,
   },
   Input: {
     flex: 1,
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     color: '#888888',
     fontWeight: '250',
     left: 15,
-    bottom: 44.5,
+    bottom: 52.5,
     paddingHorizontal: 7,
     zIndex: 1000,
     backgroundColor: 'white',

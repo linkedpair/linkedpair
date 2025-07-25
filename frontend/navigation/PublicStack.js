@@ -18,12 +18,11 @@ export default function PublicStack() {
   return (
     <SignUpProvider>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="Auth" component={AuthScreen} />
-
         <Stack.Screen name="MainDetails" component={MainDetailsScreen} /> 
         <Stack.Screen name="PickImage" component={PickImageScreen} />
         <Stack.Screen name="AdditionalDetails" component={AdditionalDetailsScreen} />
-        <Stack.Screen name="SchoolDetails" component={SchoolDetailsScreen} />
+        <Stack.Screen name="SchoolDetails" component={SchoolDetailsScreen} />               
+        <Stack.Screen name="Auth" component={AuthScreen} />
         <Stack.Screen name="SignIn" component={SignInScreen} />
       </Stack.Navigator>
     </SignUpProvider>
