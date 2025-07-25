@@ -27,26 +27,21 @@ import { zodiacSignsData } from "../../constants/DropdownData";
 import handleGenerateDescription from "../../utils/auth/HandleGenerateDescription";
 
 export default function AdditionalDetailsScreen({ navigation }) {
-  const [zodiac, setZodiac] = useState('');
-  const [gender, setGender] = useState('');
-  const [hobbies, setHobbies] = useState('');
-  const [traits, setTraits] = useState(""); 
+  const [zodiac, setZodiac] = useState("");
+  const [gender, setGender] = useState("");
+  const [hobbies, setHobbies] = useState("");
+  const [traits, setTraits] = useState("");
   const [profileDescription, setProfileDescription] = useState("");
   const [loadingDesc, setLoadingDesc] = useState(false);
 
-  const { signUpData, updateSignUpData } = useContext(SignUpContext)
+  const { signUpData, updateSignUpData } = useContext(SignUpContext);
 
   const traitsRef = useRef();
   const scrollViewRef = useRef();
 
   const handleNext = () => {
-    if (!zodiac ||
-      !hobbies ||
-      !gender ||
-      !traits
-      //|| !profileDescription
-    ) {
-      alert('Please Fill in All Required Fields.');
+    if (!zodiac || !hobbies || !gender || !traits || !profileDescription) {
+      alert("Please Fill in All Required Fields.");
       return;
     } else {
       try {
@@ -55,36 +50,37 @@ export default function AdditionalDetailsScreen({ navigation }) {
           hobbies: hobbies,
           gender: gender,
           traits: traits,
-          profileDescription: profileDescription
-        })
+          profileDescription: profileDescription,
+        });
         navigation.navigate("SchoolDetails");
       } catch (error) {
-        alert("upload failed. Please try again.")
+        alert("upload failed. Please try again.");
       }
     }
-  }
+  };
 
   const generateDescription = () => {
-    return handleGenerateDescription({ traits, setLoadingDesc, setProfileDescription })
-  }
+    return handleGenerateDescription({
+      traits,
+      setLoadingDesc,
+      setProfileDescription,
+    });
+  };
 
-  return(
-    <KeyboardAvoidingView 
-      style={styles.MainContainer} 
-      behavior={"padding"}
-    >
+  return (
+    <KeyboardAvoidingView style={styles.MainContainer} behavior={"padding"}>
       <Header onPress={() => navigation.navigate("PickImage")} />
-      <ScrollView 
+      <ScrollView
         ref={scrollViewRef}
-        style={styles.ScrollContainer} 
-        contentContainerStyle={{ flexGrow: 1, gap: 5, paddingBottom: 30, }}
+        style={styles.ScrollContainer}
+        contentContainerStyle={{ flexGrow: 1, gap: 5, paddingBottom: 30 }}
         keyboardShouldPersistTaps="handled"
       >
         <Text style={styles.Title}>Additional Details</Text>
         <Text style={styles.Subtitle}>Tell Us More!</Text>
         <View style={styles.FormContainer}>
-          <Text style={[styles.Subtitle, { color: 'black' }]}>I am a...</Text>
-          <View style={styles.GenderContainer} >
+          <Text style={[styles.Subtitle, { color: "black" }]}>I am a...</Text>
+          <View style={styles.GenderContainer}>
             <CustomButton
               buttonText={"Male"}
               isSelected={gender == "Male"}
@@ -96,31 +92,35 @@ export default function AdditionalDetailsScreen({ navigation }) {
               onPress={() => setGender("Female")}
             />
           </View>
-          <DropdownBar 
+          <DropdownBar
             data={zodiacSignsData}
             placeholder={"Select your Zodiac Sign"}
-            value={zodiac} 
-            setValue={setZodiac} 
+            value={zodiac}
+            setValue={setZodiac}
           />
           <CustomTextInput
             inputType="Hobbies"
-            placeholder="What are Some of your Hobbies?"
+            placeholder="Eg: painting, running, coding"
             value={hobbies}
             onChangeText={setHobbies}
             autoCapitalize="none"
             returnKeyType="done"
             onSubmitEditing={() => {
-              traitsRef.current.focus()
+              traitsRef.current.focus();
               setTimeout(() => {
-                scrollViewRef.current?.scrollTo({ x: 0, y: 2000, animated: true }); 
+                scrollViewRef.current?.scrollTo({
+                  x: 0,
+                  y: 2000,
+                  animated: true,
+                });
               }, 100);
             }}
           />
           <View style={styles.ProfileDescriptionContainer}>
             <CustomTextInput
               ref={traitsRef}
-              inputType="Traits"
-              placeholder="Enter traits (e.g. adventurous, kind, loves books)"
+              inputType="Personality Traits"
+              placeholder="Eg: introverted, adventurous, kind"
               value={traits}
               onChangeText={setTraits}
               autoCapitalize="none"
@@ -132,7 +132,9 @@ export default function AdditionalDetailsScreen({ navigation }) {
               style={styles.GenerateDescriptionButton}
             >
               <Text style={styles.GenerateDescriptionButtonText}>
-                {loadingDesc ? "Generating..." : "Generate your AI Profile Description"}
+                {loadingDesc
+                  ? "Generating..."
+                  : "Generate your AI Profile Description"}
               </Text>
             </TouchableOpacity>
             {profileDescription ? (
@@ -142,64 +144,61 @@ export default function AdditionalDetailsScreen({ navigation }) {
             ) : null}
           </View>
           <View style={styles.ButtonAndLinkContainer}>
-            <NextActionButton 
-              handleNext={handleNext}
-              buttonText={"Next"}
-            />
+            <NextActionButton handleNext={handleNext} buttonText={"Next"} />
             <RedirectToSignInOrUp
-            text={"Sign In"}
-            onPress={() => navigation.navigate("SignIn")}
+              text={"Sign In"}
+              onPress={() => navigation.navigate("SignIn")}
             />
           </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   MainContainer: {
-    width: '100%',
+    width: "100%",
     flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    backgroundColor: 'white',
+    flexDirection: "column",
+    alignItems: "center",
+    backgroundColor: "white",
   },
   ScrollContainer: {
-    flex: 1, 
-    flexDirection: 'column',
-    width: '100%',
+    flex: 1,
+    flexDirection: "column",
+    width: "100%",
     paddingTop: responsiveHeight(12),
     paddingBottom: responsiveHeight(6),
     paddingHorizontal: responsiveWidth(10),
   },
   Title: {
     fontSize: 32,
-    fontWeight: 'bold',
-    alignSelf: 'flex-start',
-    color: '#FE6B75',
+    fontWeight: "bold",
+    alignSelf: "flex-start",
+    color: "#FE6B75",
   },
   Subtitle: {
     fontSize: 25,
-    fontWeight: '400',
-    alignSelf: 'flex-start',
-    color: '#666',
+    fontWeight: "400",
+    alignSelf: "flex-start",
+    color: "#666",
   },
   FormContainer: {
     paddingTop: responsiveHeight(4),
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     gap: responsiveHeight(2.5),
-    width: '100%',
+    width: "100%",
   },
   GenderContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     gap: 20,
-    width: '100%'
+    width: "100%",
   },
   ProfileDescriptionContainer: {
-    width: '100%',
+    width: "100%",
     gap: 15,
   },
   GenerateDescriptionButton: {
@@ -209,17 +208,17 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   GenerateDescriptionButtonText: {
-    color: "#fff", 
+    color: "#fff",
     fontWeight: "bold",
-    fontSize: 16
+    fontSize: 16,
   },
-  ProfileDescription:{
+  ProfileDescription: {
     padding: 12,
     backgroundColor: "#f0f0f0",
     borderRadius: 8,
   },
   ButtonAndLinkContainer: {
-    width: '100%',
+    width: "100%",
     marginTop: 10,
-  }
-})
+  },
+});

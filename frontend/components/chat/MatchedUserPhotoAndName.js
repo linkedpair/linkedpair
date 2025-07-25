@@ -1,32 +1,29 @@
 import { useContext } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-} from 'react-native';
+import { Text, View, StyleSheet, Image } from "react-native";
 import { responsiveHeight } from "react-native-responsive-dimensions";
 
 const MatchedUserPhotoAndName = ({ matchedUser }) => {
   return (
     <View style={styles.AvatarSection}>
       <View style={styles.Photo}>
-        <Image style={styles.Image} source={{ uri: matchedUser.image }}/>
+        <Image style={styles.Image} source={{ uri: matchedUser.image }} />
       </View>
       <Text style={styles.UsernameText}>{matchedUser.username}</Text>
-      <Text style={[styles.LabelText, { textAlign: 'center' }]}>{matchedUser.profileDescription}</Text>
+      <Text style={[styles.LabelText, { textAlign: "center" }]}>
+        {matchedUser.profileDescription}
+      </Text>
     </View>
   );
 };
 
-export default MatchedUserPhotoAndName
+export default MatchedUserPhotoAndName;
 
 const styles = StyleSheet.create({
   AvatarSection: {
     alignItems: "center",
     marginBottom: responsiveHeight(3),
     flex: 1,
-    gap: responsiveHeight(1.5)
+    gap: responsiveHeight(1.5),
   },
   Photo: {
     width: 150,
@@ -42,7 +39,7 @@ const styles = StyleSheet.create({
   Image: {
     height: "96%",
     width: "96%",
-    borderRadius: "96%",
+    borderRadius: 72,
     resizeMode: "cover",
   },
   UsernameText: {

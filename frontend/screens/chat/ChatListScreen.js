@@ -9,9 +9,13 @@ import {
   FlatList,
   ScrollView,
   LogBox,
+  Platform,
 } from "react-native";
 
-import { responsiveHeight, responsiveWidth } from "react-native-responsive-dimensions";
+import {
+  responsiveHeight,
+  responsiveWidth,
+} from "react-native-responsive-dimensions";
 
 import { auth, db } from "../../config/firebaseConfig";
 
@@ -26,9 +30,9 @@ import { onAuthStateChanged } from "firebase/auth";
 
 import { UserContext } from "../../contexts/UserContext";
 
-import NoProfilePicture from "../../assets/images/NoPicture.jpg"
+import NoProfilePicture from "../../assets/images/NoPicture.jpg";
 
-import FormatTimestamp from "../../utils/dateFunctions/formatTimestamp";
+import FormatTimestamp from "../../utils/dateFunctions/FormatTimestamp";
 
 export default function ChatListScreen({ navigation }) {
   // Turning off an error because i need my flatlist to be in a
@@ -43,7 +47,7 @@ export default function ChatListScreen({ navigation }) {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
         subscribeToChats(user.uid);
-      } 
+      }
     });
     return () => unsubscribeAuth();
   }, []);
@@ -68,7 +72,7 @@ export default function ChatListScreen({ navigation }) {
     return unsubscribeChats;
   };
 
-  const { user, userData } = useContext(UserContext)
+  const { user, userData } = useContext(UserContext);
 
   return (
     <SafeAreaView style={styles.MainContainer}>
@@ -93,35 +97,32 @@ export default function ChatListScreen({ navigation }) {
                 : "";
               return (
                 <>
-                <TouchableOpacity
-                  style={styles.ChatContainer}
-                  onPress={async () => {
-                    navigation.navigate("ChatDetails", {
-                      chatId: item.id,
-                      matchedUser: matchedUser,
-                    });
-                  }}
-                >
-                  <Photo
-                    photo={
-                      matchedUser.image ||
-                      NoProfilePicture
-                    }
-                  />
-                  <View style={styles.TextDisplay}>
-                    <Text style={styles.NameText}>{matchedUser.firstName}</Text>
-                    <Text
-                      style={styles.ContentText}
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                    >
-                      {item.lastMessage?.text || "start chatting..."}
-                    </Text>
-                  </View>
-                  <Text style={styles.Timestamp}>{lastMessageTime}</Text>
-                  {/* <NotificationSymbol /> */}
-                </TouchableOpacity>
-                <View style={styles.GreyLine}/>
+                  <TouchableOpacity
+                    style={styles.ChatContainer}
+                    onPress={async () => {
+                      navigation.navigate("ChatDetails", {
+                        chatId: item.id,
+                        matchedUser: matchedUser,
+                      });
+                    }}
+                  >
+                    <Photo photo={matchedUser.image || NoProfilePicture} />
+                    <View style={styles.TextDisplay}>
+                      <Text style={styles.NameText}>
+                        {matchedUser.firstName}
+                      </Text>
+                      <Text
+                        style={styles.ContentText}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                      >
+                        {item.lastMessage?.text || "start chatting..."}
+                      </Text>
+                    </View>
+                    <Text style={styles.Timestamp}>{lastMessageTime}</Text>
+                    {/* <NotificationSymbol /> */}
+                  </TouchableOpacity>
+                  <View style={styles.GreyLine} />
                 </>
               );
             }}
@@ -153,16 +154,17 @@ const styles = StyleSheet.create({
   MainContainer: {
     flex: 1,
     backgroundColor: "white",
-    width: '100%'
+    width: "100%",
   },
   FormContainer: {
     paddingHorizontal: responsiveWidth(8),
     paddingBottom: responsiveHeight(2),
-    paddingTop: responsiveHeight(1)
+    paddingTop:
+      Platform.OS === "android" ? responsiveHeight(6) : responsiveHeight(1),
   },
   FlatListContainer: {
     flex: 1,
-    marginVertical: responsiveHeight(2)
+    marginVertical: responsiveHeight(2),
   },
   HeaderText: {
     fontSize: 35,
@@ -190,7 +192,7 @@ const styles = StyleSheet.create({
   },
   TextDisplay: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     gap: 5,
   },
   NameText: {
@@ -208,11 +210,11 @@ const styles = StyleSheet.create({
     height: 0.25,
   },
   Timestamp: {
-    alignSelf:'flex-start',
+    alignSelf: "flex-start",
     fontSize: 15,
-    fontWeight: '500',
-    color: '#999999',
-    paddingTop: 10
+    fontWeight: "500",
+    color: "#999999",
+    paddingTop: 10,
   },
   NotificationSymbol: {
     width: 24,

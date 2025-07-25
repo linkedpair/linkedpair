@@ -4,12 +4,16 @@ import {
   View,
   StyleSheet,
   SafeAreaView,
-  ScrollView
+  ScrollView,
+  Platform,
 } from "react-native";
-import { responsiveHeight, responsiveWidth } from "react-native-responsive-dimensions";
+import {
+  responsiveHeight,
+  responsiveWidth,
+} from "react-native-responsive-dimensions";
 
-import Ionicons from '@expo/vector-icons/Ionicons';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Ionicons from "@expo/vector-icons/Ionicons";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 import { UserContext } from "../../contexts/UserContext";
 
@@ -19,7 +23,10 @@ import ActionButtons from "../../components/matching/ActionButtons";
 
 import useMatch from "../../hooks/useMatch";
 
-import { geolocationMatch, getDistanceFromLatLonInKm } from "../../utils/matching/MatchingAlgorithms";
+import {
+  geolocationMatch,
+  getDistanceFromLatLonInKm,
+} from "../../utils/matching/MatchingAlgorithms";
 import handleChat from "../../utils/matching/HandleChat";
 
 export default function LocationMatch({ navigation }) {
@@ -27,7 +34,7 @@ export default function LocationMatch({ navigation }) {
   const [showNoUserFound, setShowNoUserFound] = useState(false);
   const [refresh, setRefresh] = useState(0);
 
-  const { user, userData } = useContext(UserContext)
+  const { user, userData } = useContext(UserContext);
 
   useMatch({
     matchAlgo: geolocationMatch,
@@ -35,57 +42,64 @@ export default function LocationMatch({ navigation }) {
     setMatchedUser,
     refresh,
     user,
-    userData
+    userData,
   });
 
   if (!matchedUser) {
-    return showNoUserFound ?
-      <LoadingScreen loadingText={"No users found"} /> :
-      <LoadingScreen loadingText={"Looking for a matching..."}/>
+    return showNoUserFound ? (
+      <LoadingScreen loadingText={"No users found"} />
+    ) : (
+      <LoadingScreen loadingText={"Looking for a matching..."} />
+    );
   }
 
-  const distance = Math.ceil(getDistanceFromLatLonInKm(
-    userData.location.latitude,
-    userData.location.longitude,
-    matchedUser.location.latitude,
-    matchedUser.location.longitude
-  ));
+  const distance = Math.ceil(
+    getDistanceFromLatLonInKm(
+      userData.location.latitude,
+      userData.location.longitude,
+      matchedUser.location.latitude,
+      matchedUser.location.longitude
+    )
+  );
 
   const LocationFields = ({ matchedUser }) => {
     return (
       <>
         <View style={styles.FieldContainer}>
           <Ionicons name="school" size={20} color="#FF7A83" />
-          <Text style={styles.PinkText}>{matchedUser.yearOfStudy} {matchedUser.faculty}</Text>
+          <Text style={styles.PinkText}>
+            {matchedUser.yearOfStudy} {matchedUser.faculty}
+          </Text>
         </View>
         <View style={styles.FieldContainer}>
           <FontAwesome name="home" size={20} color="#FF7A83" />
           <Text style={styles.PinkText}>
-            {matchedUser.stayOnCampus ? "Stays on Campus" : "Does not Stay on Campus"}
+            {matchedUser.stayOnCampus
+              ? "Stays on Campus"
+              : "Does not Stay on Campus"}
           </Text>
         </View>
         <View style={styles.FieldContainer}>
           <Ionicons name="location-outline" size={24} color="4CAF50" />
-          <Text style={styles.LocationText}>{distance} km from you</Text>
+          <Text style={styles.LocationText}>{distance} km away from you</Text>
         </View>
       </>
-    )
-  }
+    );
+  };
 
-  return(
+  return (
     <SafeAreaView style={styles.MainContainer}>
       <View style={styles.FormContainer}>
         <Text style={styles.HeaderText}>Location Match</Text>
         <Text style={styles.Subtitle}>Discover campus pals in your area.</Text>
-        <ScrollView
-          contentContainerStyle={{ paddingBottom: 120 }}>
-          <MatchedUserCard 
-            fields={<LocationFields matchedUser={matchedUser}/>}
-            matchedUser={matchedUser} 
+        <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+          <MatchedUserCard
+            fields={<LocationFields matchedUser={matchedUser} />}
+            matchedUser={matchedUser}
             purpose="location"
           />
-        </ScrollView> 
-        <ActionButtons 
+        </ScrollView>
+        <ActionButtons
           setMatchedUser={setMatchedUser}
           setRefresh={setRefresh}
           handleChat={handleChat}
@@ -96,17 +110,18 @@ export default function LocationMatch({ navigation }) {
         />
       </View>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   MainContainer: {
     flex: 1,
     backgroundColor: "white",
-    width: '100%'
+    width: "100%",
   },
   FormContainer: {
-    paddingTop: responsiveHeight(1),
+    paddingTop:
+      Platform.OS === "android" ? responsiveHeight(6) : responsiveHeight(1),
     paddingHorizontal: responsiveWidth(6),
     flex: 1,
   },
@@ -118,24 +133,24 @@ const styles = StyleSheet.create({
   },
   Subtitle: {
     fontSize: 25,
-    fontWeight: '400',
-    alignSelf: 'flex-start',
-    color: '#FFA3AD',
+    fontWeight: "400",
+    alignSelf: "flex-start",
+    color: "#FFA3AD",
     marginBottom: responsiveHeight(2.5),
   },
   FieldContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 6,
-    alignItems: 'center',
+    alignItems: "center",
   },
   PinkText: {
     fontSize: 20,
-    fontWeight: '500',
-    color: '#FF7A83',
+    fontWeight: "500",
+    color: "#FF7A83",
   },
   LocationText: {
     fontSize: 25,
-    fontWeight: '500',
-    color: '#4CAF50',
-  }
-})
+    fontWeight: "500",
+    color: "#4CAF50",
+  },
+});

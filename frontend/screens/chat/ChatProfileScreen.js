@@ -1,12 +1,9 @@
 import { useContext } from "react";
+import { Text, View, StyleSheet, ScrollView, SafeAreaView } from "react-native";
 import {
-  Text,
-  View,
-  StyleSheet,
-  ScrollView,
-  SafeAreaView,
-} from 'react-native';
-import { responsiveHeight, responsiveWidth } from "react-native-responsive-dimensions";
+  responsiveHeight,
+  responsiveWidth,
+} from "react-native-responsive-dimensions";
 
 import Header from "../../components/chat/Header";
 import LoadingScreen from "../../components/LoadingScreen";
@@ -17,35 +14,36 @@ import calculateAge from "../../utils/dateFunctions/CalculateAge";
 import { useRoute } from "@react-navigation/native";
 
 export default function ChatProfileScreen({ navigation }) {
-
   const route = useRoute();
   const { chatId, matchedUser } = route.params;
 
   // Placeholder screen
   if (!matchedUser) {
-    return <LoadingScreen loadingText={"Loading profile data..."}/>
+    return <LoadingScreen loadingText={"Loading profile data..."} />;
   }
 
   return (
     <SafeAreaView style={styles.MainContainer}>
-      <Header 
+      <Header
         navigation={navigation}
         chatId={chatId}
         matchedUser={matchedUser}
       />
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.FormContainer}
         keyboardShouldPersistTaps="handled"
       >
         <MatchedUserPhotoAndName matchedUser={matchedUser} />
-        <PinkLineSeparator/>
+        <PinkLineSeparator />
         <View style={styles.SectionContainer}>
-          <Text style={styles.SectionTitle}>{matchedUser.firstName}'s Public Profile</Text>
+          <Text style={styles.SectionTitle}>
+            {matchedUser.firstName}'s Public Profile
+          </Text>
         </View>
         <AttributeLineSeparator />
         <MatchedUserAttribute
           type="username"
-          displayType="Username"  
+          displayType="Username"
           initialValue={matchedUser.username}
         />
         <AttributeLineSeparator />
@@ -94,22 +92,22 @@ export default function ChatProfileScreen({ navigation }) {
         <MatchedUserAttribute
           type="courses"
           displayType="Courses Taken"
-          initialValue={matchedUser.courses.split(' ').join('\n')}
+          initialValue={matchedUser.courses}
         />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-const PinkLineSeparator = () => <View style={styles.PinkLine}/>;
+const PinkLineSeparator = () => <View style={styles.PinkLine} />;
 
-const AttributeLineSeparator = () => <View style={styles.GreyLine}/>;
+const AttributeLineSeparator = () => <View style={styles.GreyLine} />;
 
 const styles = StyleSheet.create({
   MainContainer: {
     flex: 1,
     backgroundColor: "white",
-    width: '100%',
+    width: "100%",
   },
   FormContainer: {
     paddingHorizontal: responsiveWidth(6),
@@ -137,4 +135,3 @@ const styles = StyleSheet.create({
     height: 0.7,
   },
 });
-

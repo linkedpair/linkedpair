@@ -59,20 +59,17 @@ export default function SignInScreen({ navigation }) {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.MainContainer} 
-      behavior={"padding"}
-    >
+    <KeyboardAvoidingView style={styles.MainContainer} behavior={"padding"}>
       <ScrollView
-        style={styles.ScrollContainer} 
+        style={styles.ScrollContainer}
         contentContainerStyle={{ flexGrow: 1, gap: 5 }}
         keyboardShouldPersistTaps="handled"
       >
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <View style={styles.FormContainer}>
-            <Text style={styles.Title}>Welcome back! Let's get you signed in.</Text>
+            <Text style={styles.Title}>Welcome! Let's get you signed in.</Text>
             <View style={styles.CenteredContent}>
-              <View style={styles.InputContainer} >
+              <View style={styles.InputContainer}>
                 <EmailInput
                   placeholder="Email"
                   value={email}
@@ -87,8 +84,8 @@ export default function SignInScreen({ navigation }) {
                   returnKeyType={"done"}
                 />
                 <View style={styles.ButtonAndLinkContainer}>
-                  <NextActionButton 
-                    handleNext={handleSignIn} 
+                  <NextActionButton
+                    handleNext={handleSignIn}
                     buttonText={"Sign In"}
                   />
                   <RedirectToSignInOrUp
@@ -107,41 +104,46 @@ export default function SignInScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   MainContainer: {
-    width: '100%',
+    width: "100%",
     flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    backgroundColor: 'white'
+    flexDirection: "column",
+    alignItems: "center",
+    backgroundColor: "white",
   },
   ScrollContainer: {
-    flex: 1, 
-    width: '100%',
+    flex: 1,
+    width: "100%",
   },
   Title: {
     fontSize: 32,
+<<<<<<< HEAD
     fontWeight: 'bold',
     color: '#fe6b75',
+=======
+    fontWeight: "bold",
+    color: "#3b3b3b",
+>>>>>>> 1a3a01a7a933bd06d400e3dd29f3804bb438b339
     marginVertical: 50,
-    textAlign: 'center',
+    textAlign: "center",
   },
   FormContainer: {
     paddingVertical: responsiveHeight(6),
     paddingHorizontal: responsiveWidth(10),
     flex: 1,
-    width: '100%',
+    width: "100%",
   },
   CenteredContent: {
     flex: 1,
-    width: '100%',
-    alignItems: 'center',
+    width: "100%",
+    alignItems: "center",
   },
   InputContainer: {
-    flexDirection: 'column',
-    width: '100%',
+    flexDirection: "column",
+    width: "100%",
     gap: 20,
   },
   ButtonAndLinkContainer: {
-    width: '100%',
+    width: "100%",
     marginTop: 15,
-  }
-})
+  },
+});

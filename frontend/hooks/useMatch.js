@@ -1,19 +1,28 @@
 import React, { useEffect } from "react";
+import { getUserFilters } from "../utils/matching/filtersUtils";
 
-export default function useMatch({ matchAlgo, setShowNoUserFound, setMatchedUser, refresh, user, userData }) {
+export default function useMatch({
+  matchAlgo,
+  setShowNoUserFound,
+  setMatchedUser,
+  refresh,
+  user,
+  userData,
+}) {
   useEffect(() => {
     if (!user || !userData) return;
 
     let timer = setTimeout(() => {
-      setShowNoUserFound(true)
+      setShowNoUserFound(true);
     }, 2000);
 
     const fetchMatch = async () => {
       try {
-        const result = await matchAlgo({ ...user, ...userData });
+        const filters = await getUserFilters(user.uid);
+        const result = await matchAlgo({ ...user, ...userData }, filters);
 
         if (result) {
-          clearTimeout(timer)
+          clearTimeout(timer);
           const matchedUserData = result.match || result;
           const compatibilityScore =
             typeof result.compatibilityScore === "number"

@@ -34,7 +34,7 @@ const zodiacSigns = [
   "Sagittarius",
   "Capricorn",
   "Aquarius",
-  "Pisces"
+  "Pisces",
 ];
 
 export const zodiacSignsData = zodiacSigns.map((zodiac) => ({
@@ -42,22 +42,24 @@ export const zodiacSignsData = zodiacSigns.map((zodiac) => ({
   value: zodiac,
 }));
 
-const yesNo = ["Yes", "No"];
-
-export const yesNoData = yesNo.map((option) => ({
-  label: option,
-  value: option,
-}));
-
-const yearsOfStudy = [
-  "Year 1",
-  "Year 2",
-  "Year 3",
-  "Year 4",
-  "Year 5",
+export const zodiacSignsWithAnyData = [
+  { label: "Any", value: "" },
+  ...zodiacSignsData,
 ];
+
+export const yesNoData = [
+  { label: "Yes", value: true },
+  { label: "No", value: false },
+];
+
+const yearsOfStudy = ["Year 1", "Year 2", "Year 3", "Year 4", "Year 5"];
 
 export const yearsOfStudyData = yearsOfStudy.map((year) => ({
   label: year,
   value: year,
 }));
+
+export const yearsOfStudyWithAnyData = [
+  { label: "Any", value: "" },
+  ...yearsOfStudyData,
+];

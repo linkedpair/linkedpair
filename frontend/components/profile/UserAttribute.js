@@ -6,37 +6,52 @@ import {
   StyleSheet,
   TextInput,
   Image,
-} from 'react-native';
+} from "react-native";
 
-import { db } from '../../config/firebaseConfig'
-import { doc, updateDoc } from 'firebase/firestore'
+import { db } from "../../config/firebaseConfig";
+import { doc, updateDoc } from "firebase/firestore";
 
 import { UserContext } from "../../contexts/UserContext";
 
-import DropdownBar from "../../components/auth/DropdownBar"
+import DropdownBar from "../../components/auth/DropdownBar";
 
 import {
   facultiesData,
   yearsOfStudyData,
   yesNoData,
-  zodiacSignsData
-} from '../../constants/DropdownData';
+  zodiacSignsData,
+} from "../../constants/DropdownData";
+import { parseToArray } from "../../utils/stringUtils";
 
 const UserAttribute = ({ type, displayType, initialValue }) => {
-  const [isEditing, setIsEditing] = useState(false)
-  const [value, setValue] = useState(initialValue ?? "-")
+  const [isEditing, setIsEditing] = useState(false);
+  const [value, setValue] = useState(initialValue ?? "-");
 
-  const { user, userData } = useContext(UserContext)
+  const { user, userData } = useContext(UserContext);
 
   const handleUpdate = async (newValue) => {
-    setIsEditing(false)
+    setIsEditing(false);
     try {
-      const userRef = doc(db, 'users', user.uid)
-      await updateDoc(userRef, {[type]: newValue})
+      const userRef = doc(db, "users", user.uid);
+
+      // Default: update type with newValue
+      const updateObj = { [type]: newValue };
+
+      // If type is "hobbies" or "courses", also update array + string version
+      if (type === "hobbies" || type === "courses") {
+        const arrayFieldName = `${type}Array`;
+        const parsedArray = parseToArray(newValue);
+        const joinedString = parsedArray.join(", ");
+        updateObj[arrayFieldName] = parsedArray;
+        updateObj[type] = joinedString;
+        setValue(joinedString); // Update displayed value to the joined string
+      }
+
+      await updateDoc(userRef, updateObj);
     } catch (error) {
-      alert('Update Failed')
-    }  
-  }
+      alert("Update Failed");
+    }
+  };
 
   const displayTypeData = {
     zodiac: zodiacSignsData,
@@ -45,9 +60,15 @@ const UserAttribute = ({ type, displayType, initialValue }) => {
     yearOfStudy: yearsOfStudyData,
   };
 
-  const TEXT_INPUT_TYPES = ['username', 'hobbies', 'courses', 'email'];
-  const DROPDOWN_TYPES = ['zodiac', 'faculty', 'stayOnCampus', 'yearOfStudy'];
-  const NON_EDITABLE_TYPES = ['firstName', 'lastName', 'age', 'gender', ];
+  const TEXT_INPUT_TYPES = ["username", "hobbies", "courses"];
+  const DROPDOWN_TYPES = ["zodiac", "faculty", "stayOnCampus", "yearOfStudy"];
+  const NON_EDITABLE_TYPES = [
+    "firstName",
+    "lastName",
+    "age",
+    "gender",
+    "email",
+  ];
 
   const isTextInput = TEXT_INPUT_TYPES.includes(type);
   const isDropdown = DROPDOWN_TYPES.includes(type);
@@ -64,16 +85,16 @@ const UserAttribute = ({ type, displayType, initialValue }) => {
             onChangeText={setValue}
             autoFocus={true}
             onBlur={() => handleUpdate(value)}
-            returnKeyType='done'
+            returnKeyType="done"
             onSubmitEditing={() => handleUpdate(value)}
           />
         ) : null
       ) : isUneditable ? (
         <View style={styles.FieldRow}>
           <Text style={styles.LabelText}>{value}</Text>
-          <Image 
+          <Image
             style={styles.UneditableImage}
-            source={require('../../assets/images/CannotEdit.png')} 
+            source={require("../../assets/images/CannotEdit.png")}
           />
         </View>
       ) : isDropdown ? (
@@ -96,7 +117,7 @@ const UserAttribute = ({ type, displayType, initialValue }) => {
   );
 };
 
-export default UserAttribute
+export default UserAttribute;
 
 const styles = StyleSheet.create({
   AttributeContainer: {
@@ -118,9 +139,9 @@ const styles = StyleSheet.create({
   },
   FieldRow: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginTop: 10,
     marginBottom: 15,
     fontSize: 18,
