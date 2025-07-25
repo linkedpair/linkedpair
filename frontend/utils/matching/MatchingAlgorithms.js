@@ -2,8 +2,6 @@ import { db } from "../../config/firebaseConfig";
 import {
   collection,
   getDocs,
-  query,
-  where,
   doc,
   updateDoc,
   arrayUnion,
@@ -55,7 +53,7 @@ function oppositeGender(gender) {
 }
 
 // Helper: Filter users based on various criteria
-async function filterUsersSmart(filters = {}) {
+export async function filterUsersSmart(filters = {}) {
   const usersRef = collection(db, "users");
   const snapshot = await getDocs(usersRef);
 

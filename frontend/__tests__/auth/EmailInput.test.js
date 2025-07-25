@@ -12,14 +12,14 @@ const defaultProps = {
 describe("emailInput tests", () => {
     it("should display the correct placeholder", () => {
         const { getByPlaceholderText } = render(<EmailInput {...defaultProps} />);
-        expect(getByPlaceholderText("Enter Email")).toBeTruthy();
+        expect(getByPlaceholderText("Email-address")).toBeTruthy();
     });
     it("should call onChangeText when user types", () => {
         const mockOnChangeText = jest.fn();
         const { getByPlaceholderText } = render(
             <EmailInput {...defaultProps} onChangeText={mockOnChangeText} />
         );
-        fireEvent.changeText(getByPlaceholderText("Enter Email"), "myEmail");
+        fireEvent.changeText(getByPlaceholderText("Email-address"), "myEmail");
         expect(mockOnChangeText).toHaveBeenCalledWith("myEmail");
     });
     it("should display error message if email is invalid", () => {

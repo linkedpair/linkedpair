@@ -36,7 +36,7 @@ import {
 import NoProfilePicture from "../../assets/images/NoPicture.jpg";
 
 export default function ChatDetailsScreen({ navigation }) {
-  const [messages, setMessages] = useState("");
+  const [messages, setMessages] = useState([]);
   const [textContent, setTextContent] = useState("");
 
   const route = useRoute();

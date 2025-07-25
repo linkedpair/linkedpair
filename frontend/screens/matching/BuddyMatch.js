@@ -44,7 +44,7 @@ export default function BuddyMatch({ navigation }) {
 
   if (!matchedUser) {
     return showNoUserFound ? (
-      <LoadingScreen loadingText={"No users found"} />
+      <LoadingScreen loadingText={"No users found"} refresh={setRefresh}/>
     ) : (
       <LoadingScreen loadingText={"Looking for a matching..."} />
     );

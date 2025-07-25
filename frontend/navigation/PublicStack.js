@@ -18,14 +18,6 @@ export default function PublicStack() {
   return (
     <SignUpProvider>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-<<<<<<< HEAD
-        <Stack.Screen name="MainDetails" component={MainDetailsScreen} /> 
-        <Stack.Screen name="PickImage" component={PickImageScreen} />
-        <Stack.Screen name="AdditionalDetails" component={AdditionalDetailsScreen} />
-        <Stack.Screen name="SchoolDetails" component={SchoolDetailsScreen} />               
-        <Stack.Screen name="Auth" component={AuthScreen} />
-=======
->>>>>>> 1a3a01a7a933bd06d400e3dd29f3804bb438b339
         <Stack.Screen name="SignIn" component={SignInScreen} />
         <Stack.Screen name="MainDetails" component={MainDetailsScreen} />
         <Stack.Screen name="PickImage" component={PickImageScreen} />

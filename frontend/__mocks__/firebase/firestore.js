@@ -6,3 +6,7 @@ export const setDoc = jest.fn((docRef, data) => {
 });
 export const doc = jest.fn(() => "mockdocref");
 export const serverTimestamp = jest.fn();
+export const collection = jest.fn(() => "mockCollection");
+export const updateDoc = jest.fn(() => Promise.resolve());
+export const arrayUnion = jest.fn((uid) => uid);
+export const getDocs = jest.fn();

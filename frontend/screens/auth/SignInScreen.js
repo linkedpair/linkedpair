@@ -116,13 +116,8 @@ const styles = StyleSheet.create({
   },
   Title: {
     fontSize: 32,
-<<<<<<< HEAD
-    fontWeight: 'bold',
-    color: '#fe6b75',
-=======
     fontWeight: "bold",
-    color: "#3b3b3b",
->>>>>>> 1a3a01a7a933bd06d400e3dd29f3804bb438b339
+    color: "#fe6b75",
     marginVertical: 50,
     textAlign: "center",
   },
